@@ -1,0 +1,229 @@
+/* Colours
+/* ============= */
+
+:root {
+  --red:#AF3B27
+  --acolor:#AF3B27;
+  --acolor:#2B6679;
+  --bgcolor:#F9F5D7;
+  --bgcolor:#FBF1C7;
+  --bg2:#EBDBB2;
+}
+
+html {
+  background:linear-gradient(var(--bgcolor), var(--bgcolor));
+}
+
+h1,h2,h3,h4,h5,h6 {
+  color:var(--acolor);
+}
+
+a {
+  color:var(--acolor);
+}
+
+code {
+  background:var(--bg2);
+}
+
+
+
+
+/* Baseline and Grid
+/* ============= */
+
+html {
+  padding:2rem 6rem;
+  font-size:25px;
+}
+body {
+  width:24rem;
+  font-size:17px;
+}
+h1 {
+  font-size:1.7rem;
+  line-height:2rem;
+  min-height:2rem;
+  margin-bottom:2rem;
+  float:left;
+}
+h1+* {
+  clear:left;
+}
+
+td {
+  white-space:nowrap;
+}
+td:nth-child(2n+2) {
+  text-align:center;
+  padding:0 .6em;
+}
+tr.-inbetween {
+  height:2rem;
+}
+
+
+.non-normative {
+}
+
+ul, ol {
+  padding:0 0 0 1em;
+}
+ul.-runin, ol.-runin {
+  list-style-position:inside;
+  padding:0;
+}
+li>ul, li>ol {
+  padding:0 0 0 1em;
+}
+ul {
+  list-style:none;
+}
+ul.-runin > li::before {
+  margin-left:0;
+}
+ul > li::before {
+  content:'–  ';
+  margin-left:-1em;
+  float:left;
+}
+
+h4+p::before {
+  content:' | ';
+}
+
+h2 {
+  margin-top:1rem;
+  margin-bottom:1rem;
+  font-size:.85rem;
+  transform:translate(0, .45rem);
+}
+h4 {
+  font-size:16px;
+  line-height:1rem;
+  display:inline;
+}
+h4+p {
+  display:inline;
+}
+h4+p:after {
+  content:'';
+  display:block;
+  margin:0 0 1rem;
+}
+
+.todo::before{
+  content:'TODO ';
+  color:var(--acolor);
+}
+.todo {
+  margin-bottom:1rem;
+  border:1px solid currentColor;
+  padding:.5rem;
+}
+
+.-line {
+  margin-bottom:0;
+}
+.-line::after {
+  content:none;
+}
+.-inbetween {
+  margin-top:-.5rem;
+  margin-bottom:.5rem;
+}
+.-inbetween + .-inbetween {
+  margin-top:0;
+  margin-bottom:.5rem;
+}
+.-center {
+  text-align:center;
+}
+
+table {
+  border-collapse:collapse;
+}
+table.-center {
+  text-align:left;
+  margin:0 auto 1rem;
+}
+td {
+  line-height:1rem;
+  padding:0;
+  margin:0;
+}
+
+
+
+
+/* Typography
+/* ============= */
+
+body {
+  font-family:'Produkt';
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family:Sans-Serif;
+  font-weight:normal;
+}
+h1{
+  font-weight:bold;
+}
+b {
+  font-weight:bold;
+  font-style:normal;
+  font-family:Sans-Serif;
+  font-size:15.4px;
+  line-height:1rem;
+}
+i {
+  font-style:italic;
+}
+i.op, i.fn {
+  font-style:normal;
+}
+code {
+  font-weight:normal;
+  font-family:Monospace;
+  font-size:14px;
+  padding:0 3px;
+  border-radius:2px;
+}
+
+a {
+  text-decoration:none;
+  font-family:Sans-Serif;
+  font-size:.62rem;
+}
+dfn {
+  font-style:italic;
+}
+a:hover, dfn {
+  text-decoration:underline;
+}
+
+abbr.-caps {
+  text-transform:lowercase;
+  font-variant:small-caps;
+  font-size:1.3em;
+}
+
+sup, sub {
+  font-size:.75em;
+}
+
+/* Styling
+/* ============= */
+
+html {
+  border-bottom:1px solid var(--acolor);
+/*  <'border-image-source'> || <'border-image-slice'> [ / <'border-image-width'> | / <'border-image-width'>? / <'border-image-outset'> ]? || <'border-image-repeat'>  */
+  border-image: linear-gradient(var(--acolor), var(--acolor)) 1 1 / 20rem 10rem 0rem 10rem / 24rem 12rem 22rem 7.5rem;
+}
+
+/*.grammar tr:not(.-inbetween) td:first-child {
+  font-family:Sans-Serif;
+  font-size:15px;
+
+}*/
