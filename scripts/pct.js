@@ -1,29 +1,20 @@
 // Percent Coding
 // --------------
 
-// The set of characters to be encoded depends on the property-key and
-// on the 'mode'. The mode is computed from the structure of the URL. 
+// Lookup tables
+// I'm using bitmasks for the modes, and offsets for the keys.
 
 const modes =
   { regular: 0b10, relative: 0b01 }
 
-// Lookup tables
-// I'm using bitmasks for the modes, and offsets for the keys.
-// There are 5 keys times three mode-bits, 
-// thus 15 bits of info per character to encode the escape sets. 
-
 const _offsets =
-  { url:10, user:8, pass:8, host:6, dir:2, file:4, query:2, hash:0 }
+  { url:10, user:8, pass:8, host:6, dir:4, file:4, query:2, hash:0 }
 
 const t32 = [
 /*  32 ( ) */ 0b111111101011,
 /*  33 (!) */ 0b000000000000,
 /*  34 (") */ 0b111100101011,
-/*  35 (#) */ 0b111111111100,
-/*  36 ($) */ 0b000000000000,
-/*  37 (%) */ 0b111111111111,
-/*  38 (&) */ 0b000000000000,
-/*  39 (') */ 0b000000000000 ]
+/*  35 (#) */ 0b111111111100 ]
 
 const t47 = [
 /*  47 (/) */ 0b001111111100 ]
@@ -53,10 +44,10 @@ const t123 = [
 
 
 function charInfo (c) {
-  // Escape C0 controls, C1 controls and DEL
+  // Escape C0 controls, DEL and C1 controls
   if (c <= 31 || 127 <= c && c < 160) return ~0
-  // Lookup tables for 32-39, 47, 58-64, 91-96, 123-126
-  if (32 <= c && c <= 39) return t32 [c - 32]
+  // Lookup tables for 32-35, 47, 58-64, 91-96, 123-126
+  if (32 <= c && c <= 35) return t32 [c - 32]
   if (c === 47) return t47 [c-47]
   if (58 <= c && c <= 64) return t58 [c - 58]
   if (91 <= c && c <= 96) return t91 [c - 91]

@@ -30,18 +30,57 @@
       const defs = doc.getElementsByTagName ('DFN')
       const index = { }
       for (let def of defs) {
-        let block = def
-        do { block = block.parentNode }
-        while (block && block.tagName !== 'P')
-        index [def.innerText] = { text: block? block.innerText : null, def, block }
+        // OK so need to define the definition-scope,
+        // using a -def-scope class is good, otherwise fall back to the p. 
+        let block = getDefScope (def)
+        let text = block ? block.innerText.replace(/\s+/, ' ') : ''
+        index [def.innerText] = { text, def, block }
       }
       log (index)
+      return index
     }
+    
+  function getDefScope (elem) {
+    let block = elem, para = null
+    while (block) {
+      block = block.parentNode
+      para  = block.tagName === 'P' ? block : para
+      if (block.classList.contains('-def-scope')) break
+      if (block.tagName === 'BODY') block = null
+    }
+    return block || para
+  }
+    
+
+
+  window.addEventListener('DOMContentLoaded', $=> {
+    const index = buildIndex ()
+    const toolsDiv = document.getElementById ('tools')
+    
+    const handleClick = evt => {
+      let elem = evt.target
+      if (evt.target.tagName === 'I') {
+        const text = evt.target.innerText.replace(/\s+/, ' ')
+        let entry 
+        if ((entry = index[text].block)) {
+          const block = getDefScope (elem)
+          // if (entry.block === block) return
+          const tip = entry.cloneNode(true)
+          toolsDiv.append (tip)
+        }
+      }
+    }
+    document.body.addEventListener ('click', handleClick)
+  })
 
   </script>
 </head>
 <body>
   
+<div id=tools>
+</div>
+
+<article>
 <h1>URL Specification</h1>
 
 <section>
@@ -70,7 +109,7 @@
       To enable and support efforts <em>towards</em> a single
       <strong><em>Unified <abbr class=-caps>URL</abbr> Standard</em></strong>
       that includes a normative specification of <abbr class=-caps>URL</abbr>
-      handling by web browsers and that resolves the incompatibilites between
+      handling by web browsers and that resolves the incompatibilities between
       <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>,
       <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a> and the
       <a href="https://url.spec.whatwg.org/"
@@ -85,7 +124,8 @@
 <section><h2 class=-toc-exclude>Status of this document</h2>
   <ul>
     <li>
-      This is a working draft. The version of this draft is 0.2.0.
+      This is version 0.2.0 of the specification. This is a development 
+      version. 
     <li>
       The versioning scheme is specified by
       <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.
@@ -123,18 +163,34 @@
     which the rest of the specification is built. 
 
   <h4>Sequences</h4>
-  <p class=-line>
-    …
-
-  <p class="-inbetween todo">
-    NB ε is overloaded, it is used for empty sequences in
-    general.
-
+  <p>
+    This specification uses an algebraic notation for sequences that makes no 
+    distinction between one-element sequences and their first element. 
+    It uses the following notation. 
+  <ul class=-inbetween>
+    <li>
+      The empty sequence is denoted by ε. 
+    <li>
+      The concatenation of two sequences <var>S</var> and <var>T</var> is
+      denoted by <var>S</var>・<var>T</var>. 
+  </ul>
+  <p>
+    Parentheses are used for disambiguation and as visual aides. Paired 
+    parentheses are not used as a sequence-constructing operation. 
+      
   <h4>Tokens</h4>
   <p>
-    The word <dfn>token</dfn> is used throughout this document to mean a
+    The word <dfn>token</dfn> is used throughout this specification to mean a
     tagged value, (<em>tag</em> <em>value</em>), where the <em>tag</em> is
     taken from a set of predefined <dfn>token-types</dfn>.
+  <p>
+    Both <i>tag</i> constants and their corresponding token constructing
+    operator are typeset in boldface. For example, <b>scheme</b> denotes a 
+    <i>tag</i>, whilst (<b>scheme</b> <var>value</var>) denotes a token. 
+  <br>
+    Again, parentheses are used to disambiguate and as visual aides. 
+    They are not part of the token constructing operation. 
+
   <p>
     The value of a token may be a sequence of tokens itself, in which case
     the token may be referred to as a <dfn>compound token</dfn> for clarity.
@@ -143,11 +199,11 @@
   <p>
     When a collection of tokens contains exactly one sub-token
     (<em>tag</em> <em>value</em>) for a given tag, then the tag may be used
-    to refer to its value directly. <br>For example, given a sequence of tokens
-    S := (<b>foo</b> <var>x</var>・<b>bar</b> <em>y</em>・<b>baz</b> <em>z</em>), the prase
-      &ldquo;the <b>bar</b> of S&rdquo; identifies the value <em>y</em>
-      whereas the phrase &ldquo;the <b>bar</b> token of S&rdquo; identifies
-      (<b>bar</b> <em>y</em>).
+    to refer to its value directly. For example, given a sequence of tokens
+    S := (<b>dir</b> <var>x</var>・<b>file</b> <em>y</em>・<b>query</b> <em>z</em>), the prase
+      &ldquo;the <b>query</b> of S&rdquo; identifies the value <em>z</em>
+      whereas the phrase &ldquo;the <b>query</b> token of S&rdquo; identifies
+      (<b>query</b> <em>z</em>).
 
   <h4>Strings and Code-Points</h4>
   <p class=-line>
@@ -163,17 +219,17 @@
       A <dfn>code point</dfn>, is a natural number <var>n</var> ≤ 1114111.
     <li>
       The <dfn>empty string</dfn> is a sequence of zero code points. It is
-      denoted by ε.
+      denoted by ε. 
   </ul>
   <p>
     Code points are denoted by a number in <em>hexadecimal</em> notation
     preceded by <b>u+</b> in boldface. In addition, code points that correspond
-    to printable <abbr class=-caps>ASCII</abbr> characters can be denoted by
-    their corresponding glyph, typeset in  monospace on a screened
-    background. For example, <b>u+41</b> and <code>A</code> denote the same
+    to printable <abbr class=-caps>ASCII</abbr> characters are often denoted by
+    their corresponding glyph, typeset in monospace on a screened background.
+    For example, <b>u+41</b> and <code>A</code> denote the same
     code point. Strings that contain only printable
-    <abbr class=-caps>ASCII</abbr> characters are typically denoted by a 
-    connected sequence of glyphs, likewise.
+    <abbr class=-caps>ASCII</abbr> characters are often denoted as a 
+    connected sequence of glyphs, typeset likewise.
   <p>
     The printable <abbr class=-caps>ASCII</abbr> characters are codepoints in
     the range <b>u+20</b> to <b>u+7E</b>, inclusive. Note that this
@@ -184,11 +240,11 @@
     A <dfn>character range</dfn> is the largest set of characters that includes
     a given least character <var>c</var> and a greatest character <var>d</var>.
     Such a character range is denoted by { <var>c</var>–<var>d</var> }.
-    Furthermore, the union of e.g. { <var>c</var>–<var>d</var> }
-    and { <var>a</var>–<var>b</var> }, is denoted by
-    { <var>c</var>–<var>d</var>, <var>a</var>–<var>b</var> }, and this
-    notation generalises to <var>n</var>-ary unions. Character sets that are 
-    used throughout this document are defined below: 
+    Furthermore, the union of e.g. { <var>a</var>–<var>b</var> }
+    and { <var>c</var>–<var>d</var> }, is denoted by
+    { <var>a</var>–<var>b</var>, <var>c</var>–<var>d</var> }, and this
+    notation is generalised to <var>n</var>-ary unions. Character sets that are 
+    used throughout this specification are defined below: 
 
   <table class=grammar>
     <tr><td>        any <td> := <td> { <b>u+0</b>–<b>u+10FFFF</b> }
@@ -220,7 +276,9 @@
   <p>
     The shorthand notation <var>string</var> :: <var>rule</var> is used to
     express that a string <var>string</var> can be generated by the production
-    rule <var>rule</var> of a given grammar. 
+    rule <var>rule</var> of a given grammar. <br>Likewise, the notation 
+    <var>string</var> :: <var>expression</var> is used to express that 
+    <var>string</var> can be generated by <var>expression</var>.
 
 </section>
 
@@ -253,9 +311,8 @@
       <abbr class=-caps>URL</abbr>s are subject to the following constraints:
     <ul>
       <li>
-        An <abbr class=-caps>URL</abbr> contains at most one token per type, except for <b>dir</b>
-        tokens.
-      <li>An <abbr class=-caps>URL</abbr> may have any finite amount of <b>dir</b> tokens.
+        An <abbr class=-caps>URL</abbr> contains at most one token per type, 
+        except for <b>dir</b> tokens, of which it may have any finite amount.
       <li>
         If an <abbr class=-caps>URL</abbr> has an <b>authority</b> or a <b>drive</b> token, and it
         has a <b>dir</b> or a <b>file</b> token, then it also has a
@@ -263,35 +320,45 @@
     </ul>
     <ul>
       <li>
-        The <dfn><b>scheme</b></dfn> of an <abbr class=-caps>URL</abbr>, if present, is a string
-        <var>scheme</var> :: alpha (alpha | digit | <code>+</code> | <code>-</code> | <code>.</code>)*
+        The <b>scheme</b> of an <abbr class=-caps>URL</abbr>, if present, is a
+        string <span class=-nobr><var>scheme</var> :: alpha (alpha | digit | <code>+</code> | <code>-</code> | <code>.</code>)*</span>
       <li>
-        The <dfn><b>authority</b></dfn> of an <abbr class=-caps>URL</abbr>, if present, is an
-        <i>Authority</i> — to be defined below.
+        The <b>authority</b> of an <abbr class=-caps>URL</abbr>, if present, is
+        an <i>Authority</i> — to be defined below.
       <li>
-        The <dfn><b>drive</b></dfn> of an <abbr class=-caps>URL</abbr>, if present, is a string
-        <var>drive</var> :: alpha (<code>:</code> | <code>|</code>)
+        The <b>drive</b> of an <abbr class=-caps>URL</abbr>, if present, is a
+        string <var>drive</var> :: alpha (<code>:</code> | <code>|</code>)
       <li>
-        The <dfn><b>file</b></dfn> of an <abbr class=-caps>URL</abbr>, if present, is a nonempty string.
+        The <b>file</b> of an <abbr class=-caps>URL</abbr>, if present, is a
+        nonempty string.
       <li>
         For all other tokens present, the tokens&rsquo; values are strings.
     </ul>
 
+
+    <div class=-def-scope>
     <h4>Base-<abbr class=-caps>URL</abbr></h4>
     <p>
       A <dfn>base-<abbr class=-caps>URL</abbr></dfn> is an <i><abbr class=-caps>URL</abbr></i> that has a <i><b>scheme</b></i>
       and that has in addition, an <i><b>authority</b></i> or a <i><b>path-root</b></i>.
+    </div>
 
+
+    <div class=-def-scope>
     <h4>Special-<abbr class=-caps>URL</abbr></h4>
-      <p>An <abbr class=-caps>URL</abbr> is <dfn>special</dfn> if has a <i>special</i> <b>scheme</b>.
-        If an <abbr class=-caps>URL</abbr> is not <dfn>special</dfn> then it is said to be <dfn>regular</dfn>.
+      <p>
+        An <abbr class=-caps>URL</abbr> is <dfn>special</dfn> if has a <i>special</i> <b>scheme</b>.
+        If an <abbr class=-caps>URL</abbr> is not <dfn>special</dfn> then it is said to be <dfn>non-special</dfn>.
         A <i>special</i> <b>scheme</b>  is a string <var>scheme</var> such that:
       <table>
         <tr><td>lowercase (<var>scheme</var>) <td>::<td> <code>http</code> | <code>https</code> | <code>ws</code> | <code>wss</code> | <code>ftp</code> | <code>file</code>
       </table>
+    </div>
+
 
     <h4>Authority</h4>
-    <p class=-line>
+    <div class=-def-scope>
+    <p>
       An <dfn>Authority</dfn> is a sequence of tokens ordered by their type, 
       taken from the ordered set:
 
@@ -300,17 +367,17 @@
 
     <p class=-line>
       Authorities are subject to the following constraints:
+    </div>
+
     <ul>
       <li>
         Authorities contain at most one token per type.
       <li>
-        Authorities have exactly one <b>host</b> token. 
-      <li>
         If an Authority has a <b>password</b> token then it also has a
         <b>username</b> token.
       <li>
-        If an Authority has a <b>host</b> token whose value is the empty
-        string, then it has no other tokens.
+        If an Authority has a <b>username</b> or a <b>port</b> token
+        then it also has a <b>host</b> token. 
     </ul>
 
     <p class=-line>
@@ -322,35 +389,40 @@
       <li>
         The <dfn><b>port</b></dfn> of an Authority, if present, is either the
         empty string ε,<br>or a natural number <var>n</var> &lt; 2<sup>16</sup>.
-      <li>For all other tokens present, the tokens&rsquo; values are strings.
+      <li>
+        For all other tokens present, the tokens&rsquo; values are strings.
     </ul>
 
-  <h4>Host</h4>
-  <p class=-line>
-    A <dfn>Host</dfn> is either
-  <ul>
-    <li>the empty string,
-    <li>an ipv6-address,
-    <li>an opaque-host,
-    <li>an ipv4-address, or
-    <li>a domain-name.
-  </ul>
+
+  <div class=-def-scope>
+    <h4>Host</h4>
+    <p class=-line>
+      A <dfn>Host</dfn> is either
+    <ul>
+      <li>an ipv6-address,
+      <li>an opaque-host, which is a string <var>host</var> :: <i class=rule>opaque-host</i>
+      <li>an ipv4-address, or
+      <li>a domain-name.
+    </ul>
+  </div>
 
   <div class=todo>
-    Additional constraints, but ehh
-    yeah, structural constraints, validaton and failures, all need to be
+    Additional constraints, validation and failures, all need to be
     expressed in one way or another. 
-    This is a bit messy, because, the validations and errors may occur on multiple levels. For one, the parsing of backslashes. Two, validation warnings on invalid code points, three, errors, possibly on parsing, else higher up. 
-    Errors after parsing, such as the host constraints, 
+    This is a bit messy, because, validation warnings and errors may occur on
+    multiple levels. For one, the parsing of backslashes. Two, validation
+    warnings on invalid code points, three, errors, possibly on parsing, else
+    higher up. Four. Errors after parsing, such as the host constraints, …
   </div>
 
   <h3>Additional Constraints</h3>
   <p class=-line>
-    If an <abbr class=-caps>URL</abbr> has a token (<b>scheme</b> <em>s</em>), then it is subject to two 
-    additional constraints:
+    If an <abbr class=-caps>URL</abbr> <var>url</var> has a <b>scheme</b> then 
+    it is subject to two additional constraints:
     <ul>
-  <li>If <em>s</em>, converted to lowercase, is not <code>file</code> then the <abbr class=-caps>URL</abbr> must not have a <b>drive</b> token.
-  <li>If <em>s</em>, converted to lowercase, is <code>file</code> and the <abbr class=-caps>URL</abbr> has an <b>authority</b> then the authority must not contain a <b>username</b>, <b>password</b> or <b>port</b>.
+  <li>If <var>url</var>'s <b>scheme</b> – converted to lowercase – is 
+  <code>file</code> and <var>url</var> has an <b>authority</b> then the authority must not contain a <b>username</b>, <b>password</b> or <b>port</b>.
+  <li>Otherwise the <abbr class=-caps>URL</abbr> must not have a <b>drive</b> token.
 </ul>
 </section>
 
@@ -372,9 +444,17 @@
     <li> Decoding and parsing the host.
   </ol>
 
-  <h3 id="preprocessing">Preprocessing</h3>
-  <p>
-  <div class=todo>Preprocessing</div>
+  <h3>Preprocessing</h3>
+  <p class=-line>
+    Before parsing, preprocess the input string <var>input</var> as follows:
+  <ul>
+    <li>
+      Remove all leading and trailing <i>c0-control</i> and <b>u+20</b> 
+      (space) characters from <var>input</var>.
+    <li>
+      Remove all <b>u+9</b> (tab), <b>u+A</b> (line-feed) and <b>u+D</b>
+      (carriage-return) characters from <var>input</var>.
+  </ul>
 
   <h3>Parser modes</h3>
 
@@ -399,16 +479,13 @@
   <ul>
     <li>Let <em>magic</em> be the first <em>n</em> characters of <em>input</em>, with <em>n</em> being min (6, input.length).
     <li>Set the parser mode to <b>special</b> if (lowercase <em>magic</em>) :: is-special.
-    <li>Otherwise if the fallback scheme is <b>special</b> and <em>input</em> :: has-scheme, then set the parse mode to regular.
+    <li>Otherwise if the fallback scheme is <b>special</b> and <em>input</em> :: has-scheme, then set the parse mode to non-special.
   </ul>
 
-  <p>The grammar is parameterised by the parser mode. There are two parser modes, regular, and <b>special</b>. In <b>special</b> mode, the s subscripted rules must be used instead of their unsubscripted counterparts, whenever available.
+  <p>The grammar is parameterised by the parser mode. There are two parser modes, default, and <b>special</b>. In <b>special</b> mode, the s subscripted rules must be used instead of their unsubscripted counterparts, whenever available.
 
 
-  <h3><abbr class=-caps>URL</abbr> Grammar</h3>
-  <p>
-    The following defines the grammar for regular, and special <abbr class=-caps>URL</abbr>s. 
-
+  <h4>URL Grammar</h4>
     <table class=grammar>
       <!-- <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
       <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] (auth-path | path) [ <code>?</code> query ] [ <code>#</code> fragment ]
@@ -426,8 +503,8 @@
       <tr><td>file <td> ::= <td> pchar+
       <tr><td>query <td> ::= <td> qchar*
       <tr><td>fragment <td> ::= <td> any*
-      <tr><td>slash <td> ::= <td> <code>/</code>
-      <tr><td>slash<sub>S</sub> <td> ::= <td> <code>/</code> | <code>\</code><sub>err</sub>
+      <tr><td>s <td> ::= <td> <code>/</code>
+      <tr><td>s<sub>S</sub> <td> ::= <td> <code>/</code> | <code>\</code><sub>err</sub>
 
       <tr class=-inbetween><td colspan=3>These rules are based on the following character sets:
 
@@ -438,14 +515,14 @@
 
   <h4>Authority Grammar</h4>
     <table class=grammar>
-      <tr><td>authority <td> ::= <td> [ credentials <code>@</code> ] host [ <code>:</code> port ]
+      <tr><td>authority <td> ::= <td> ε | [ credentials <code>@</code> ] host [ <code>:</code> port ]
       <tr><td>credentials <td> ::= <td> username [ <code>:</code> password ]
 
       <tr class=-inbetween><td colspan=3>This refers to the following rules:
 
       <tr><td>username <td> ::= <td> uchar*
       <tr><td>password <td> ::= <td> pchar*
-      <tr><td>host <td> ::= <td> ε | <code>[</code> ip6-address <code>]</code> | opaque-host
+      <tr><td>host <td> ::= <td> <code>[</code> ip6-address <code>]</code> | opaque-host
       <tr><td>opaque-host <td> ::= <td> hchar+
       <tr><td>port <td> ::= <td> ε | digit+
 
@@ -459,11 +536,21 @@
 
     <div class=todo>
     <ul>
-      <li>ipv6
       <li>Host processing
       <li>Evaluating the port
     </ul>
   </div>
+
+  <h4>IPv6 Address</h4>
+  <p>
+    An IPv6 address-string <!--consists of a sequence of items, separated by
+    <code>:</code> or <code>::</code>, the items being hexadecimal except for
+    the last itme, which may consist of four decimal numbers separated by
+    <code>.</code> as follows:-->
+    is a string representation of a natural number <var>n</var> &lt; 2<sup>128</sup>. 
+    It is accurately described by the production rule <var>IPv6address</var>
+    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
+    section of <abbr class=-caps>RFC</abbr> 3986. 
 
 
   <h3>A note about repeated slashes</h3>
@@ -545,7 +632,6 @@
 
   <div class=todo>
   <ul>
-    <li>Validation warnings on certain chars
     <li>Percent decode
     <li>Puny decode
     <li>Apply IDNA/ Nameprep normalisation
@@ -553,17 +639,6 @@
     <li>Err on forbidden host codepoints
   </ul>
   </div>
-
-  <h4>IPv6 Address</h4>
-  <p>
-    An IPv6 address-string <!--consists of a sequence of items, separated by
-    <code>:</code> or <code>::</code>, the items being hexadecimal except for
-    the last itme, which may consist of four decimal numbers separated by
-    <code>.</code> as follows:-->
-    is a string representation of a natural number <var>n</var> &lt; 2<sup>128</sup>. 
-    It is accurately described by the production rule <var>IPv6address</var>
-    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
-    section of <abbr class=-caps>RFC</abbr> 3986. 
 
   <h4>IPv4 Address</h4>
   <p>
@@ -602,7 +677,7 @@
     mentioned sections in <abbr class=-caps>RFC</abbr> 3986 and in the
     <abbr class=-caps>WHATWG</abbr> standard, it does not do additional 
     normalisation, which is relegated to the section
-    <a href=#normalisation>Normalisation</a> instead.
+    <a>Equivalences and Normalisation</a> instead.
 
   <h4>The Order of an <abbr class=-caps>URL</abbr></h4>
   <p>
@@ -622,7 +697,7 @@
 
   <p class=-line>
     The <dfn>order-limited prefix</dfn>
-    (<var>url</var> <b class=-op>upto</b> <var>order</var>)
+    (<var>url</var> <span class=op>upto</span> <var>order</var>)
     is defined to be <br>
     the <em>shortest</em> prefix of <var>url</var> that contains:
     <ul>
@@ -680,50 +755,57 @@
     <li>
       <var>url<sub>1</sub></var> goto ε = <var>url<sub>1</sub></var> — if <var>url<sub>1</sub></var> does not have a <b>fragment</b>.
     <li>
-      all of the above ae true for ~goto as well.
+      all of the above are true for ~goto as well.
     <li>
-      <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var> goto <var>url<sub>2</sub></var>) but not necessarily of (<var>url<sub>1</sub></var> goto&rsquo; <var>url<sub>2</sub></var>).
+      <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var> goto <var>url<sub>2</sub></var>) but not necessarily of (<var>url<sub>1</sub></var> ~goto <var>url<sub>2</sub></var>).
   </ul>
 
   <h4>Force</h4>
   <p>
     There is an additional operation on <abbr class=-caps>URL</abbr>s called <em>force</em> that 
     it is used as an error-recovery measure for special <abbr class=-caps>URL</abbr>s that have an
-    empty, or an absent authority. 
+    empty, or an absent authority. Force has no effect on <i>non-special</i>
+    <abbr class=-caps>URL</abbr>s. 
 
-  <p class=-line>
+  <div class=-def-scope>
+  <ul><li>
     To <dfn>force</dfn> a file <abbr class=-caps>URL</abbr>:
     <ul>
       <li>
-        Set its <b>authority</b> to (<b>host</b> ε) if absent.
+        Set its <b>authority</b> token to (<b>authority</b> ε) if absent.
       <li>
         Set its <b>path-root</b> token to (<b>path-root</b> <code>/</code>) unless it
         has a <b>drive</b>.
     </ul>
-
-  <p class=-line>
-    To <dfn>force</dfn> any other special <abbr class=-caps>URL</abbr>
+    </ul><ul>
+    <li>
+      To <dfn>force</dfn> any other special <abbr class=-caps>URL</abbr>
     <ul>
       <li>
-        If the <abbr class=-caps>URL</abbr> does not have an <b>authority</b> or if it is
-        (<b>host</b> ε) then let <var>token</var> be the first <b>dir</b> or
+        If the <abbr class=-caps>URL</abbr> does not have an <b>authority</b> 
+        or if it is ε then let <var>token</var> be the first <b>dir</b> or
         <b>file</b> token whose value is not ε. 
         If no such token exists, fail. 
         Remove all <b>dir</b> or <b>file</b> tokens that precede 
         <var>token</var> and remove <var>token</var> as well. 
         Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
-        an <i>Authority</i> and set the <b>authority</b> of the <abbr class=-caps>URL</abbr> to
-        <var>auth</var>. 
+        an <i>Authority</i> and set the <b>authority</b> of the
+        <abbr class=-caps>URL</abbr> to <var>auth</var>. 
       <li>
-        Set the <b>path-root</b> of the <abbr class=-caps>URL</abbr> to <code>/</code>. 
+        Set the <b>path-root</b> of the <abbr class=-caps>URL</abbr> to 
+        <code>/</code>. 
     </ul>
-
-  <p class=-line>
-    Other <abbr class=-caps>URL</abbr>s remain unaffected. 
-
-  <div class=todo>
-    Make this clean
+  </ul>
   </div>
+  <!--<div class=todo>
+    Make this clean
+  </div>-->
+
+  <p>
+    The <i>force</i> operation has some unpleasant mathematical properties
+    that will be discussed in the chapter 
+    <a>Equivalences and Normalisation</a>. 
+
 
   <h3>Resolution</h3>
   <p>
@@ -740,24 +822,26 @@
         <var>url1</var> otherwise. 
   </ol>
 
+  <p>
+    The condition 1. checks for the presence of a <b>fragment</b> token
+    to emulate the behaviour of the parse-and-resolve algorithm of the
+    <abbr class=-caps>WHATWG</abbr> standard. 
+
   <h4>Resolution</h4>
   <p>
     The <dfn>resolution</dfn> of <var>url1</var> against <var>url2</var> is
     defined to be the <i>pre-resolution</i> of <var>url1</var> against
     <var>url2</var>, if it is not ε and its order is <b>scheme</b> or
     <b>fragment</b>.
-    Otherwise resolution fails. 
+    Otherwise resolution <strong>fails</strong>. 
 
   <h4>Forced Resolution</h4>
   <p>
     The <dfn>forced resolution</dfn> of <var>url1</var> against
-    <var>url2</var> is defined to be
-    force (resolve <var>url1</var>, <var>url2</var>).
+    <var>url2</var> is defined to be the <i>resolution</i> of 
+    <var>url1</var> against <var>url2</var>, subsequently  
+    <i>force</i>d. 
 
-  <p>
-    The condition 1. checks for the presence of a <b>fragment</b> token
-    to emulate the behaviour of the parse-and-resolve algorithm of the
-    <abbr class=-caps>WHATWG</abbr> standard. 
   <p>
     Note that resolution, defined as such, may return an <abbr class=-caps>URL</abbr> that consists of
     only a <b>fragment</b> and is therefore not a <i>base-<abbr class=-caps>URL</abbr></i>.
@@ -781,7 +865,7 @@
     to right results in a set of terminating rewrite rules. An <abbr class=-caps>URL</abbr> is in normal
     form if no more rewrite rules can be applied. 
 
-<h4>Path Segment Normalization</h4>
+<h4>Path Segment Normalisation</h4>
 
 <table>
   <tr><td><b>dir</b>  <var>x</var> <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
@@ -798,8 +882,8 @@
     <td> — <td> if <var>y</var> :: <i>dots</i>
 
   <tr class=-inbetween><td colspan=10>where,
-  <tr><td><i>dot</i> <td> ::= <td> <code>.</code> | <code>%2e</code> | <code>%2E</code>
-  <tr><td><i>dots</i> <td> ::= <td> <i>dot</i> <i>dot</i>
+  <tr><td><i>dot</i> <td> ::= <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
+  <tr><td><i>dots</i> <td> ::= <td colspan=10> <i>dot</i> <i>dot</i>
 </table>
 
 <h4 id="authority-normalisation">Authority Normalisation</h3>
@@ -811,7 +895,7 @@
 
 <h4>Scheme-based Authority Normalisation</h4>
   <table>
-    <tr><td><b>scheme</b> <code>file</code> <td>・<td><b>authority</b> (<b>host</b> <code>localhost</code>)          <td> ≈ <td> <b>scheme</b> <code>file</code> <td>・<td><b>authority</b> (<b>host</b> ε)
+    <tr><td><b>scheme</b> <code>file</code> <td>・<td><b>authority</b> (<b>host</b> <code>localhost</code>)          <td> ≈ <td> <b>scheme</b> <code>file</code> <td>・<td><b>authority</b> ε
     <tr><td><b>scheme</b> <code>http</code> <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>80</code>)  <td> ≈ <td> <b>scheme</b> <code>http</code> <td>・<td><b>authority</b> <var>xs</var>
     <tr><td><b>scheme</b> <code>ws</code>   <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>80</code>)  <td> ≈ <td> <b>scheme</b> <code>ws</code>   <td>・<td><b>authority</b> <var>xs</var>
     <tr><td><b>scheme</b> <code>ftp</code>  <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>21</code>)  <td> ≈ <td> <b>scheme</b> <code>ftp</code>  <td>・<td><b>authority</b> <var>xs</var>
@@ -824,29 +908,41 @@
 
 <h2>Percent Coding</h2>
 
+<h2>Printing</h2>
+<p>
+  Printing is the process of converting an <abbr class=-caps>URL</abbr> to an
+  <abbr class=-caps>URL</abbr>-string.
 <ul>
   <li>
-    nonhost := { <b>u+0</b>, <b>u+9</b>, <b>u+A</b>, <b>u+D</b>, <b>u+20</b>, <code>#</code>, <code>/</code>, <code>:</code>, <code>&lt;</code>, <code>&gt;</code>, <code>?</code>, <code>@</code>, <code>[</code>, <code>\</code>, <code>]</code>, <code>^</code> }
+    To print to an <abbr class=-caps>ASCII</abbr> <abbr class=-caps>URL</abbr>-string, percent encode any \ printable-ascii
+  <li>
+    Otherwise percent encode c0-control, DEL, c1-control, surrogates and
+    non-chars. 
+  <li>
+    In addition percent encode a subset of printable-ascii, depending on the 
+    token, as indicated by the tables below. 
 </ul>
 
-<table class=-lined id=percent-encode-sets>
+<table id=percent-encode-sets>
 </table>
 
 <script>
   const table = document.getElementById ('percent-encode-sets')
-  for (let x of ['url', 'user', 'host', 'dir', 'query', 'hash']) {
+  for (let x of ['url', 'user', 'host', 'dir', 'file', 'query', 'hash']) {
     var tr = ce ('tr')
     tr.append (ce('th', x))
     table.append (tr)
     for (let i=0x20; i<=0x7e; i++) {
-      // remove 0-9, a-z, A-Z
-      if ((i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
+      // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
+      if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
         const hs = isInSet (i, x)
         const str = String.fromCharCode(i)
-        const cel = ce('code', str == ' ' ? ' ' : str)
-        cel.title = 'u+'+i.toString(16)
-        if (!hs) cel.classList.add ('-screen')
-        tr.append(ce('td', cel))
+        const code = ce('code', str == ' ' ? ' ' : str)
+        code.title = 'u+'+i.toString(16).toUpperCase() 
+        const td = ce('td', code)
+        if (!hs) td.classList.add ('-screen')
+        if (!hs) td.classList.add ('-screen')
+        tr.append(td)
       }
     }
     if (x in { dir:1, query:1}) {
@@ -854,37 +950,29 @@
     tr.append (ce('th', 's'+x))
     table.append (tr)
     for (let i=0x20; i<=0x7e; i++) {
-      // remove 0-9, a-z, A-Z
-      if ((i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
+      // remove 0-9, a-z, A-Z, '('-'.'
+      if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
         const hs = isInSet (i, x, { special:true })
         const str = String.fromCharCode(i)
-        const cel = ce('code', str == ' ' ? ' ' : str)
-        if (!hs) cel.classList.add ('-screen')
-        tr.append(ce('td', cel))
+        const td = ce('td', ce('code', str == ' ' ? ' ' : str))
+        if (!hs) td.classList.add ('-screen')
+        tr.append(td)
       }
     }
     }
   }
 </script>
 
-
-<h2 id="printing">Printing</h2>
-
-<p>Printing is the process of converting an <abbr class=-caps>URL</abbr> to an <abbr class=-caps>URL</abbr>-string.
-
-<p>To obtain an <abbr class=-caps>URL</abbr>-string for a given <abbr class=-caps>URL</abbr> <var>url1</var> proceed as follows.
-
 <ul>
-  <li>Let <var>url2</var> be <var>url1</var>, percent encoded.
-  <li>Let output be the empty string, then, for each of the tokens (<em>type</em>, <em>value</em>) of <em>url2</em> in order, convert the token to a string according to the following table and append it to the output.
+  <li>Let output be the empty string, then, for each of the tokens (<em>type</em>, <em>value</em>) of <em>url2</em> in tree order, convert the token to a string according to the following table and append it to the output.
 </ul>
 
-<table id=printer class=-lined>
+<table id=printer>
   <tr>
   <th><b>scheme</b>
   <th colspan=2><b>authority</b>
   <th><b>drive</b>
-  <th><b>path-root</b>
+  <th><b>root</b>
   <th><b>dir</b>
   <th><b>file</b>
   <th><b>query</b>
@@ -894,7 +982,7 @@
   <td><code>//</code><td><table>
     <tr><th colspan=2>credentials<th><b>host</b><th><b>port</b>
     <tr><td><table>
-      <tr><th><b>username</b><th><b>password</b>
+      <tr><th><b>user</b><th><b>pass</b>
       <tr><td><var>value</var><td><var> <code>:</code> value</var>
     </table><td><code>@</code>
       <td><var>value</var><td><var><code>:</code> value</var>
@@ -907,8 +995,5 @@
   <td><code>#</code> <var>value</var>
 </table>
 
-<script>
-  setTimeout (buildIndex (), 100)
-</script>
 </body>
 </html>
