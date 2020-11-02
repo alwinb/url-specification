@@ -14,7 +14,7 @@ html {
   background:linear-gradient(var(--bgcolor), var(--bgcolor));
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1, h2, h3, h4, h5, h6 {
   color:var(--acolor);
 }
 
@@ -27,7 +27,7 @@ code {
 }
 
 
-/* Baseline Grid
+/* Baseline and Grid
 /* ============= */
 
 html {
@@ -49,12 +49,16 @@ article {
 
 #tools {
   position:fixed;
-  right:0;
-  top:0;
+  left:32rem;
+  top:calc(100vh - 16rem);
   width:calc(100vw - 30rem);
+  max-width:15rem;
+  font-family:Sans-Serif;
+  font-size:.6rem;
 }
 
-/* Scale
+
+/* Typographic Scale and Structural Devices
 /* ============= */
 
 h1 {
@@ -63,15 +67,17 @@ h1 {
   min-height:2rem;
   margin-bottom:2rem;
 }
+
 h2 {
-  margin-top:1rem;
-  font-size:.88rem;
-  transform:translate(0, .5rem);
-}
-h3 {
-  line-height:1rem;
   margin-top:1.5rem;
   margin-bottom:.5rem;
+  line-height:1rem;
+  font-size:.88rem;
+}
+h3 {
+  margin-top:1.5rem;
+  margin-bottom:.5rem;
+  line-height:1rem;
   font-size:.89rem;
   text-transform:lowercase;
   font-variant:small-caps;
@@ -87,21 +93,6 @@ sup, sub {
 
 
 
-
-
-
-
-
-td {
-  white-space:nowrap;
-}
-td:nth-child(2n+2) {
-  text-align:center;
-  padding:0 .6em;
-}
-tr.-inbetween {
-  height:2rem;
-}
 
 ul{
   padding:0 0 0 1em;
@@ -137,14 +128,13 @@ h4+p {
 h4+p::before {
   content:'|';
   padding:0 .18em;
-  vertical-align:bottom;
 }
 h4+p::after {
   content:'';
   display:block;
   margin:0 0 1rem;
 }
-h4+p.-line::after {
+h4+p.-br::after {
   display:block;
   margin:0;
 }
@@ -159,32 +149,19 @@ h4+p.-line::after {
   padding:.5rem;
 }
 
-.-line {
+
+/* CSS Micro framework
+/* ============= */
+
+.-br {
   margin-bottom:0;
 }
-.-inline, ol.-inline {
-  display:inline;
+.\+br {
+  margin-bottom:1rem;
 }
-.-inline>li{
-  display:inline-block;
+.-screen {
+  opacity:.2;
 }
-.-inline>li::before {
-  content: counter(listCounter) '. ';
-}
-.-inline>li::after {
-  content:' ';
-}
-.-inline>li:last-child:after {
-  content:none;
-}
-
-ol {
-  counter-reset: listCounter;
-}
-li {
-  counter-increment: listCounter;
-}
-
 .-inbetween {
   margin-top:-.5rem;
   margin-bottom:.5rem;
@@ -192,6 +169,9 @@ li {
 .-inbetween + .-inbetween {
   margin-top:0;
   margin-bottom:.5rem;
+}
+.-nowrap {
+  white-space:nowrap;
 }
 :not(table).-center {
   text-align:center;
@@ -201,6 +181,42 @@ table {
 }
 td {
 }
+td {
+  white-space:nowrap;
+}
+
+td:nth-child(2n+2) {
+  text-align:center;
+  padding:0 .6em;
+}
+tr.-inbetween {
+  height:2rem;
+}
+
+/* Inline lists */
+
+ol {
+  counter-reset: list-counter;
+}
+li {
+  counter-increment: list-counter;
+}
+.-inline, ol.-inline {
+  display:inline;
+}
+.-inline li {
+  display:inline-block;
+}
+.-inline li::before {
+  content: counter(list-counter) '. ';
+}
+.-inline li::after {
+  content:' ';
+}
+.-inline li:last-child::after {
+  content:none;
+}
+
 
 
 
@@ -219,6 +235,58 @@ h1,h2,h3,h4,h5,h6 {
 h1{
   font-weight:bold;
 }
+abbr.-caps {
+  text-transform:lowercase;
+  font-variant:small-caps;
+  font-size:1.3em;
+}
+a {
+  text-decoration:none;
+  font-family:Sans-Serif;
+  font-size:.62rem;
+}
+
+a:hover {
+  text-decoration:underline;
+}
+
+/* Typography for Idioms
+/* ============= */
+
+dfn {
+  font-style:italic;
+  text-decoration:underline;
+}
+
+b > dfn {
+  text-decoration:none;
+  font-style:normal;
+}
+
+/* Using <i> For idioms */
+
+i, var {
+  font-style:italic;
+}
+i:hover, b:hover {
+  text-decoration:underline;
+  cursor:help;
+}
+i.noindex:hover, b.noindex:hover {
+  text-decoration:none;
+  cursor:text;
+}
+.op, .fn {
+  font-style:normal;
+  font-weight:normal;
+  text-decoration:none;
+}
+i.common {
+  font-style:normal;
+}
+
+/* Using <b> for constants */
+
 b {
   font-weight:bold;
   font-style:normal;
@@ -226,15 +294,7 @@ b {
   font-size:15.4px;
   line-height:1rem;
 }
-i, var {
-  font-style:italic;
-}
-i:hover {
-  text-decoration:underline;
-}
-i.op, i.fn {
-  font-style:normal;
-}
+
 code {
   font-weight:normal;
   font-family:Monospace;
@@ -242,35 +302,17 @@ code {
   padding:1px 3px 0px;
   border-radius:1px;
 }
+
 a {
   text-decoration:none;
   font-family:Sans-Serif;
   font-size:.62rem;
 }
-dfn {
-  font-style:italic;
-}
 
-a:hover, dfn {
-  text-decoration:underline;
-}
-dfn>b{
-  text-decoration:none;
-}
-abbr.-caps {
-  text-transform:lowercase;
-  font-variant:small-caps;
-  font-size:1.3em;
-}
-.-nobr {
-  white-space:nowrap;
-}
 .rule {
   font-style:normal;
 }
-.-screen {
-  opacity:.2;
-}
+
 
 /* Styling
 /* ============= */
@@ -286,6 +328,22 @@ html {
   font-size:15px;
 
 }*/
+
+
+/* Specific elements
+/* ============= */
+
+
+.url {
+  text-transform:lowercase;
+  font-variant:small-caps;
+  font-style:normal;
+  font-size:1.3em;
+}
+
+.-lined td,.-lined th {
+ border:1px solid currentColor; 
+}
 
 #printer td, #printer th {
   padding:0 .5em;
@@ -324,8 +382,6 @@ table#printer table {
   margin:-1px calc(-.3em - 1px);
 }
 
-
-
 #percent-encode-sets td.-screen code {
  background:none;
   -webkit-touch-callout: none; /* iOS Safari */
@@ -335,4 +391,12 @@ table#printer table {
         -ms-user-select: none; /* Internet Explorer/Edge */
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
+}
+
+
+/* Tweaks
+/* ============= */
+
+sub, sup { 
+  line-height:0;
 }

@@ -38,7 +38,7 @@ body {
 }
 
 /* Block elements followed by a blank line */
-hr,p,ol,ul,dl,table,form,blockquote,pre,figure,img,video,canvas,h1,h2 {
+hr,p,ol,ul,dl,table,form,blockquote,pre,figure,img,video,canvas,h1,h2,section {
   display:block;
   margin-top:0;
   margin-bottom:1rem;
