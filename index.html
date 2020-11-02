@@ -188,19 +188,19 @@
     parentheses are not part of a sequence-constructing operation. 
   </div>    
 
+  <div class="dfn-scope +br">
+  <!-- add to dfn index -->
+  <div style=display:none><dfn>value</dfn><dfn>type</dfn></div>
   <h4>Tokens</h4>
   <p>
     The word <dfn>token</dfn> is used throughout this specification to mean a
-    tagged value, denoted by (<var>tag</var> <var>value</var>), where the
-    <dfn>tag</dfn> is taken from a predefined set <dfn>token-type</dfn>s.
-    <span style=display:none>
-      <dfn>value</dfn>
-      <dfn>type</dfn>
-    </span>
+    tagged value, denoted by (<var>type</var> <var>value</var>), where
+    <var>type</var> is taken from a predefined set <dfn>token-type</dfn>s.
+  </div>
   <p>
     Both <i>tag</i> constants and their corresponding
     <i class=common>token</i>-constructing operator are typeset in boldface.
-    For example, <b>scheme</b> denotes a <i>tag</i>, whilst
+    For example, <b>scheme</b> denotes a <i>token-type</i>, whilst
     (<b>scheme</b> <var>value</var>) denotes a <i>token</i>.
   <br>
     Again, parentheses are used to disambiguate and as visual aides. 
@@ -223,7 +223,7 @@
     example, given a <i class=common>sequence</i> of <i class=common>token</i>s
     S := (<b class=noindex>dir</b> <var>x</var>・<b class=noindex>file</b> <var>y</var>・<b class=noindex>query</b> 
     <var>z</var>), the prase
-    &ldquo;the <b>query</b> of S&rdquo; identifies the
+    &ldquo;the <b class=noindex>query</b> of S&rdquo; identifies the
     <i class=common>value</i> <var>z</var> whereas the phrase &ldquo;the
     <b class=noindex>query</b> <i class=common>token</i> of
     S&rdquo; identifies (<b class=noindex>query</b> <var>z</var>).
@@ -430,7 +430,7 @@
         <i class=url>URL</i> that has a <i>file-<b>scheme</b></i>.
         A <dfn>file-<b>scheme</b></dfn> is a <i class=common>string</i>
         <var>scheme</var> such that
-        <span class=-nowrap>lowercase (<var>scheme</var>) = <code>file</code>. 
+        <span class=-nowrap>lowercase (<var>scheme</var>) :: <code>file</code>. 
     </div>
 
 
@@ -495,28 +495,19 @@
     </ul>
   </div>
 
-  <div class=todo>
-    Additional constraints, validation and failures, all need to be
-    expressed in one way or another. 
-    This is a bit messy, because, validation warnings and errors may occur on
-    multiple levels. For one, the parsing of backslashes. Two, validation
-    warnings on invalid code points, three, errors, possibly on parsing, else
-    higher up. Four. Errors after parsing, such as the host constraints, …
-  </div>
-
   <h3>Additional Constraints</h3>
   <p class=-br>
     If an <i class=url>URL</i> <var>url</var> has a <b>scheme</b> then 
     it is subject to two additional constraints:
     <ul>
   <li>
-    If <var>url</var>'s <b>scheme</b> – converted to lowercase – is 
-    <code>file</code> and <var>url</var> has an <b>authority</b> then the
-    authority must not contain a <b>username</b>, <b>password</b> or
-    <b>port</b>.
+    If <var>url</var> is not a <i>file-<span class=url>URL</span></i> 
+    then it must not have a <b>drive</b> <i class=common>token</i>.
   <li>
-    Otherwise the <i class=url>URL</i> must not have a <b>drive</b>
-    <i class=common>token</i>.
+    If <var>url</var> <strong>is</strong> a 
+    <i>file-<span class=url>URL</span></i>, and it has an <b>authority</b>,
+    then the authority must not contain a <b>username</b>, <b>password</b> or
+    <b>port</b>.
 </ul>
 </section>
 
@@ -577,40 +568,52 @@
     <li>Otherwise if the fallback scheme is <b>special</b> and <var>input</var> :: has-scheme, then set the parse mode to non-special.
   </ul>
 
-  <p>The grammar is parameterised by the parser mode. There are two parser modes, default, and <b>special</b>. In <b>special</b> mode, the s subscripted rules must be used instead of their unsubscripted counterparts, whenever available.
+  <p>
+    The grammar is parameterised by the parser mode. There are three parser 
+    modes: <b>default</b>, <b>web</b> and <b>file</b>.
 
+    <!-- In <b>special</b> mode, the s subscripted rules must be used instead of their unsubscripted counterparts, whenever available. -->
 
   <h4>URL Grammar</h4>
     <table class=grammar>
       <!-- <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
       <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] (auth-path | path) [ <code>?</code> query ] [ <code>#</code> fragment ]
-      <tr><td>auth-path <td> ::= <td> s s authority [ path-root (dir s)* [ file ] ]
-      <tr><td>path <td> ::= <td> [ path-root ] (dir s)* [ file ]
+      <tr><td>auth-path <td> ::= <td> s s authority [ path-root [ dir s ]* [ file ] ]
+      <tr><td>path <td> ::= <td> [ path-root ] path-rel
+
+      <tr class=-inbetween>
+        <td colspan=3>Modified <i>auth-path</i> rule for <i>file-<span class=url>URL</span></i>s:
+      <tr>
+        <td>auth-path<sub>F</sub> <td> ::= <td> ([ s [s] ] drive) | s s host) [ path-root [ dir s ]* [ file ] ]
 
       <tr class=-inbetween>
         <td colspan=3>This refers to the following rules:
 
       <tr><td>scheme <td> ::= <td> alpha (alpha | digit | <code>+</code> | <code>-</code> | <code>.</code>)*
       <tr><td>authority <td> — <td> shall be defined in the next subsection,
-      <tr><td>drive <td> ::= <td> alpha (<code>:</code> | <code>|</code>) — to be used in a subsequent subsection
-      <tr><td>path-root <td> ::= <td> slash
+      <tr><td>host <td> — <td> shall be defined in the next subsection,
+      <tr><td>drive <td> ::= <td> alpha (<code>:</code> | <code>|</code>)
+      <tr><td>path-root <td> ::= <td> s
       <tr><td>dir <td> ::= <td> pchar*
       <tr><td>file <td> ::= <td> pchar+
       <tr><td>query <td> ::= <td> qchar*
       <tr><td>fragment <td> ::= <td> any*
-      <tr><td>s <td> ::= <td> <code>/</code>
-      <tr><td>s<sub>S</sub> <td> ::= <td> <code>/</code> | <code>\</code><sub>err</sub>
 
-      <tr class=-inbetween><td colspan=3>These rules are based on the following character sets:
+      <tr class=-inbetween>
+        <td colspan=3>These rules are based on the following character sets:
+      <tr><td>s <td> ::= <td> { <code>/</code> }
+      <tr><td>pchar <td> := <td> any \ { <code>/</code>, <code>#</code>, <code>?</code> }
+      <tr><td>qchar <td> := <td> any \ { <code>#</code> }
 
-      <tr><td>qchar <td> := <td> any \ {<code>#</code>}
-      <tr><td>pchar <td> := <td> any \ {<code>/</code>, <code>#</code>, <code>?</code>}
-      <tr><td>pchar<sub>S</sub> <td> := <td> any \ {<code>/</code>, <code>\</code>, <code>#</code>, <code>?</code>}
+      <tr class=-inbetween>
+        <td colspan=3>The character sets are modified for <i>file-<span class=url>URL</span></i>s and <i>web-<span class=url>URL</span></i>s:
+      <tr><td>s<sub>S</sub> <td> ::= <td> { <code>/</code>, <code>\</code> }
+      <tr><td>pchar<sub>S</sub> <td> := <td> any \ { <code>/</code>, <code>\</code>, <code>#</code>, <code>?</code> }
     </table>
 
   <h4>Authority Grammar</h4>
     <table class=grammar>
-      <tr><td>authority <td> ::= <td> ε | [ credentials <code>@</code> ] host [ <code>:</code> port ]
+      <tr><td>authority <td> ::= <td> ε  |  [ credentials <code>@</code> ] host [ <code>:</code> port ]
       <tr><td>credentials <td> ::= <td> username [ <code>:</code> password ]
 
       <tr class=-inbetween><td colspan=3>This refers to the following rules:
@@ -648,14 +651,14 @@
     section of <abbr class=-caps>RFC</abbr> 3986. 
 
 
-  <h3 id="drive-letters">Drive letters</h3>
+  <!-- <h3 id="drive-letters">Drive letters</h3>
   <p>
     The grammar does not have rules for parsing windows drive letters in
     <i>file-<span class=url>URL</span></i>s. It is possible to add that, but together with the
     mode selection, it would complicate the grammar quite a bit. An easier way
     to express this is via a separate operation on parsed <i class=url>URL</i>s.
   <p>
-    Drive letter detection, defined using pattern matching: 
+    Drive letter detection, defined using pattern matching:
 
   <table>
     <tr><td><b>authority</b> (<b>host</b> <var>x</var>)<td>
@@ -674,14 +677,14 @@
   <div class=todo>
     No, theres still a problem with the last two rules. This cannot be done
     algebraically, it requires context. You can add path-root to the left, then
-    it almost works, but no, still not for e.g. <code>c|/foo</code>. 
+    it almost works, but no, still not for e.g. <code>c|/foo</code>.
   </div>
 
   <p>
     Drive letter detection must not be applied to <i class=url>URL</i>s that
     have a scheme that is not <code>file</code>. It may be applied to
     scheme-less <i class=url>URL</i>s in contexts where
-    <i>file-<span class=url>URL</span></i>s are expected.
+    <i>file-<span class=url>URL</span></i>s are expected. -->
 
 
   <h3>A note about repeated slashes</h3>
@@ -706,7 +709,7 @@
       It is tempting to try to express this behaviour on the level of the
       grammar. For example one might consider using the following rule:
 
-    <p class="-inbetween -center">auth-path  :=  s* authority [ path-root (dir s)* [ file ] ]
+    <p class="-inbetween -center">auth-path  :=  s* authority [ path-root [ dir s ]* [ file ] ]
 
     <p>
       However, the examples above <em>do</em> behave differently with 
@@ -1017,11 +1020,19 @@
 </section>
 
 <ul class=todo>
-  <li>(norm url1) goto (norm url2) = norm (url1 goto url2)
-  <li>(norm url1) ~goto (norm url2) = norm (url1 ~goto url2)
+  <li>norm ((norm url1) goto (norm url2)) = norm (url1 goto url2)
+  <li>norm ((norm url1) ~goto (norm url2)) = norm (url1 ~goto url2)
 </ul>
 
 <h2 id="validation">Validation</h2>
+
+<div class=todo>
+  Additional constraints, validation and failures, all need to be
+  expressed in one way or another. 
+  This is a bit messy, because, validation warnings and errors may occur on
+  multiple levels. For one, the parsing of backslashes. Two, validation
+  warnings on invalid code points
+</div>
 
 <h2>Percent Coding</h2>
 
