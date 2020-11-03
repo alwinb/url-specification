@@ -27,7 +27,7 @@
 
     function buildIndex (doc = document) {
       // const dfns = doc.getElementsByTagName ('DFN')
-      const dfns = doc.querySelectorAll('dfn, table.grammar td:first-child')
+      const dfns = doc.querySelectorAll('dfn') //, table.grammar td:first-child
       const index = { }
       for (let dfn of dfns) {
         let block = getDefScope (dfn)
@@ -62,16 +62,17 @@
   }
 
   function getCurrentSection (sections) {
-    const threshold = 43
+    const threshold = 55
     for (let s of sections) {
       const { top, bottom } = s.getBoundingClientRect ()
       if (top < threshold && threshold < bottom) return s
     }
   }
 
-  window.addEventListener ('DOMContentLoaded', $=> {
+  window.addEventListener ('DOMContentLoaded', ()=> {
     const index = buildIndex ()
-    const toolsDiv = document.getElementById ('tools')
+    const toolsDiv = $('div', '')
+    document.getElementById ('tools').append (toolsDiv)
     const header = document.getElementsByTagName('HEADER')[0]
     const sections = Array.from (document.getElementsByTagName('SECTION'))
     let hoverDfn = null
