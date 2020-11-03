@@ -330,7 +330,7 @@
     <i class=common>character</i> <var>d</var>.
     Such a <i>character-range</i> is denoted by
     { <var>c</var>–<var>d</var> }
-    Furthermore, the union of e.g. { <var>a</var>–<var>b</var> }
+    The union of e.g. { <var>a</var>–<var>b</var> }
     and { <var>c</var>–<var>d</var> }, is denoted by
     { <var>a</var>–<var>b</var>, <var>c</var>–<var>d</var> }, and this
     notation is generalised to <var>n</var>-ary unions. 
@@ -595,7 +595,6 @@
     <li>Preprocessing.
     <li> Selecting the parser mode.
     <li> Parsing.
-    <li> Detecting drive letters.
     <li> Decoding and parsing the host.
   </ol>
 
@@ -612,39 +611,76 @@
   </ul>
 
   <h3>Parser modes</h3>
+  <p>
+    Unfortunately, <span class=url>URL</span>-parsing slightly depends on the
+    <b>scheme</b> of the <span class=url>URL</span> being parsed. 
+    This has the unfortunate consequence that the parsing of scheme-less
+    <i class=url>URL</i>s ambiguous.
+  <p>
+    In order to resolve the ambiguity, a <i>parser-mode</i> has to be explicitly specified.
+    This supplied mode only influences the parsing behaviour for scheme-less
+    <span class=url>URL</span>s. 
+  <p>
+    In practice, it is possible to start parsing with a supplied <i>parser-mode</i>,
+    and to then update the <i class=common>parser-mode</i> whilst parsing, as soon as a scheme has been detected. 
+    <br>
+    For the purpose of the specification however, it is useful to implement
+    the mode detection as a separate step, before parsing. 
+  <p>
+
+  <div class="dfn-scope +br">
+  <h4>Parser Mode</h4>
+    <p class=-br>
+      There are three distinct <dfn>parser-mode</dfn>s:
+      <ul>
+        <li><dfn>web-mode</dfn>,
+        <li><dfn>file-mode</dfn>, and
+        <li><dfn>generic-mode</dfn>.
+      </ul>
+  </div>
 
   <p>
-    The parser mode can be determined by &lsquo;sniffing&rsquo; a scheme from 
-    the input before parsing. This can be done in a multiple of ways. 
-    The mode selection can be implemented within the parser, by adding a bit of
-    additional logic after a scheme rule. For this specification however,
-    it is useful to specify it as a separate step, so that the grammar can be
-    presented as a whole. 
+    The parser mode can be determined by testing the input string
+    for the presence of a scheme, as follows.  
 
-  <p class=-inbetween>
-    Define the following rules.
+  <h4>Mode Detection</h4>
+    <p>
+      The <dfn>updated-parser-mode</dfn> (<dfn class=fn>update-mode</dfn>
+      <var>supplied-mode</var> <var>input</var>) for a given input string
+      <var>input</var> is defined as follows:
+    <p class=-inbetween>
+      Let <var>magic</var> be the first <var>n</var> characters of
+      <var>input</var>, with <var>n</var> being the least of 6 and the length
+      of <var>input</var>, and define the following rules:
 
-  <table class=grammar>
-    <tr><td>special-scheme <td> ::= <td> <code>http</code> | <code>https</code> | <code>ws</code> | <code>wss</code> | <code>ftp</code> | <code>file</code>
-    <tr><td>is-special <td> ::= <td> special-scheme <code>:</code> any*
-    <tr><td>has-scheme <td> ::= <td> alpha (alpha | digit | <code>+</code> | <code>-</code> | <code>.</code>)*<code>:</code> any*
-  </table>
+      <table class=grammar>
+        <tr><td>is-web <td> ::= <td> (<code>http</code> | <code>https</code> | <code>ws</code> | <code>wss</code> | <code>ftp</code>) <code>:</code> any*
+        <tr><td>is-file <td> ::= <td> <code>file</code> <code>:</code> any*
+        <tr><td>has-scheme <td> ::= <td> alpha (alpha | digit | <code>+</code> | <code>-</code> | <code>.</code>)*<code>:</code> any*
+      </table>
 
-  <p class=-inbetween>The mode can be selected as follows.
-
-  <ul>
-    <li>Let <var>magic</var> be the first <var>n</var> characters of <var>input</var>, with <var>n</var> being min (6, input.length).
-    <li>Set the parser mode to <b>special</b> if (lowercase <var>magic</var>) :: is-special.
-    <li>Otherwise if the fallback scheme is <b>special</b> and <var>input</var> :: has-scheme, then set the parse mode to non-special.
-  </ul>
-
-  <p>
-    The grammar is parameterised by the parser mode. There are three parser 
-    modes: <b>default</b>, <b>web</b> and <b>file</b>.
+      <p class=-inbetween>
+        The <i>updated-parser-mode</i> is then defined to be:
+      <ul>
+        <li>
+          <b>file-mode</b> — if (lowercase <var>magic</var>) :: <i>is-file</i>
+        <li>
+          <b>web-mode</b> — if (lowercase <var>magic</var>) :: <i>is-web</i>
+        <li>
+          <b>generic-mode</b> — if <var>input</var> :: has-scheme
+        <li>
+          <var>supplied-mode</var> — otherwise. 
+      </ul>
 
     <!-- In <b>special</b> mode, the s subscripted rules must be used instead of their unsubscripted counterparts, whenever available. -->
 
-  <h4>URL Grammar</h4>
+  <h3>URL Grammar</h3>
+    <p>
+      The grammar is parameterised by the parser mode.
+      Unsubscripted rules must be used in <i>generic-mode</i>,
+      <span class=-caps>F</span>-subscripted rules must be used in <i>file-mode</i> whenever available, and 
+      <span class=-caps>S</span>-subscripted rules must be used in both <i>file-mode</i> and in <i>web-mode</i>. 
+
     <table class=grammar>
       <!-- <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
       <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] (auth-path | path) [ <code>?</code> query ] [ <code>#</code> fragment ]
@@ -670,7 +706,7 @@
       <tr><td>fragment <td> ::= <td> any*
 
       <tr class=-inbetween>
-        <td colspan=3>These rules are based on the following <i class=common>character-set</i>s:
+        <td colspan=3>These rules are based on the following character-sets:
       <tr><td>s <td> ::= <td> { <code>/</code> }
       <tr><td>pchar <td> := <td> any \ { <code>/</code>, <code>#</code>, <code>?</code> }
       <tr><td>qchar <td> := <td> any \ { <code>#</code> }
@@ -681,7 +717,7 @@
       <tr><td>pchar<sub>S</sub> <td> := <td> any \ { <code>/</code>, <code>\</code>, <code>#</code>, <code>?</code> }
     </table>
 
-  <h4>Authority Grammar</h4>
+  <h3>Authority Grammar</h3>
     <table class=grammar>
       <tr><td>authority <td> ::= <td> ε  |  [ credentials <code>@</code> ] host [ <code>:</code> port ]
       <tr><td>credentials <td> ::= <td> username [ <code>:</code> password ]
@@ -694,19 +730,14 @@
       <tr><td>opaque-host <td> ::= <td> hchar+
       <tr><td>port <td> ::= <td> ε | digit+
 
-      <tr class=-inbetween><td colspan=3>These rules are based on the following <i class=common>character-set</i>s:
+      <tr class=-inbetween>
+        <td colspan=3>These rules are based on the following character-sets:
 
       <tr><td>uchar <td> := <td> pchar \ { <code>:</code> }
       <!-- <tr><td>hchar <td> := <td> pchar \ { <code>@</code>, <code>:</code> } -->
       <tr><td>hchar <td> := <td> any \ { <b>u+0</b>, <b>u+9</b>, <b>u+A</b>, <b>u+D</b>, <code><span style=display:inline-block;width:1ch> </span></code>, <code>#</code>, <code>/</code>, <code>:</code>, <code>&lt;</code>, <code>&gt;</code>, <code>?</code>, <code>@</code>, <code>[</code>, <code>\</code>, <code>]</code>, <code>^</code> }
       <!-- <tr><td>portchar <td> := <td> pchar \ { <code>@</code> } -->
     </table>
-
-    <div class=todo>
-    <ul>
-      <li>Host processing
-      <li>Evaluating the port
-    </ul>
   </div>
 
   <h4>IPv6 Address</h4>
