@@ -10,7 +10,6 @@
   <script src="scripts/pct.js"></script>
   <script>
     const log = console.log.bind (console)
-    
 
     const $ = (name, ...subs) => {
       const r = document.createElement (name)
@@ -27,12 +26,14 @@
     }
 
     function buildIndex (doc = document) {
-      const defs = doc.getElementsByTagName ('DFN')
+      // const dfns = doc.getElementsByTagName ('DFN')
+      const dfns = doc.querySelectorAll('dfn, table.grammar td:first-child')
       const index = { }
-      for (let def of defs) {
-        let block = getDefScope (def)
-        let text = def.innerText.replace(/\s+/, ' ')
-        index [def.innerText] = { text, def, block }
+      for (let dfn of dfns) {
+        let block = getDefScope (dfn)
+        let text = dfn.innerText.replace(/\s+/, ' ')
+        // TODO multiple dfns with same name
+        index [text] = { text, dfn, block }
       }
       log (index)
       return index
@@ -42,56 +43,104 @@
     let block = elem, para = null
     while (block) {
       block = block.parentNode
-      para  = block.tagName === 'P' ? block : para
+      para  = block.tagName in { P:1, TR:1 } ? block : para
       if (block.classList.contains('dfn-scope')) break
       if (block.tagName === 'BODY') block = null
     }
     return block || para
   }
-    
 
+  function getIdiomTag (elem) {
+    while (elem) {
+      if (elem.tagName in { I:1, B:1 } && !elem.classList.contains('noindex'))
+        break
+      else if (elem.tagName in { LI:1, DIV:1, P:1, SECTION:1, BODY:1 })
+        elem = null
+      else elem = elem.parentNode
+    }
+    return elem
+  }
 
-  window.addEventListener('DOMContentLoaded', $=> {
+  function getCurrentSection (sections) {
+    const threshold = 43
+    for (let s of sections) {
+      const { top, bottom } = s.getBoundingClientRect ()
+      if (top < threshold && threshold < bottom) return s
+    }
+  }
+
+  window.addEventListener ('DOMContentLoaded', $=> {
     const index = buildIndex ()
     const toolsDiv = document.getElementById ('tools')
-    
+    const header = document.getElementsByTagName('HEADER')[0]
+    const sections = Array.from (document.getElementsByTagName('SECTION'))
+    let hoverDfn = null
+
+    const onscroll = evt => {
+      if (window.scrollY < 80) header.classList.add ('-hidden')
+      else header.classList.remove ('-hidden')
+      let current = getCurrentSection (sections)
+      if (current) {
+        header.innerHTML = ''
+        const node = current.querySelector('h2').cloneNode(true)
+        node.style.display = null
+        header.append (node)
+      }
+    }
+
+    const onout = evt => {
+      if (hoverDfn) hoverDfn.classList.remove ('-focus')
+    }
+
     const onover = evt => {
-      let elem = evt.target
-      //toolsDiv.append ('over ')
-      
-      if (elem.tagName in {'I':1, 'B':1} && !elem.classList.contains('noindex')) {
-        const text = evt.target.innerText.replace(/\s+/, ' ')
-        let entry 
-        if ((entry = index[text].block)) {
+      let elem = getIdiomTag (evt.target)
+      if (elem) {
+        const text = elem.innerText.replace(/\s+/, ' ')
+        let entry
+        if ((entry = index[text])) {
           const block = getDefScope (elem)
-          log (entry)
-          if (entry.block === block) return
-          const tip = entry.cloneNode(true)
+          log (entry, entry.dfn)
+          entry.dfn.classList.add ('-focus')
+          hoverDfn = entry.dfn
+          if (!entry.block || entry.block === block) return
+          const tip = entry.block.cloneNode(true)
           toolsDiv.innerHTML =''
           toolsDiv.append (tip)
         }
-      else {
+      else
         toolsDiv.innerHTML =''
       }
-      }
-      else {
+      else
         toolsDiv.innerHTML =''
-      }
     }
+
+    onscroll ()
+    document.body.addEventListener ('mouseout', onout)
     document.body.addEventListener ('mouseover', onover)
+    let scrollTimeout
+    window.addEventListener ('scroll', evt => {
+      clearTimeout (scrollTimeout)
+      scrollTimeout = setTimeout (onscroll, 15)
+    })
   })
 
   </script>
 </head>
 <body>
-  
+
+<header class=-hidden>
+</header>
+
+
 <div id=tools>
 </div>
 
 <article>
 <h1>URL Specification</h1>
 
-<section>
+<!----------------------------->
+<section><h2 class=-toc-exclude style=display:none>URL Specification</h2>
+<!----------------------------->
   <p>
     This document provides a concise formal specification of
     <span class=url>URL</span>s and the language of
@@ -129,7 +178,10 @@
   </ul>
 </section>
 
+
+<!----------------------------->
 <section><h2 class=-toc-exclude>Status of this document</h2>
+<!----------------------------->
   <ul>
     <li>
       This is version 0.2.0 of the specification. This is a development 
@@ -144,7 +196,10 @@
   </ul>
 </section>
 
+
+<!----------------------------->
 <section><h2 class=-toc-exclude>Structure of this document</h2>
+<!----------------------------->
   <p>
     As of this writing, this document has a compact format that is focused
     specifically on the definition and specification of <span
@@ -164,48 +219,51 @@
   </script>
 </section>
 
-<section><h2>Preliminaries</h2>
 
+<!----------------------------->
+<section><h2>Preliminaries</h2>
+<!----------------------------->
   <p>
     This section introduces basic concepts and notational conventions upon 
     which the rest of the specification is built. 
 
+
   <h4>Sequences</h4>
   <div class="dfn-scope +br">
-  <p>
-    This specification uses an algebraic notation for <dfn>sequence</dfn>s that
-    makes no distinction between one-element sequences and their first element. 
-    It uses the following notation:
-  <ul class=-inbetween>
-    <li>
-      The empty sequence is denoted by ε. 
-    <li>
-      The concatenation of two sequences <var>S</var> and <var>T</var> is
-      denoted by <var>S</var>・<var>T</var>. 
-  </ul>
-  <p>
+    <p>
+      This specification uses an algebraic notation for <dfn>sequence</dfn>s that
+      makes no distinction between one-element sequences and their first element. 
+      It uses the following notation:
+    <ul class=-inbetween>
+      <li>
+        The empty sequence is denoted by ε. 
+      <li>
+        The concatenation of two sequences <var>S</var> and <var>T</var> is
+        denoted by <var>S</var>・<var>T</var>. 
+    </ul>
+    <p>
     Parentheses are used for disambiguation and as visual aides. Paired 
     parentheses are not part of a sequence-constructing operation. 
   </div>    
 
   <div class="dfn-scope +br">
-  <!-- add to dfn index -->
-  <div style=display:none><dfn>value</dfn><dfn>type</dfn></div>
-  <h4>Tokens</h4>
-  <p>
-    The word <dfn>token</dfn> is used throughout this specification to mean a
-    tagged value, denoted by (<var>type</var> <var>value</var>), where
-    <var>type</var> is taken from a predefined set <dfn>token-type</dfn>s.
+    <h4>Tokens</h4>
+    <p>
+      The word <dfn>token</dfn> is used throughout this specification to mean a
+      tagged value, denoted by (<var>type</var> <var>value</var>), where
+      <var>type</var> is taken from a predefined set of <dfn>token-<dfn>type</dfn></dfn>s.
+    <!-- add to dfn index -->
+    <!-- TODO I want to be able to add alt-name attributes to the dfn tags-->
+    <div style=display:none><dfn>value</dfn></div>
   </div>
   <p>
-    Both <i>tag</i> constants and their corresponding
+    Both <i>token-type</i> constants and their corresponding
     <i class=common>token</i>-constructing operator are typeset in boldface.
-    For example, <b>scheme</b> denotes a <i>token-type</i>, whilst
-    (<b>scheme</b> <var>value</var>) denotes a <i>token</i>.
+    For example, <b class=noindex>scheme</b> denotes a <i>token-type</i>, whilst
+    (<b class=noindex>scheme</b> <var>value</var>) denotes a <i>token</i>.
   <br>
     Again, parentheses are used to disambiguate and as visual aides. 
     They are not part of the <i class=common>token</i>-constructing operator. 
-
   <p>
     The <i class=common>value</i> of a <i class=common>token</i> may be a
     <i class=common>sequence</i> of
@@ -228,6 +286,7 @@
     <b class=noindex>query</b> <i class=common>token</i> of
     S&rdquo; identifies (<b class=noindex>query</b> <var>z</var>).
 
+
   <h4>Strings and Code-Points</h4>
     <p class=-br>
       For the purpose of this specification,
@@ -248,28 +307,33 @@
     <p>
       Code points are denoted by a number in <em>hexadecimal</em> notation
       preceded by <b class=noindex>u+</b> in boldface. In addition, code points
-      that correspond to printable <abbr class=-caps>ASCII</abbr> characters are
+      that correspond to <i class=common>printable <abbr class=-caps>ASCII</abbr> character</i>s are
       often denoted by their corresponding glyph, typeset in monospace on a
       screened background.
       For example, <b>u+41</b> and <code>A</code> denote the same
-      code point. Strings that contain only printable
-      <abbr class=-caps>ASCII</abbr> characters are often denoted as a 
-      connected sequence of glyphs, typeset likewise.
+      code point. Strings that contain only
+      <i class=common>printable <abbr class=-caps>ASCII</abbr> character</i>s
+      are often denoted as a connected sequence of glyphs, typeset likewise.
     <p>
-      The printable <abbr class=-caps>ASCII</abbr> characters are codepoints in
-      the range <b>u+20</b> to <b>u+7E</b>, inclusive. Note that this
-      includes the space character <b>u+20</b>.
+      The <dfn class=common>printable <abbr class=-caps>ASCII</abbr> character</dfn>s are
+      codepoints in the range <b>u+20</b> to <b>u+7E</b>, inclusive. Note that
+      this includes the space <i class=common>character</i> <b>u+20</b>.
 
 
   <h4>Character Sets</h4>
   <p>
-    A <dfn>character range</dfn> is the largest set of characters that includes
-    a given least character <var>c</var> and a greatest character <var>d</var>.
-    Such a character range is denoted by { <var>c</var>–<var>d</var> }.
+    A <dfn>character-set</dfn> is a set of <i>character</i>s. 
+    A <dfn>character-range</dfn> is the largest 
+    <i class=common>character-set</i> that includes a given least
+    <i class=common>character</i> <var>c</var> and a greatest
+    <i class=common>character</i> <var>d</var>.
+    Such a <i>character-range</i> is denoted by
+    { <var>c</var>–<var>d</var> }
     Furthermore, the union of e.g. { <var>a</var>–<var>b</var> }
     and { <var>c</var>–<var>d</var> }, is denoted by
     { <var>a</var>–<var>b</var>, <var>c</var>–<var>d</var> }, and this
-    notation is generalised to <var>n</var>-ary unions. Character sets that are 
+    notation is generalised to <var>n</var>-ary unions. 
+    Common <i>character-set</i>s that are 
     used throughout this specification are defined below: 
 
   <table class=grammar>
@@ -287,9 +351,8 @@
     <tr><td> c1-control <td> := <td> { <b>u+80</b>–<b>u+9F</b> }
     <tr><td>    latin-1 <td> := <td> { <b>u+A0</b>–<b>u+FF</b> }
     <tr><td>  surrogate <td> := <td> { <b>u+D800</b>–<b>u+DFFF</b> }
-
-
   </table>
+
 
   <h4>Grammars</h4>
   <p>
@@ -301,6 +364,7 @@
     <i class=common>string</i>s
     and an epsilon ( ε ) for the empty string. Parentheses are used for 
     grouping and disambiguation. 
+
 
   <h4>Pattern Matching</h4>
   <p>
@@ -314,7 +378,9 @@
 </section>
 
 
+<!------------------------>
 <section><h2>URL Model</h2>
+<!------------------------>
 <p>
   An <i class=url>URL</i> is a special kind of ordered list that is
   subject to a number of additional constraints. The ordering of the list is
@@ -329,9 +395,9 @@
     An <i class=url>URL</i> is a <em>structure</em>, indeed a special
     kind of ordered list, whereas an
     <dfn><span class=url>URL</span>-string</dfn> is a
-    special kind of <i>string</i> that <em>represents</em> an <span
-   class=-caps>URL</span></span>. Conversions between <i class=url>URL</i>s
-  and <i><span class=url>URL</span>-strings</i> are described in the sections on
+    special kind of <i>string</i> that <em>represents</em> an
+    <i class=url>URL</i></span>. Conversions between <i class=url>URL</i>s
+  and <i><span class=url>URL</span>-string</i>s are described in the sections on
   <a href="#parsing">parsing</a> and <a href="#printing">printing</a>.
 
   <h4>URL</h4>
@@ -501,7 +567,7 @@
     it is subject to two additional constraints:
     <ul>
   <li>
-    If <var>url</var> is not a <i>file-<span class=url>URL</span></i> 
+    If <var>url</var> is <strong>not</strong> a <i>file-<span class=url>URL</span></i> 
     then it must not have a <b>drive</b> <i class=common>token</i>.
   <li>
     If <var>url</var> <strong>is</strong> a 
@@ -511,7 +577,10 @@
 </ul>
 </section>
 
+
+<!------------------------>
 <section><h2>Parsing</h2>
+<!------------------------>
   <!--<ul>
     <li>An URL-string is a string that represents an URL.
     <li>There are strings that are not URL strings.
@@ -535,10 +604,10 @@
   <ul>
     <li>
       Remove all leading and trailing <i>c0-control</i> and <b>u+20</b> 
-      (space) characters from <var>input</var>.
+      (space) <i class=common>character</i>s from <var>input</var>.
     <li>
       Remove all <b>u+9</b> (tab), <b>u+A</b> (line-feed) and <b>u+D</b>
-      (carriage-return) characters from <var>input</var>.
+      (carriage-return) <i class=common>character</i>s from <var>input</var>.
   </ul>
 
   <h3>Parser modes</h3>
@@ -600,13 +669,13 @@
       <tr><td>fragment <td> ::= <td> any*
 
       <tr class=-inbetween>
-        <td colspan=3>These rules are based on the following character sets:
+        <td colspan=3>These rules are based on the following <i class=common>character-set</i>s:
       <tr><td>s <td> ::= <td> { <code>/</code> }
       <tr><td>pchar <td> := <td> any \ { <code>/</code>, <code>#</code>, <code>?</code> }
       <tr><td>qchar <td> := <td> any \ { <code>#</code> }
 
       <tr class=-inbetween>
-        <td colspan=3>The character sets are modified for <i>file-<span class=url>URL</span></i>s and <i>web-<span class=url>URL</span></i>s:
+        <td colspan=3>The <i class=common>character-set</i>s are modified for <i>file-<span class=url>URL</span></i>s and <i>web-<span class=url>URL</span></i>s:
       <tr><td>s<sub>S</sub> <td> ::= <td> { <code>/</code>, <code>\</code> }
       <tr><td>pchar<sub>S</sub> <td> := <td> any \ { <code>/</code>, <code>\</code>, <code>#</code>, <code>?</code> }
     </table>
@@ -624,7 +693,7 @@
       <tr><td>opaque-host <td> ::= <td> hchar+
       <tr><td>port <td> ::= <td> ε | digit+
 
-      <tr class=-inbetween><td colspan=3>These rules are based on the following character sets:
+      <tr class=-inbetween><td colspan=3>These rules are based on the following <i class=common>character-set</i>s:
 
       <tr><td>uchar <td> := <td> pchar \ { <code>:</code> }
       <!-- <tr><td>hchar <td> := <td> pchar \ { <code>@</code>, <code>:</code> } -->
@@ -649,42 +718,6 @@
     It is accurately described by the production rule <var>IPv6address</var>
     in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
     section of <abbr class=-caps>RFC</abbr> 3986. 
-
-
-  <!-- <h3 id="drive-letters">Drive letters</h3>
-  <p>
-    The grammar does not have rules for parsing windows drive letters in
-    <i>file-<span class=url>URL</span></i>s. It is possible to add that, but together with the
-    mode selection, it would complicate the grammar quite a bit. An easier way
-    to express this is via a separate operation on parsed <i class=url>URL</i>s.
-  <p>
-    Drive letter detection, defined using pattern matching:
-
-  <table>
-    <tr><td><b>authority</b> (<b>host</b> <var>x</var>)<td>
-      ⇒ <td> <b>drive</b> <var>x</var> — if <var>x</var> :: drive-letter
-    <tr><td><b>authority</b> (<b>host</b> <var>x</var>・<b>port</b> ε)<td>
-      ⇒ <td> <b>drive</b> (<var>x</var>⧺<code>:</code>) <td>
-      — <td> if <var>x</var> :: alpha
-    <tr><td><var>xs</var>・<b>dir</b> <var>x</var> <td>
-      ⇒ <td> <var>xs</var>・<b>drive</b> <var>x</var>・<b>path-root</b> <code>/</code><td>
-      — <td> if <var>x</var> :: drive-letter and <var>xs</var> does not contain a <b>dir</b> token
-    <tr><td><var>xs</var>・<b>file</b> <var>x</var> <td>
-      ⇒ <td> <b>drive</b> <var>x</var><td>
-      — <td> if <var>x</var> :: drive-letter and <var>xs</var> does not contain a <b>dir</b> token
-  </table>
-
-  <div class=todo>
-    No, theres still a problem with the last two rules. This cannot be done
-    algebraically, it requires context. You can add path-root to the left, then
-    it almost works, but no, still not for e.g. <code>c|/foo</code>.
-  </div>
-
-  <p>
-    Drive letter detection must not be applied to <i class=url>URL</i>s that
-    have a scheme that is not <code>file</code>. It may be applied to
-    scheme-less <i class=url>URL</i>s in contexts where
-    <i>file-<span class=url>URL</span></i>s are expected. -->
 
 
   <h3>A note about repeated slashes</h3>
@@ -732,16 +765,18 @@
 </section>
 
 
+<!------------------------------>
 <section><h2>Host processing</h2>
+<!------------------------------>
 
   <div class=todo>
-  <ul>
-    <li>Percent decode
-    <li>Puny decode
-    <li>Apply IDNA/ Nameprep normalisation
-    <li>Detect IPv4 addresses
-    <li>Err on forbidden host codepoints
-  </ul>
+    <ul>
+      <li>Percent decode
+      <li>Puny decode
+      <li>Apply IDNA/ Nameprep normalisation
+      <li>Detect IPv4 addresses
+      <li>Err on forbidden host codepoints
+    </ul>
   </div>
 
   <h4>IPv4 Address</h4>
@@ -756,11 +791,14 @@
     <tr><td>ip4hex <td> ::= <td> (<code>0x</code> | <code>0X</code>) hexdigit*
   </table>
 
-  <p>Note that <code>0x</code> is parsed as a hexadecimal number. (It will be interpreted as 0).
+  <p>
+    Note that <code>0x</code> is parsed as a hexadecimal number. (It will be interpreted as 0).
 </section>
 
 
+<!----------------------------------->
 <section><h2>Reference Resolution</h2>
+<!----------------------------------->
 
   <p>
     This section defines a reference resolution operation that is analogous,
@@ -769,7 +807,7 @@
     Resolution</a> of <abbr class=-caps>RFC</abbr> 3986. Likewise, it is
     analogous, but not equal to the &ldquo;basic <i class=url>URL</i> parser&rdquo; that is
     described in the section
-    <a href="https://url.spec.whatwg.org/#url-parsing"><i class=url>URL</i> parsing</a> of the
+    <a href="https://url.spec.whatwg.org/#url-parsing"><span class=url>URL</span> parsing</a> of the
     <abbr class=-caps>WHATWG URL</abbr> standard. The operations shall later be
     used to define a parse-resolve-and-normalise operation that is compatible
     with the <abbr class=-caps>WHATWG URL</abbr> standard.
@@ -777,7 +815,7 @@
   <p>
     Reference Resolution as defined in this section does not involve
     <i class=url>URL</i>-strings. It solely operates on <i class=url>URL</i>s as defined in the section
-    <a href=#model><i class=url>URL</i> Model</a> above. In contrast with the previously
+    <a href=#model><span class=url>URL</span> Model</a> above. In contrast with the previously
     mentioned sections in <abbr class=-caps>RFC</abbr> 3986 and in the
     <abbr class=-caps>WHATWG</abbr> standard, it does not do additional 
     normalisation, which is relegated to the section
@@ -793,20 +831,20 @@
 
   <div class="dfn-scope +br">
     <p class=-br>
-      The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn><b class=fn>ord</b></dfn> <var>url</var>) is
+      The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn class=fn>ord</dfn> <var>url</var>) is
       defined to be:
     <ul>
       <li>
         <b>fragment</b> if <var>url</var> is the empty <i class=url>URL</i>.
       <li>
-        The <i>type</i> of its first <i class=common>token</i> otherwise.
+        The <i class=common>type</i> of its first <i class=common>token</i> otherwise.
     </ul>
   </div>
 
   <div class="dfn-scope +br">
     <p class=-br>
       The <dfn>order-limited prefix</dfn>
-      (<var>url</var> <dfn><b class=op>upto</b></dfn> <var>order</var>)
+      (<var>url</var> <dfn class=op>upto</dfn> <var>order</var>)
       is defined to be <br>
       the <em>shortest</em> prefix of <var>url</var> that contains:
       <ul>
@@ -820,9 +858,10 @@
   </div>
 
   <p>
-    Based on the order and the order-limited prefix one can define
-     &ldquo;goto&rdquo; and &ldquo;nonstrict goto&rdquo; operations that are
-    analogous to the &ldquo;merge&rdquo; operation and its nonstrict
+    Based on the <i class=common>order</i> and the
+    <i class=common>order-limited prefix</i> one can define
+    &ldquo;goto&rdquo; and &ldquo;nonstrict goto&rdquo; operations that are
+    analogous to the &ldquo;merge&rdquo; operation and its non-strict
     counterpart defined in section
     <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform
     References</a> of <abbr class=-caps>RFC</abbr> 3986.
@@ -835,7 +874,7 @@
   <h4>Goto</h4>
   <p>
     The <dfn>goto</dfn> operation
-    (<var>url<sub>1</sub></var> goto <var>url<sub>2</sub></var>) is defined
+    (<var>url<sub>1</sub></var> <dfn class=op>goto</dfn> <var>url<sub>2</sub></var>) is defined
     to return <br>
     the <em>shortest</em> <i class=url>URL</i> that has
     <var>url<sub>1</sub></var> <b class=fn>upto</b> (<b class=fn>ord</b> <var>url<sub>2</sub></var>) as a
@@ -966,23 +1005,26 @@
 </section>
 
 
+<!--------------------------------------------->
 <section><h2>Equivalences and Normalisation</h2>
-  <p>
-    This section is analogous to the section
-    <a href="https://tools.ietf.org/html/rfc3986#section-6.2">Normalization and 
-    Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
-    <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
-    particular normal form. The <abbr class=-caps>WHATWG</abbr> standard, does, but it does so 
-    implicitly.
-  <p>
-    I think it is nice to define the equivalences via a congruence relation.
-    The rules below are specified in such a way that directing them from left
-    to right results in a set of terminating rewrite rules. An <i class=url>URL</i> is in normal
-    form if no more rewrite rules can be applied. 
+<!--------------------------------------------->
+
+<p>
+  This section is analogous to the section
+  <a href="https://tools.ietf.org/html/rfc3986#section-6.2">Normalization and 
+  Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
+  <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
+  particular normal form. The <abbr class=-caps>WHATWG</abbr> standard, does, but it does so 
+  implicitly.
+<p>
+  I think it is nice to define the equivalences via a congruence relation.
+  The rules below are specified in such a way that directing them from left
+  to right results in a set of terminating rewrite rules. An <i class=url>URL</i> is in normal
+  form if no more rewrite rules can be applied. 
 
 <h3>Path Segment Normalisation</h3>
 
-<table>
+<table class=grammar>
   <tr><td><b>dir</b>  <var>x</var> <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
   <tr><td><b>file</b> <var>x</var> <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
 
@@ -997,8 +1039,8 @@
     <td> — <td> if <var>y</var> :: <i>dots</i>
 
   <tr class=-inbetween><td colspan=10>where,
-  <tr><td><i>dot</i> <td> ::= <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
-  <tr><td><i>dots</i> <td> ::= <td colspan=10> <i>dot</i> <i>dot</i>
+  <tr><td>dot <td> ::= <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
+  <tr><td>dots <td> ::= <td colspan=10> <i>dot</i> <i>dot</i>
 </table>
 
 <h3>Authority Normalisation</h3>
@@ -1017,14 +1059,17 @@
     <tr><td><b>scheme</b> <code>wss</code>  <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) <td> ≈ <td> <b>scheme</b> <code>wss</code>  <td>・<td><b>authority</b> <var>xs</var>
     <tr><td><b>scheme</b> <code>https</code><td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) <td> ≈ <td> <b>scheme</b> <code>https</code><td>・<td><b>authority</b> <var>xs</var>
   </table>
-</section>
 
 <ul class=todo>
   <li>norm ((norm url1) goto (norm url2)) = norm (url1 goto url2)
   <li>norm ((norm url1) ~goto (norm url2)) = norm (url1 ~goto url2)
 </ul>
+</section>
 
-<h2 id="validation">Validation</h2>
+
+<!------------------------->
+<section><h2>Validation</h2>
+<!------------------------->
 
 <div class=todo>
   Additional constraints, validation and failures, all need to be
@@ -1033,8 +1078,12 @@
   multiple levels. For one, the parsing of backslashes. Two, validation
   warnings on invalid code points
 </div>
+</section>
 
-<h2>Percent Coding</h2>
+
+<!----------------------------->
+<section><h2>Percent Coding</h2>
+<!----------------------------->
 
 Percent encoding is the process of replacing certain characters in a string
 with a percent-escape-sequence. 
@@ -1093,16 +1142,20 @@ with a percent-escape-sequence.
   }
 </script>
 
+
 <h3>Percent Decoding</h3>
+  <ul class=todo>
+    <li>
+      Decode to byte sequence
+    <li>
+      Decode to code point
+    <li>
+      Recompose string
+  </ul>
+</section>
 
-<ul class=todo>
-  - Decode to byte sequence
-  - Decode to code point
-  - Recompose string
-</ul>
 
-
-<h2>Printing</h2>
+<section><h2>Printing</h2>
 <p>
   Printing is the process of converting an <i class=url>URL</i> to an
   <i><span class=url>URL</span>-string</i>.
@@ -1111,7 +1164,7 @@ with a percent-escape-sequence.
     To print to an <abbr class=-caps>ASCII</abbr>
     <i><span class=url>URL</span>-string</i>, percent encode any \ printable-ascii
   <li>
-    Otherwise percent encode c0-control, DEL, c1-control, surrogates and
+    Otherwise percent encode <i>c0-control</i>, DEL, c1-control, surrogates and
     non-chars. 
   <li>
     In addition percent encode a subset of printable-ascii, depending on the 
@@ -1154,6 +1207,8 @@ with a percent-escape-sequence.
   <td><code>?</code> <var>value</var>
   <td><code>#</code> <var>value</var>
 </table>
+</section>
+
 
 </body>
 </html>
