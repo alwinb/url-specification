@@ -307,9 +307,9 @@
     </ul>
     <p>
       Code points are denoted by a number in <em>hexadecimal</em> notation
-      preceded by <b class=noindex>u+</b> in boldface. In addition, code points
+      preceded by <b class=noindex>u+</b>, in boldface. In addition, code points
       that correspond to <i class=common>printable <abbr class=-caps>ASCII</abbr> character</i>s are
-      often denoted by their corresponding glyph, typeset in monospace on a
+      often denoted by their corresponding glyph, typeset in monospace and on a
       screened background.
       For example, <b>u+41</b> and <code>A</code> denote the same
       code point. Strings that contain only
@@ -329,25 +329,25 @@
     <i class=common>character</i> <var>c</var> and a greatest
     <i class=common>character</i> <var>d</var>.
     Such a <i>character-range</i> is denoted by
-    { <var>c</var>–<var>d</var> }
+    { <var>c</var>–<var>d</var> }. 
     The union of e.g. { <var>a</var>–<var>b</var> }
     and { <var>c</var>–<var>d</var> }, is denoted by
     { <var>a</var>–<var>b</var>, <var>c</var>–<var>d</var> }, and this
     notation is generalised to <var>n</var>-ary unions. 
-    Common <i>character-set</i>s that are 
+    Common <i class=common>character-set</i>s that are 
     used throughout this specification are defined below: 
 
   <table class=grammar>
-    <tr><td>        any <td> := <td> { <b>u+0</b>–<b>u+10FFFF</b> }
-    <tr><td> c0-control <td> := <td> { <b>u+0</b>–<b>u+1F</b> }
+    <tr><td><dfn>any</dfn> <td> := <td> { <b>u+0</b>–<b>u+10FFFF</b> }
+    <tr><td><dfn>c0-control</dfn> <td> := <td> { <b>u+0</b>–<b>u+1F</b> }
     <tr><td> printable-<abbr class=-caps>ASCII</abbr><td> := <td>
       { <b>u+20</b>–<b>u+7E</b> } — i.e. { <code><span style=width:1ch;display:inline-block;padding:0> </span></code>–<code>~</code> }
     <tr><td> octaldigit <td> := <td> { <code>0</code>–<code>7</code> }
-    <tr><td>      digit <td> := <td> { <code>0</code>–<code>9</code> }
+    <tr><td><dfn>digit</dfn> <td> := <td> { <code>0</code>–<code>9</code> }
     <tr><td>   hexdigit <td> := <td> { <code>0</code>–<code>9</code>, 
       <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }
     <tr><td> digit-nonzero <td> := <td> { <code>1</code>–<code>9</code> }
-    <tr><td>      alpha <td> := <td> { <code>A</code>–<code>Z</code>, 
+    <tr><td><dfn>alpha</dfn> <td> := <td> { <code>A</code>–<code>Z</code>, 
       <code>a</code>–<code>z</code> }
     <tr><td> c1-control <td> := <td> { <b>u+80</b>–<b>u+9F</b> }
     <tr><td>    latin-1 <td> := <td> { <b>u+A0</b>–<b>u+FF</b> }
@@ -430,7 +430,7 @@
       <li class=dfn-scope>
         The <dfn><b>scheme</b></dfn> of an <i class=url>URL</i>,
         if present, is a
-        <i class=common>string</i> <span class=-nowrap><var>scheme</var> :: alpha (alpha | digit | 
+        <i class=common>string</i> <span class=rule><var>scheme</var> :: <i>alpha</i> (<i>alpha</i> | <i>digit</i> | 
         <code>+</code> | <code>-</code> | <code>.</code>)*</span>
       <li class=dfn-scope>
         The <dfn><b>authority</b></dfn> of an <i class=url>URL</i>,
@@ -443,7 +443,7 @@
         The <dfn><b>drive</b></dfn> of an <i class=url>URL</i>,
         if present, is a
         <i class=common>string</i> <span class=-nowrap><var>drive</var> ::
-          alpha (<code>:</code> | <code>|</code>)</span>
+          <i>alpha</i> (<code>:</code> | <code>|</code>)</span>
       <li class=dfn-scope>
         The <dfn><b>file</b></dfn> of an <i class=url>URL</i>,
         if present, is a nonempty string.
@@ -615,59 +615,45 @@
     Unfortunately, <span class=url>URL</span>-parsing slightly depends on the
     <b>scheme</b> of the <span class=url>URL</span> being parsed. 
     This has the unfortunate consequence that the parsing of scheme-less
-    <i class=url>URL</i>s ambiguous.
+    <i class=url>URL</i>s is ambiguous.
   <p>
-    In order to resolve the ambiguity, a <i>parser-mode</i> has to be explicitly specified.
-    This supplied mode only influences the parsing behaviour for scheme-less
-    <span class=url>URL</span>s. 
+    In order to resolve the ambiguity, a <i>parser-mode</i> has to be
+    explicitly specified for potentially scheme-less <span class=url>URL</span>s. 
+    The supplied <i class=common>parser-mode</i> only influences how
+    scheme-less <span class=url>URL</span>s are parsed.
+
+  <div class="dfn-scope +br">
+  <h4>Parser Mode</h4>
+    <p>
+      There are three distinct <dfn>parser-mode</dfn>s:
+    <p class="-center -inbetween">
+      <dfn><b>web-mode</b></dfn>, 
+      <dfn><b>file-mode</b></dfn>, and
+      <dfn><b>generic-mode</b></dfn>.
+  </div>
+
   <p>
     In practice, it is possible to start parsing with a supplied <i>parser-mode</i>,
     and to then update the <i class=common>parser-mode</i> whilst parsing, as soon as a scheme has been detected. 
     <br>
     For the purpose of the specification however, it is useful to implement
-    the mode detection as a separate step, before parsing. 
-  <p>
-
-  <div class="dfn-scope +br">
-  <h4>Parser Mode</h4>
-    <p class=-br>
-      There are three distinct <dfn>parser-mode</dfn>s:
-      <ul>
-        <li><dfn>web-mode</dfn>,
-        <li><dfn>file-mode</dfn>, and
-        <li><dfn>generic-mode</dfn>.
-      </ul>
-  </div>
-
-  <p>
-    The parser mode can be determined by testing the input string
-    for the presence of a scheme, as follows.  
+    the mode detection as a separate step, before parsing, as follows. 
 
   <h4>Mode Detection</h4>
     <p>
-      The <dfn>updated-parser-mode</dfn> (<dfn class=fn>update-mode</dfn>
-      <var>supplied-mode</var> <var>input</var>) for a given input string
-      <var>input</var> is defined as follows:
+      The updated parser-mode
+      (<var>supplied-mode</var> <dfn class=fn>updated-for</dfn> <var>input-string</var>) is defined as follows:
     <p class=-inbetween>
       Let <var>magic</var> be the first <var>n</var> characters of
-      <var>input</var>, with <var>n</var> being the least of 6 and the length
-      of <var>input</var>, and define the following rules:
-
-      <table class=grammar>
-        <tr><td>is-web <td> ::= <td> (<code>http</code> | <code>https</code> | <code>ws</code> | <code>wss</code> | <code>ftp</code>) <code>:</code> any*
-        <tr><td>is-file <td> ::= <td> <code>file</code> <code>:</code> any*
-        <tr><td>has-scheme <td> ::= <td> alpha (alpha | digit | <code>+</code> | <code>-</code> | <code>.</code>)*<code>:</code> any*
-      </table>
-
-      <p class=-inbetween>
-        The <i>updated-parser-mode</i> is then defined to be:
+      <var>input-string</var>, with <var>n</var> being the least of 6 and the length
+      of <var>input-string</var>. The <i>updated-parser-mode</i> is then defined to be:
       <ul>
         <li>
-          <b>file-mode</b> — if (lowercase <var>magic</var>) :: <i>is-file</i>
+          <b>file-mode</b> — if  (lowercase <var>magic</var>) :: <span class=rule><code>file</code> <code>:</code> <i>any</i>*</span>
         <li>
-          <b>web-mode</b> — if (lowercase <var>magic</var>) :: <i>is-web</i>
+          <b>web-mode</b> — if  (lowercase <var>magic</var>) :: <span class=rule>(<code>http</code> | <code>https</code> | <code>ws</code> | <code>wss</code> | <code>ftp</code>) <code>:</code> <i>any</i>*</span>
         <li>
-          <b>generic-mode</b> — if <var>input</var> :: has-scheme
+          <b>generic-mode</b> — if  <var>input</var> :: <span class=rule><i>alpha</i> (<i>alpha</i> | <i>digit</i> | <code>+</code> | <code>-</code> | <code>.</code>)*<code>:</code> <i>any</i>*</span>
         <li>
           <var>supplied-mode</var> — otherwise. 
       </ul>
@@ -676,10 +662,12 @@
 
   <h3>URL Grammar</h3>
     <p>
-      The grammar is parameterised by the parser mode.
-      Unsubscripted rules must be used in <i>generic-mode</i>,
-      <span class=-caps>F</span>-subscripted rules must be used in <i>file-mode</i> whenever available, and 
-      <span class=-caps>S</span>-subscripted rules must be used in both <i>file-mode</i> and in <i>web-mode</i>. 
+      This section specifies a parameterised grammar for file-<span class=url>URL</span>s,
+      web-<span class=url>URL</span>s, and generic <span class=url>URL</span>s at once.
+      The grammar is parameterised by a <i>parser-mode</i>.
+      Unsubscripted rules must be used in <i>generic-mode</i>. 
+      Whenever available, <span class=-caps>F</span>-subscripted rules must be used in <b>file-mode</b> and 
+      <span class=-caps>S</span>-subscripted rules must be used both in <b>file-mode</b> and in <b>web-mode</b>. 
 
     <table class=grammar>
       <!-- <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
@@ -695,15 +683,15 @@
       <tr class=-inbetween>
         <td colspan=3>This refers to the following rules:
 
-      <tr><td>scheme <td> ::= <td> alpha (alpha | digit | <code>+</code> | <code>-</code> | <code>.</code>)*
+      <tr><td>scheme <td> ::= <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i> | <code>+</code> | <code>-</code> | <code>.</code>)*
       <tr><td>authority <td> — <td> shall be defined in the next subsection,
       <tr><td>host <td> — <td> shall be defined in the next subsection,
-      <tr><td>drive <td> ::= <td> alpha (<code>:</code> | <code>|</code>)
+      <tr><td>drive <td> ::= <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
       <tr><td>path-root <td> ::= <td> s
       <tr><td>dir <td> ::= <td> pchar*
       <tr><td>file <td> ::= <td> pchar+
       <tr><td>query <td> ::= <td> qchar*
-      <tr><td>fragment <td> ::= <td> any*
+      <tr><td>fragment <td> ::= <td> <i>any</i>*
 
       <tr class=-inbetween>
         <td colspan=3>These rules are based on the following character-sets:
@@ -751,6 +739,15 @@
     in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
     section of <abbr class=-caps>RFC</abbr> 3986. 
 
+
+  <h3>Syntax Tree</h3>
+  <div class=todo>
+    The grammar and the model, are very closely related. 
+    (So close even that I'm pondering if I can merge them). 
+    If you record the use of each rule whose name corresponds to 
+    a token-type as a token, then you end up with an URL as defined in the Model section. 
+    With the port, being once exception, and the definition of a host needs a bit of work too. 
+  </div>
 
   <h3>A note about repeated slashes</h3>
     <p>
@@ -836,17 +833,16 @@
     This section defines a reference resolution operation that is analogous,
     but not equal to the algorithm that is described in the chapter
     <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference
-    Resolution</a> of <abbr class=-caps>RFC</abbr> 3986. Likewise, it is
-    analogous, but not equal to the &ldquo;basic <i class=url>URL</i> parser&rdquo; that is
-    described in the section
-    <a href="https://url.spec.whatwg.org/#url-parsing"><span class=url>URL</span> parsing</a> of the
-    <abbr class=-caps>WHATWG URL</abbr> standard. The operations shall later be
-    used to define a parse-resolve-and-normalise operation that is compatible
-    with the <abbr class=-caps>WHATWG URL</abbr> standard.
-
+    Resolution</a> of <abbr class=-caps>RFC</abbr> 3986. 
+    The operations that are defined in this section are used in a subsequent
+    chapter to accurately describe the behaviour of a
+    <i>parse-resolve-and-normalise</i> algorithm that is referred to as the
+    &ldquo;<a style=margin-left:-.4ch href="https://url.spec.whatwg.org/#concept-basic-url-parser">
+    basic <span class=url>URL</span> parser</a>&rdquo;
+    in the <abbr class=-caps>WHATWG URL</abbr> standard.
   <p>
     Reference Resolution as defined in this section does not involve
-    <i class=url>URL</i>-strings. It solely operates on <i class=url>URL</i>s as defined in the section
+    <i><span class=url>URL</span>-string</i>s. It solely operates on <i class=url>URL</i>s as defined in the section
     <a href=#model><span class=url>URL</span> Model</a> above. In contrast with the previously
     mentioned sections in <abbr class=-caps>RFC</abbr> 3986 and in the
     <abbr class=-caps>WHATWG</abbr> standard, it does not do additional 
@@ -892,9 +888,9 @@
   <p>
     Based on the <i class=common>order</i> and the
     <i class=common>order-limited prefix</i> one can define
-    &ldquo;goto&rdquo; and &ldquo;nonstrict goto&rdquo; operations that are
+    &ldquo;<i class=common>goto</i>&rdquo; and &ldquo;<i class=common>non-strict goto</i>&rdquo; operations that are
     analogous to the &ldquo;merge&rdquo; operation and its non-strict
-    counterpart defined in section
+    counterpart that are defined in section
     <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform
     References</a> of <abbr class=-caps>RFC</abbr> 3986.
 
@@ -925,7 +921,8 @@
 
   <h4>Properties of the Goto operations</h4>
   <p class=-br>
-    The Goto operations have a number of pleasing mathematical properties. 
+    The Goto operations have a number of pleasing mathematical properties, 
+    as follows:
   <ul>
     <li>
       <i class=op>ord</i> (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>) is the least type of {<i class=op>ord</i> <var>url<sub>1</sub></var>, <i class=op>ord</i> <var>url<sub>2</sub></var>}.
@@ -941,14 +938,13 @@
       <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>) but not necessarily of (<var>url<sub>1</sub></var> <i class=op>~goto</i> <var>url<sub>2</sub></var>).
   </ul>
 
+  <div class="dfn-scope +br">
   <h4>Force</h4>
   <p>
     There is an additional operation on <i class=url>URL</i>s called
-    <i>force</i> that it is used as an error-recovery measure for
+    <dfn>force</dfn> that it is used as an error-recovery measure for
     <i>web-<span class=url>URL</span></i>s and for <i>file-<span class=url>URL</span></i>s. Force has no effect on other <i class=url>URL</i>s.
 
-
-  <div class="dfn-scope +br">
   <ul><li>
     To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
     <ul>
@@ -989,23 +985,33 @@
     that will be discussed in the chapter 
     <a>Equivalences and Normalisation</a>. 
 
+  <div class=todo>
+    Clean up the definition a bit. 
+    Plus, the properties can be mentioned here already. 
+    It breaks the monoid laws, IIRC.
+    But it is also not congruent with normalisation. 
+    Bah!
+  </div>
+
 
   <h3>Resolution</h3>
   <p>
-    Finally, reference resolution can be defined.
+    Based on the <i>goto</i> and <i>force</i> operations defined above,
+    it is now possible to define a <i>resolution</i> operation that is
+    compatible with the <abbr class=-caps>WHATWG</abbr> standard. 
 
   <div class="dfn-scope +br">
   <h4>Pre-Resolution</h4>
     <p class=-br>
       The <dfn>pre-resolution</dfn> of <var>url<sub>1</sub></var> against
       <var>url<sub>2</sub></var> is defined to be:
-    <ol>
+    <ul>
       <li><var>url<sub>2</sub></var> <i class=op>~goto</i> <var>url<sub>1</sub></var>
         — if <var>url<sub>2</sub></var> is a <i>base-<i class=url>URL</i></i> or
         if <var>url<sub>1</sub></var> has a <b>fragment</b> <i class=common>token</i>.
       <li>
-        <var>url<sub>1</sub></var> otherwise. 
-  </ol>
+        <var>url<sub>1</sub></var> — otherwise. 
+  </ul>
 
   <!-- <p>
     The condition 1. checks for the presence of a <b>fragment</b>
@@ -1031,8 +1037,7 @@
   <p>
     Note that resolution, defined as such, may return an <i class=url>URL</i> 
     that is not a <i>base-<i class=url>URL</i></i>.
-    This emulates the behaviour that is implied by the
-    <abbr class=-caps>WHATWG</abbr> standard.
+    This is in accordance with the <abbr class=-caps>WHATWG</abbr> standard.
 
 </section>
 
@@ -1124,11 +1129,46 @@ with a percent-escape-sequence.
 
 <h3>Percent Encoding</h3>
 
+<p>
+  Unfortunately, like parsing, <i>percent-encoding</i> is scheme-dependent. 
+  And not only is it scheme dependent, it also depends on the shape of an
+  <span class=url>URL</span>.
+
+<div class="dfn-scope +br">
+<h4>Percent Encode Mode</h4>
+<p>
+  There are three distinct <dfn>percent-encode-mode</dfn>s:
+<p class="-inbetween -center">
+  <dfn><b>special-encode</b></dfn>,  <dfn><b>non-base-encode</b></dfn>,  and <dfn><b>generic-encode</b></dfn>. 
+<p class=-inbetween>
+  The <i>percent-encode-mode</i> for a given <i class=url>URL</i> <var>url</var>
+  is defined to be:
+  <ul>
+    <li>
+      <b>special-encode</b> — if <var>url</var> is a <i>file-<span class=url>URL</span></i> or a <i>web-<span class=url>URL</span></i>,
+    <li>
+      <b>non-base-encode</b> — if <var>url</var> is <strong>not</strong> a <i>base-<span class=url>URL</span></i>, and
+    <li>
+      <b>generic-encode</b> — otherwise. 
+  </ul>
+</div>
+
+
 <div class=todo>
-  Profiles: ascii, base, special
+  No this is not true. 
+  There are four?
+  special:true/false, non-base:true/false. 
+  And then there is the ascii -flag which I'd like to add. 
 </div>
 
 <h3>Percent Encode Sets</h3>
+
+<p>
+  When percent encoding a <i>token</i>, the set of characters that must
+  be percent-encoded
+  does not only depend on the
+  <b>scheme</b> and on the shape of an <span class=url>URL</span>. 
+  It also depends on the <i>token-type</i>. 
 
 <table id=percent-encode-sets>
   <col>
@@ -1192,8 +1232,8 @@ with a percent-escape-sequence.
   }
 </script>
 
-
-<h3>Percent Decoding</h3>
+<h3>
+  Percent Decoding</h3>
   <ul class=todo>
     <li>
       Decode to byte sequence

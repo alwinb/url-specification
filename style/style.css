@@ -193,6 +193,9 @@ h4+p.-br::after {
   margin-top:-.5rem;
   margin-bottom:.5rem;
 }
+.-inbetween +.-inbetween {
+  margin-top:.5rem;
+}
 tr.-inbetween {
   height:2rem;
 }
@@ -294,8 +297,7 @@ dfn.-focus {
 }
 
 i:not(.noindex) {
-/*  background:rgba(207, 174, 114, 0.1);
-*/  text-decoration:underline;
+/text-decoration:underline;
 }
 
 /* Using <i> For idioms */
@@ -347,12 +349,17 @@ a {
 }
 
 .rule {
-  font-style:normal;
+  text-decoration:none;
+  font-style:normal
+  white-space:nowrap;
 }
 
 th {
   font-weight:unset;
   padding:0 1ch;
+}
+.rule i, table.grammar > tbody > tr > td:nth-child(3) > i {
+  font-style:normal;
 }
 
 /*.grammar tr:not(.-inbetween) td:first-child {
