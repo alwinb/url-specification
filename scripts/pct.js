@@ -59,12 +59,13 @@ function charInfo (c) {
   return 0
 }
 
-function isInSet (c, key, { special = false, mode = modes.regular, ascii = false, percentCoded = true} = {}) {
-  if (!(key in _offsets)) throw new Error ('unknown encode set')
-  const mask = mode << _offsets[key]
+function isInSet (c, { name,  special = false, relative = false, ascii = false, percentCoded = true }) {
+  if (!(name in _offsets)) throw new Error ('unknown encode set')
+  mode = relative ? modes.relative : modes.regular
+  const mask = mode << _offsets[name]
   const escape = percentCoded && c === 0x25 ? false
-    : c === 92 && special && key in { dir:1, file:1 } ? true
-    : c === 39 && special && key === 'query' ? true
+    : c === 92 && special && name in { dir:1, file:1 } ? true
+    : c === 39 && special && name === 'query' ? true
     : ascii && c > 127 || charInfo (c) & mask
   return escape
 }

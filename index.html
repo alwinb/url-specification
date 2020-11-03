@@ -1023,7 +1023,6 @@
   form if no more rewrite rules can be applied. 
 
 <h3>Path Segment Normalisation</h3>
-
 <table class=grammar>
   <tr><td><b>dir</b>  <var>x</var> <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
   <tr><td><b>file</b> <var>x</var> <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
@@ -1043,12 +1042,14 @@
   <tr><td>dots <td> ::= <td colspan=10> <i>dot</i> <i>dot</i>
 </table>
 
+
 <h3>Authority Normalisation</h3>
   <table>
     <tr><td><b>username</b> ε・<b>password</b> ε <td> ≈ <td>ε
     <tr><td><b>password</b> ε <td> ≈ <td>ε
     <tr><td><b>port</b> ε <td> ≈ <td>ε
   </table>
+
 
 <h3>Scheme-based Authority Normalisation</h3>
   <table>
@@ -1059,6 +1060,7 @@
     <tr><td><b>scheme</b> <code>wss</code>  <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) <td> ≈ <td> <b>scheme</b> <code>wss</code>  <td>・<td><b>authority</b> <var>xs</var>
     <tr><td><b>scheme</b> <code>https</code><td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) <td> ≈ <td> <b>scheme</b> <code>https</code><td>・<td><b>authority</b> <var>xs</var>
   </table>
+
 
 <ul class=todo>
   <li>norm ((norm url1) goto (norm url2)) = norm (url1 goto url2)
@@ -1096,21 +1098,50 @@ with a percent-escape-sequence.
 
 <h3>Percent Encode Sets</h3>
 
-<table id=percent-encode-sets class=-lined>
+<table id=percent-encode-sets>
+  <col>
+  <colgroup span=8>
+  <colgroup span=8>
+  <colgroup span=6>
+  <colgroup span=5>
   <tr>
     <th>
     <th colspan=8><b>u+20</b>–<b>u+27</b>
     <th colspan=8><b>u+2F</b>–<b>u+40</b>
     <th colspan=6><b>u+5B</b>–<b>u+60</b>
-    <th colspan=6><b>u+7B</b>–<b>u+7E</b>
+    <th colspan=5><b>u+7B</b>–<b>u+7E</b>
+    <th>
 </table>
 
 <script>
+  const [special, relative] = [true, true]
+  const encodeSets = [
+    { name:'url' },
+    { name:'user' },
+    { name:'pass' },
+    { name:'host' },
+    { name:'dir', special },
+    { name:'dir' },
+    { name:'dir', relative },
+    { name:'dir', special, relative },
+    // { name:'file' },
+    // { name:'file', special },
+    // { name:'file', relative },
+    { name:'query' },
+    { name:'query', special },
+    { name:'hash' },
+  ]
+
   const table = document.getElementById ('percent-encode-sets')
-  for (let x of ['url', 'user', 'host', 'dir', 'file', 'query', 'hash']) {
-    var tr = $ ('tr')
-    tr.append ($('th', x))
+  for (let x of encodeSets) {
+    const tr = $ ('tr')
+    let sub = x.special ? 'S' : ''
+    sub += x.relative ? 'R' : ''
+    const name = [x.name]
+    if (sub) name.push ($('sub', sub))
+    tr.append ($('th', ...name))
     table.append (tr)
+
     for (let i=0x20; i<=0x7e; i++) {
       // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
       if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
@@ -1124,21 +1155,8 @@ with a percent-escape-sequence.
         tr.append(td)
       }
     }
-    if (x in { dir:1, query:1}) {
-    tr = $ ('tr')
-    tr.append ($('th', 's'+x))
-    table.append (tr)
-    for (let i=0x20; i<=0x7e; i++) {
-      // remove 0-9, a-z, A-Z, '('-'.'
-      if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
-        const hs = isInSet (i, x, { special:true })
-        const str = String.fromCharCode(i)
-        const td = $('td', $('code', str == ' ' ? ' ' : str))
-        if (!hs) td.classList.add ('-screen')
-        tr.append(td)
-      }
-    }
-    }
+    tr.append($('td', '  '))
+    
   }
 </script>
 

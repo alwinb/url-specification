@@ -4,7 +4,7 @@
 :root {
   --acolor:#2B6679;
   --highlight:#2B667925;
-  --bgcolor:#FFFADF;
+  --bgcolor:#FFF9DE;
   --bgcolor-alpha:#FFFBDF00;
   --bg2:#EBDBB2;
   --screen:#CCBB9B66;
@@ -350,6 +350,11 @@ a {
   font-style:normal;
 }
 
+th {
+  font-weight:unset;
+  padding:0 1ch;
+}
+
 /*.grammar tr:not(.-inbetween) td:first-child {
   font-family:var(--sans);
   font-size:15px;
@@ -372,6 +377,42 @@ a {
  border:1px solid currentColor; 
 }
 
+
+#percent-encode-sets colgroup:not(:first-child) {
+  border-left:1px solid #0002;
+}
+#percent-encode-sets tr:not(last-child) {
+  border-bottom:1px solid #0002;
+}
+#percent-encode-sets tr:first-child th * {
+  font-size:.55rem;
+}
+#percent-encode-sets th:first-child {
+  text-align:left;
+}
+#percent-encode-sets td {
+  text-align:center;
+  cursor:crosshair;
+  padding:0;
+}
+#percent-encode-sets td code {
+  text-align:center;
+  display:block;
+  margin:0;
+  width:.7rem;
+  height:calc(1rem - 5px);
+  line-height:calc(1rem - 6px);
+  margin:3px 0px 1px 4px ;
+}
+#percent-encode-sets td.-screen {
+  opacity:.17;
+  cursor:default;
+}
+
+
+
+
+
 #printer td, #printer th {
   padding:0 .5em;
   text-align:center;
@@ -385,22 +426,6 @@ a {
   border:1px solid #0004;
   border-top:none;
   border-bottom:none;
-}
-
-#percent-encode-sets {
-  display:block;
-  width:100%;
-}
-#percent-encode-sets td
-{
-  padding:0;
-  border:2px solid var(--bgcolor);
-  background-color:var(--screen);
-  border-radius:5px;
-}
-#percent-encode-sets td.-screen {
-  opacity:.18;
-  background:none;
 }
 #printer td, #printer th {
   padding:0 .3em;
