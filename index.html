@@ -340,7 +340,7 @@
   <table class=grammar>
     <tr><td><dfn>any</dfn> <td> := <td> { <b>u+0</b>–<b>u+10FFFF</b> }
     <tr><td><dfn>c0-control</dfn> <td> := <td> { <b>u+0</b>–<b>u+1F</b> }
-    <tr><td> printable-<abbr class=-caps>ASCII</abbr><td> := <td>
+    <tr><td><dfn>printable-<abbr class=-caps>ASCII</abbr></dfn><td> := <td>
       { <b>u+20</b>–<b>u+7E</b> } — i.e. { <code><span style=width:1ch;display:inline-block;padding:0> </span></code>–<code>~</code> }
     <tr><td> octaldigit <td> := <td> { <code>0</code>–<code>7</code> }
     <tr><td><dfn>digit</dfn> <td> := <td> { <code>0</code>–<code>9</code> }
@@ -504,7 +504,7 @@
 
     <div class=dfn-scope>
     <h4>Authority</h4>
-    <p>
+    <p class=-br>
       An <dfn>Authority</dfn> is a sequence of tokens ordered by their type, 
       taken from the ordered set:
 
@@ -517,7 +517,7 @@
 
     <ul>
       <li>
-        Authorities contain at most one <i class=common>token</i> per
+        Authorities have at most one <i class=common>token</i> per
         <i class=common>type</i>.
       <li>
         If an Authority has a <b>password</b> <i class=common>token</i> then it
@@ -1131,44 +1131,80 @@ with a percent-escape-sequence.
 
 <p>
   Unfortunately, like parsing, <i>percent-encoding</i> is scheme-dependent. 
-  And not only is it scheme dependent, it also depends on the shape of an
-  <span class=url>URL</span>.
+  The consequence is that a <i>percent-encoding-mode</i> must be 
+  manually supplied to specify the encoding behaviour for 
+  scheme-less <span class=url>URL</span>s.
 
-<div class="dfn-scope +br">
+<div class="dfn-scope" style=margin-bottom:.5rem>
 <h4>Percent Encode Mode</h4>
 <p>
-  There are three distinct <dfn>percent-encode-mode</dfn>s:
-<p class="-inbetween -center">
-  <dfn><b>special-encode</b></dfn>,  <dfn><b>non-base-encode</b></dfn>,  and <dfn><b>generic-encode</b></dfn>. 
-<p class=-inbetween>
-  The <i>percent-encode-mode</i> for a given <i class=url>URL</i> <var>url</var>
-  is defined to be:
+  There are four distinct <dfn>percent-encode-mode</dfn>s:
+<p class="-center">
+  <dfn><b>generic</b></dfn>,  
+  <dfn><b>minimal</b></dfn>, 
+  <dfn><b>special</b></dfn>, and
+  <dfn><b>minimal-special</b></dfn>.
+<p>
+</div>
+
+<p>
+  The supplied <i>percent-encode-mode</i> has no influence on <i class=url>URL</i>s
+  that do have a <b>scheme</b>. 
+
+<h4>Mode Detection</h4>
+  <p>
+    The <i>percent-encode-mode</i> for a given <i class=url>URL</i> <var>url</var>, 
+    and a manually supplied default mode <var>supplied-mode</var> is defined to be:
+    <ul>
+      <li>
+        <b>special</b> — if <var>url</var> is a <i>file-<span class=url>URL</span></i> or if <var>url</var> is a <i>web-<span class=url>URL</span></i>,
+      <li>
+        <b>generic</b> — if otherwise <var>url</var> is a <i>base-<span class=url>URL</span></i>,
+      <li>
+        <b>minimal</b> — if otherwise <var>url</var> has a <b>scheme</b>, and
+      <li>
+        <var>supplied-mode</var> — otherwise. 
+    </ul>
+
+
+<h3>Percent Encode Sets</h3>
+<p>
+  When percent encoding a <i>token</i>, the set of characters that must
+  be percent-encoded in the <i>token</i>'s <i>value</i> depends on the
+  <i>percent-encode-mode</i> <strong>and</strong> on the <i>token-type</i>. 
+
+<div class="dfn-scope +br">
+<h4>Percent Encode Set</h4>
+<p>
+  The <dfn>percent-encode-set</dfn> for a given <i class=common>token</i> (<var>type</var> <var>value</var>)
+  and a <i class=common>percent-encode-mode</i> <var>mode</var>
+  is defined to be a subset of the <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
+  as indicated by the table below, as follows:
   <ul>
     <li>
-      <b>special-encode</b> — if <var>url</var> is a <i>file-<span class=url>URL</span></i> or a <i>web-<span class=url>URL</span></i>,
+      If <var>type</var> is <b>username</b> or <b>password</b> the encode set is given by the row named <i>userinfo</i>.
     <li>
-      <b>non-base-encode</b> — if <var>url</var> is <strong>not</strong> a <i>base-<span class=url>URL</span></i>, and
+      If <var>type</var> is <b>host</b> then the encode set is given by the row named <i>host</i>. 
     <li>
-      <b>generic-encode</b> — otherwise. 
+      If <var>type</var> is <b>dir</b> or <b>file</b> then the encode set is given by the row named
+      <i class=rule>path</i> in <b>generic</b> mode,
+      <i class=rule>path-m</i> in <b>minimal</b> mode,
+      <i class=rule>path-s</i> in <b>special</b> mode and
+      <i class=rule>path-ms</i> in <b>minimal-special</b> mode. 
+    <li>
+      If <var>type</var> is <b>query</b> then the encode set is given by the row named
+      <i class=rule>query-s</i> in <b>special</b> mode,
+      and by the row named <i class=rule>query</i> otherwise.  
+    <li>
+      If <var>type</var> is <b>fragment</b> then the encode set is given by the row named <i>fragment</i>. 
+    <li>
+      Otherwise the encode set is the empty set. 
   </ul>
 </div>
 
-
-<div class=todo>
-  No this is not true. 
-  There are four?
-  special:true/false, non-base:true/false. 
-  And then there is the ascii -flag which I'd like to add. 
-</div>
-
-<h3>Percent Encode Sets</h3>
-
-<p>
-  When percent encoding a <i>token</i>, the set of characters that must
-  be percent-encoded
-  does not only depend on the
-  <b>scheme</b> and on the shape of an <span class=url>URL</span>. 
-  It also depends on the <i>token-type</i>. 
+<!-- <div class=todo>
+  Allright, this is a bit clumsy, I don't like it much yet.
+</div> -->
 
 <table id=percent-encode-sets>
   <col>
@@ -1186,31 +1222,27 @@ with a percent-escape-sequence.
 </table>
 
 <script>
-  const [special, relative] = [true, true]
+  const [special, minimal] = [true, true]
   const encodeSets = [
-    { name:'url' },
-    { name:'user' },
-    { name:'pass' },
+    // { name:'url' },
+    { name:'userinfo' },
     { name:'host' },
-    { name:'dir', special },
-    { name:'dir' },
-    { name:'dir', relative },
-    { name:'dir', special, relative },
-    // { name:'file' },
-    // { name:'file', special },
-    // { name:'file', relative },
+    { name:'path' },
+    { name:'path', special },
+    { name:'path', special, minimal },
+    { name:'path', minimal },
     { name:'query' },
     { name:'query', special },
-    { name:'hash' },
+    { name:'fragment' },
   ]
 
   const table = document.getElementById ('percent-encode-sets')
   for (let x of encodeSets) {
     const tr = $ ('tr')
-    let sub = x.special ? 'S' : ''
-    sub += x.relative ? 'R' : ''
-    const name = [x.name]
-    if (sub) name.push ($('sub', sub))
+    let sub = x.minimal ? 'm' : ''
+    sub += x.special ? 's' : ''
+    let name = [x.name]
+    if (sub) name.push ('-' + sub)
     tr.append ($('th', ...name))
     table.append (tr)
 
@@ -1234,14 +1266,16 @@ with a percent-escape-sequence.
 
 <h3>
   Percent Decoding</h3>
-  <ul class=todo>
-    <li>
-      Decode to byte sequence
-    <li>
-      Decode to code point
-    <li>
-      Recompose string
-  </ul>
+  <div class=todo>
+    <ul>
+      <li>
+        Decode to byte sequence
+      <li>
+        Decode to code point
+      <li>
+        Recompose string
+    </ul>
+  </div>
 </section>
 
 

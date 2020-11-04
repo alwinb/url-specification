@@ -5,10 +5,10 @@
 // I'm using bitmasks for the modes, and offsets for the keys.
 
 const modes =
-  { regular: 0b10, relative: 0b01 }
+  { regular: 0b10, minimal: 0b01 }
 
 const _offsets =
-  { url:10, user:8, pass:8, host:6, dir:4, file:4, query:2, hash:0 }
+  { url:10, user:8, pass:8, host:6, dir:4, file:4, query:2, fragment:0 }
 
 const t32 = [
 /*  32 ( ) */ 0b111111101011,
@@ -59,9 +59,19 @@ function charInfo (c) {
   return 0
 }
 
-function isInSet (c, { name,  special = false, relative = false, ascii = false, percentCoded = true }) {
+const translations = {
+  path:'dir',
+  userinfo:'user',
+  creds:'user',
+  username:'user',
+  password:'pass',
+  hash:'fragment',
+}
+
+function isInSet (c, { name,  special = false, minimal = false, ascii = false, percentCoded = true }) {
+  if (name in translations) name = translations[name]
   if (!(name in _offsets)) throw new Error ('unknown encode set')
-  mode = relative ? modes.relative : modes.regular
+  mode = minimal ? modes.minimal : modes.regular
   const mask = mode << _offsets[name]
   const escape = percentCoded && c === 0x25 ? false
     : c === 92 && special && name in { dir:1, file:1 } ? true

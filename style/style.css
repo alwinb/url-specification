@@ -350,7 +350,7 @@ a {
 
 .rule {
   text-decoration:none;
-  font-style:normal
+  font-style:normal;
   white-space:nowrap;
 }
 
@@ -406,14 +406,15 @@ th {
   text-align:center;
   display:block;
   margin:0;
-  width:.7rem;
+  width:.63rem;
   height:calc(1rem - 5px);
   line-height:calc(1rem - 6px);
   margin:3px 0px 1px 4px ;
 }
 #percent-encode-sets td.-screen {
-  opacity:.17;
+  opacity:.15;
   cursor:default;
+  pointer-events:none;
 }
 
 
