@@ -162,18 +162,29 @@ h4+p::after {
   display:block;
   margin:0 0 1rem;
 }
+h4+p.-inbetween::after {
+  margin:0 0 .5rem;
+}
 h4+p.-br::after {
   margin:0;
 }
 
 .todo::before {
-  content:'TODO ';
+  content:'TODO';
   color:var(--acolor);
+  font-family:var(--sans);
+  font-variant:small-caps;
+  font-style:normal;
+  text-transform:lowercase;
+  font-size:1.3em;
 }
 .todo {
   margin-bottom:1rem;
-  border:1px solid currentColor;
   padding:.5rem;
+  background-color:var(--highlight);
+  font-family:var(--sans);
+  font-size:.9em;
+  font-style:italic;
 }
 
 
