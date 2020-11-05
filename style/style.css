@@ -1,9 +1,83 @@
+/* Fonts
+/* ============= */
+
+/* 
+font:
+  [ [ <'font-style'> || <font-variant-css21> || <'font-weight'> || <'font-stretch'> ]?
+    <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
+  | caption | icon | menu | message-box | small-caption | status-bar
+
+where
+  <font-variant-css21> = [ normal | small-caps ]
+*/
+
+:root{
+  --sans: calc(2rem/3)/1rem var(---sans);
+  --sans-bold: bold calc(2rem/3)/1rem var(---sans);
+  --sans-italic: italic calc(2rem/3)/1rem var(---sans);
+  --serif: calc(2rem/3)/1rem var(---serif);
+  --serif-bold: bold calc(2rem/3)/1rem var(---serif);
+  --serif-italic: italic calc(2rem/3)/1rem 'Times', 'Times New Roman';
+  --mono: calc(2rem/3)/1rem var(---mono);
+}
+
+:root {
+  ---serif:'Times', 'Times New Roman', Serif;
+  ---sans: Helvetica, Sans-Serif;
+  ---mono: 'Hack', 'Monaco', 'Menlo', MonoSpace;
+}
+
+body {
+  font:var(--serif);
+}
+
+h1 {
+  font:var(--sans-bold);
+}
+
+h2, h3, h4 {
+  font:var(--sans);
+}
+
+h3 {
+  text-transform:lowercase;
+  font-variant:small-caps;
+}
+
+a {
+  font:var(--sans);
+}
+
+b {
+  font:var(--sans-bold);
+}
+
+dfn, i, var, em {
+  font:var(--serif-italic);
+}
+
+strong {
+  font:var(--serif-bold);
+}
+
+code, pre {
+  font:var(--mono);
+}
+
+#menu li::before {
+  content:none;
+}
+#menu li > a {
+  font:var(--serif);
+}
+
+
 /* Colours
 /* ============= */
 
 :root {
   --acolor:#2B6679;
-  --highlight:#2B667925;
+  --highlight:#2B667930;
   --bgcolor:#FFF9DE;
   --bgcolor-alpha:#FFFBDF00;
   --bg2:#EBDBB2;
@@ -13,12 +87,15 @@
 @media screen {
   html {
     background-color:var(--bgcolor);
-    background:linear-gradient(var(--bgcolor), var(--bgcolor));
-    border-bottom:1px solid var(--acolor);
-    border-image: linear-gradient(var(--acolor), var(--acolor)) 1 1 / 20rem 0rem 0rem 10rem / 24rem 12rem 22rem 7.5rem;
+/*    background:linear-gradient(var(--bgcolor), var(--bgcolor));
+*//*   border-image: linear-gradient(var(--acolor), var(--acolor)) 1 1 / 20rem 0rem 0rem 10rem / 24rem 12rem 22rem 7.5rem;
+*/
   }
 }
 
+header {
+  background:var(--bgcolor);
+}
 h1, h2, h3, h4, h5, h6 {
   color:var(--acolor);
 }
@@ -31,36 +108,92 @@ code {
   background:var(--screen);
 }
 
+#menu a.-focus, #menu a:hover {
+  color:var(--acolor);
+  font:var(--sans);
+  text-decoration:none;
+  display:block;
+  height:1rem;
+}
+#menu a:hover:not(.-focus) {
+  font:var(--serif);
+}
+
 
 /* Baseline and Grid
 /* ============= */
 
 html {
-  padding:2rem 6rem;
   font-size:25px;
+  position:absolute;
 }
 body {
-  font-size:0.68rem;
+  font-size:0.7rem;
+  border-left:2rem solid var(--acolor);
+  padding:3rem 5rem 8rem 3rem;
 }
-abbr {
-  display:inline;
-  line-height:0rem;
-  white-space:nowrap;
-}
-
 article {
   width:24rem;
 }
 
+@media print {
+  header {
+    display:none;
+  }
+}
+h1 {
+  margin-top:-1rem;
+}
+header {
+  height:3rem;
+  width:28rem;
+  position:fixed;
+  top:0;
+  left:3rem;
+  z-index:100;
+  padding:0 1.75rem;
+  margin:0;
+}
+
+header.-hidden {
+  display:none;
+}
+
+header h2 {
+  padding:0 .25rem .5rem;
+  border-bottom:1px solid var(--acolor);
+  margin:1.5rem 0 .5rem;
+  line-height:1rem;
+}
+
 #tools {
   position:fixed;
-  left:32rem;
-  top:calc(100vh - 16rem);
-  width:calc(100vw - 30rem);
-  max-width:15rem;
-  font-family:Sans-Serif;
-  font-size:.6rem;
+  top:0;
+  left:31rem;
+  width:8rem;
+  padding:3rem 0 0 0;
+  counter-reset: list-counter;
+  /* for easy absolute positioning, relative to the mouse */
 }
+
+h1::before {
+  /* For fragment references */
+  display:block;
+  content:'';
+  height:2rem;
+  margin-top:-2rem;
+}
+
+article h2::before {
+  /* For fragment references */
+  display:block;
+  content:'';
+  height:2rem;
+  margin-top:-2rem;
+}
+
+
+
 
 
 /* Typographic Scale and Structural Devices
@@ -69,76 +202,50 @@ article {
 h1 {
   font-size:1.7rem;
   line-height:2rem;
-  min-height:2rem;
   margin-bottom:2rem;
 }
 
-h2 {
+h2, h3 {
   margin-top:1.5rem;
   margin-bottom:.5rem;
-  line-height:1rem;
   font-size:.88rem;
 }
-header {
-  position:fixed;
-  top:0;
-
-  height:3rem;
-  padding:0 1rem;
-  margin:0 -1rem;
-  width:26rem;
-
-  font-size:.88rem;
-  font-family:var(--sans);
-  color:var(--acolor);
-  line-height:1rem;
-  background:var(--bgcolor);
-/*  background:linear-gradient(to bottom, var(--bgcolor) 3.2rem, var(--bgcolor-alpha) 4.5rem);
-*/}
-header h2 {
-  padding:0 .25rem .5rem;
-  margin-left:-.25rem;
-  margin-right:-.25rem;
-  border-bottom:1px solid var(--acolor);
-}
-header.-hidden {
-  transform:translate(0, -4.7rem);
-}
-
 
 h3 {
-  margin-top:1.5rem;
-  margin-bottom:.5rem;
-  line-height:1rem;
-  font-size:.89rem;
-  text-transform:lowercase;
-  font-variant:small-caps;
+  font-size:.9rem;
 }
+
 h4 {
-  font-size:.62rem;
-  line-height:1rem;
+  font-size:.68rem;
 }
+
 sup, sub {
   font-size:.75em;
 }
 
-ul{
-  padding:0 0 0 1em;
+a {
+  font-size:0.64rem;
 }
+
+ul {
+  padding:0 0 0 1em;
+  list-style:none;
+}
+
 ol {
   padding:0;
   list-style-position:inside;
 }
+
 ul.-prose, ol.-prose {
   list-style-position:inside;
   padding:0;
 }
-li>ul, li>ol {
+
+li > ul, li > ol {
   padding:0 0 0 1em;
 }
-ul {
-  list-style:none;
-}
+
 ul.-prose > li::before {
   margin-left:0;
 }
@@ -147,219 +254,138 @@ ul > li::before {
   margin-left:-1em;
 }
 
-h4 {
+h4, h4+p {
   display:inline;
 }
-h4+p {
-  display:inline;
-}
-h4+p::before {
+
+article h4 + p::before {
   content:'|';
   padding:0 .18em;
 }
-h4+p::after {
+article h4 + p::after {
   content:'';
   display:block;
   margin:0 0 1rem;
 }
-h4+p.-inbetween::after {
+article h4 + p.-inbetween::after {
   margin:0 0 .5rem;
 }
-h4+p.-br::after {
+article h4 + p.-br::after {
   margin:0;
+}
+
+table td {
+  white-space:nowrap;
 }
 
 .todo::before {
   content:'TODO';
   color:var(--acolor);
-  font-family:var(--sans);
+  font:var(--sans);
   font-variant:small-caps;
-  font-style:normal;
   text-transform:lowercase;
-  font-size:1.3em;
+  font-size:.9rem;
 }
 .todo {
+  font:var(--sans-italic);
   margin-bottom:1rem;
   padding:.5rem;
   background-color:var(--highlight);
-  font-family:var(--sans);
-  font-size:.9em;
-  font-style:italic;
+  font-size:.61rem;
 }
 
 
-/* CSS Micro framework
-/* ============= */
-
-.-br {
-  margin-bottom:0;
-}
-.\+br {
-  margin-bottom:1rem;
-}
-.-screen {
-  opacity:.2;
-}
-.-inbetween {
-  margin-top:-.5rem;
-  margin-bottom:.5rem;
-}
-.-inbetween +.-inbetween {
-  margin-top:.5rem;
-}
-tr.-inbetween {
-  height:2rem;
-}
-.-nowrap {
-  white-space:nowrap;
-}
-:not(table).-center {
-  text-align:center;
-}
 table {
   border-collapse:collapse;
 }
+
 td:nth-child(2n+2) {
   text-align:center;
   padding:0 .6em;
+  font:var(--serif);
 }
 
-/* Inline lists */
-
-ol {
-  counter-reset: list-counter;
-}
-li {
-  counter-increment: list-counter;
-}
-.-inline, ol.-inline {
-  display:inline;
-}
-.-inline li {
-  display:inline-block;
-}
-.-inline li::before {
-  content: counter(list-counter) '. ';
-}
-.-inline li::after {
-  content:' ';
-}
-.-inline li:last-child::after {
-  content:none;
-}
-
-
-
-
-
-/* Typography
-/* ============= */
-
-:root {
-  --serif: 'Produkt', 'Times New Roman', Serif;
-  --sans: Sans-Serif;
-}
-
-body {
-  font-family:var(--serif);
-}
-
-h1,h2,h3,h4,h5,h6 {
-  font-family:var(--sans);
-  font-weight:normal;
-}
-h1{
-  font-weight:bold;
-}
-abbr.-caps {
-  text-transform:lowercase;
-  font-variant:small-caps;
-  font-size:1.3em;
-}
-a {
-  text-decoration:none;
-  font-family:var(--sans);
-  font-size:.62rem;
-}
-
-a:hover {
-  text-decoration:underline;
-}
 
 /* Typography for Idioms
 /* ============= */
 
-dfn {
-  font-style:italic;
-  text-decoration:underline;
-}
-
-b > dfn {
-  text-decoration:none;
-  font-style:normal;
-}
-
-dfn.-focus {
-  background:var(--highlight);
-  border-radius:3px;
-  padding:.1ch .25ch .15ch .26ch;
-  margin:-.1ch -.25ch -.15ch -.26ch;
-  cursor:crosshair;
-}
-
-i:not(.noindex) {
-/text-decoration:underline;
-}
-
 /* Using <i> For idioms */
-
-i, var {
-  font-style:italic;
-}
-i:hover, b:hover, dfn:hover {
-  cursor:crosshair;
-  color:var(--acolor);
-}
-i.noindex:hover, b.noindex:hover {
-  text-decoration:none;
-  cursor:text;
-}
-.op, .fn, i.op, i.fn {
-  font-style:normal;
-  font-weight:normal;
-  text-decoration:none;
-  font-family:var(--sans);
-  font-size:15.4px;
-}
-i.common, i.url {
-  font-style:normal;
-  text-decoration:none;
-}
-
-/* Using <b> for constants */
-
-b {
-  font-weight:bold;
-  font-style:normal;
-  font-family:var(--sans);
-  font-size:15.4px;
-}
-
-code {
-  font-weight:normal;
-  font-family:Monospace;
-  font-size:14px;
-  border-radius:3px;
-  padding:.1ch .25ch .15ch .26ch;
-}
+/* Using <b> and <code> for constants */
 
 a {
   text-decoration:none;
-  font-family:var(--sans);
-  font-size:.62rem;
 }
 
-.rule {
+i:not(.common) {
+  text-decoration:underline;
+}
+
+a:hover, b:hover, i:hover {
+  color:var(--acolor);
+  text-decoration:underline;
+  cursor:crosshair;
+}
+
+dfn, dfn b, dfn i {
+  color:unset;
+}
+
+a, var, dfn, code, b, i, h4 {
+  display:inline-block;
+  line-height:.72rem;
+  height:.71rem;
+  overflow:visible;
+}
+
+dfn {
+  display:inline-block;
+  text-decoration:underline;
+}
+
+dfn.-focus *, a:hover *, b:hover *, i:hover * {
+  text-decoration:underline;
+}
+
+a:hover {
+  cursor:pointer; 
+}
+
+
+dfn:hover, dfn.-focus {
+  cursor:crosshair;
+  border:none;
+  background:var(--highlight);
+  color:currentColor;
+  border-radius:3px;
+  padding:0 .2em 0 .2em;
+  margin:0 -.2em 0 -.2em;
+}
+
+
+i.noindex:hover, b.noindex:hover {
+  text-decoration:none;
+  cursor:text;
+  color:unset;
+}
+.op, .fn, i.op, i.fn {
+  font:var(--sans);
+  font-size:0.61rem;
+}
+i.common, i.url {
+  font-style:normal;
+}
+
+b {
+  font-size:0.625rem;
+}
+
+code {
+  font-size:0.56rem;
+  border-radius:3px;
+  padding:0 .27ch 0 .27ch;
+}
+
+.rule, table.grammar>tbody>td:first-child {
   text-decoration:none;
   font-style:normal;
   white-space:nowrap;
@@ -369,33 +395,120 @@ th {
   font-weight:unset;
   padding:0 1ch;
 }
+
 .rule i, table.grammar > tbody > tr > td:nth-child(3) > i {
   font-style:normal;
 }
 
-/*.grammar tr:not(.-inbetween) td:first-child {
-  font-family:var(--sans);
-  font-size:15px;
+abbr, .url {
+  font:inherit;
+  text-transform:lowercase;
+  font-variant:small-caps;
+  font-size:1.3em;
+  text-decoration:inherit;
+  position:relative;
+}
 
-}*/
+
+/* Menu and ToolTip
+/* ============= */
+
+#menu, #menu ul {
+  list-style:none;
+  padding:0;
+  margin:0;
+  text-align:center;
+}
+
+#tooltip {
+ text-align:center;
+  font:var(--sans);
+  font-size:.6rem;
+  position:absolute;
+  padding:0;
+  opacity:1;
+  transition:none;
+}
+#tooltip ul {
+  padding:0;
+}
+#tooltip li {
+  display:inline;
+  padding:0;
+}
+#tooltip li::before {
+  margin-left:0px;
+  padding:0;
+  content:'❊)';
+  content:'(' counter(list-counter, lower-roman) ')';
+  font:var(--serif);
+}
+#tooltip li li::before {
+  margin-left:0px;
+  padding:0;
+  font:var(--serif);
+  content:'(' counter(list-counter, lower-alpha) ')';
+}
+#tooltip dfn {
+  line-height:.65rem;
+}
+#tooltip br {
+  display:none;
+}
+#tooltip p {
+  min-height:1rem;
+}  
+#tooltip h4 {
+ display:block;
+ min-height:1rem;
+ line-height:1rem;
+ margin:0;
+}
+#tooltip h4:first-child {
+  margin-top:-1rem;
+}
+#tooltip *+h4 {
+}
+#tooltip .-inbetween {
+  margin-top:0;
+}
+#tooltip.-hidden {
+  transition-delay: 25ms;
+  transition:opacity 300ms;
+  opacity:0;
+}
+
+#tooltip h3 {
+  margin-top:0;
+}
+#tooltip>li {
+  list-style:none;
+}
+
+#menu {
+  margin-top:1rem;
+}
+
+#toc a, #menu a {
+  font-family:var(--serif);
+  font-size:inherit;
+  color:unset;
+}
+#tools div {
+}
+
 
 
 /* Specific elements
 /* ============= */
 
-
-.url {
-  text-transform:lowercase;
-  font-variant:small-caps;
-  font-style:normal;
-  font-size:1.3em;
-}
-
 .-lined td,.-lined th {
  border:1px solid currentColor; 
 }
 
-
+#percent-encode-sets th {
+  white-space:nowrap;
+}
 #percent-encode-sets colgroup:not(:first-child) {
   border-left:1px solid #0002;
 }
@@ -423,14 +536,10 @@ th {
   margin:3px 0px 1px 4px ;
 }
 #percent-encode-sets td.-screen {
-  opacity:.15;
+  opacity:.12;
   cursor:default;
   pointer-events:none;
 }
-
-
-
-
 
 #printer td, #printer th {
   padding:0 .5em;
@@ -467,3 +576,18 @@ table#printer table {
 sub, sup { 
   line-height:0;
 }
+.url, abbr {
+  display:inline-block;
+  line-height:0;
+  height:0;
+  overflow:visible;
+}
+
+i.url, i>.url {
+  text-decoration:inherit;
+}
+
+#percent-encode-sets {
+  margin-left:-0.5ch;
+}
+

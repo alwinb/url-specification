@@ -56,3 +56,56 @@ header,main,aside,article,footer,nav,div,dd,dt,fieldset,legend,figcaption,h3,h4,
   margin-bottom:0;
 }
 
+
+/* CSS Micro framework
+/* ============= */
+
+.-br {
+  margin-bottom:0;
+}
+.\+br {
+  margin-bottom:1rem;
+}
+.-screen {
+  opacity:.2;
+}
+.-inbetween {
+  margin-top:-.5rem;
+  margin-bottom:.5rem;
+}
+.-inbetween +.-inbetween {
+  margin-top:.5rem;
+}
+tr.-inbetween {
+  height:2rem;
+}
+.-nowrap {
+  white-space:nowrap;
+}
+:not(table).-center {
+  text-align:center;
+}
+
+/* Inline lists */
+
+ol, ul {
+  counter-reset: list-counter;
+}
+li {
+  counter-increment: list-counter;
+}
+.-inline, ol.-inline {
+  display:inline;
+}
+.-inline > li {
+  display:inline-block;
+}
+.-inline > li::before {
+  content: counter(list-counter) '. ';
+}
+.-inline > li::after {
+  content:' ';
+}
+.-inline > li:last-child::after {
+  content:none;
+}

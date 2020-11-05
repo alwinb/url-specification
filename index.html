@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>URL Specification</title>
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
@@ -19,72 +20,114 @@
 
     function buildTOC (doc = document) {
       const heads = doc.getElementsByTagName ('H2')
-      const toc = doc.getElementById ('toc')
-      for (let h of heads)
-        if (!h.classList.contains('-toc-exclude'))
-        toc.append ($('li', h.innerText))
+      const ul = $('ul')
+      for (let h of heads) {
+        if (h.classList.contains('-toc-exclude')) continue
+        let anchor = $('a', h.innerText)
+        let id = h.innerText.replace (/\s+/g, '-') .toLowerCase ()
+        h.id = id
+        anchor.href = '#' + id
+        ul.append ($('li', anchor))
+      }
+      return ul
+    }
+
+    function buildTOCIndex (doc = document) {
+      let base = new URL (document.location)
+      base.hash = base.search = ''
+      base = String (base)
+      const anchors = doc.getElementsByTagName ('A')
+      const index = Object.create (null)
+      for (let anchor of anchors) {
+        let href = new URL (anchor.href, base)
+        let id = href.hash.substr(1)
+        href.hash = href.search = ''
+        if (id && base === String (href)) {
+          index[id] = index[id] || []
+          index[id].push (anchor)
+        }
+      }
+      log (index)
+      return index
     }
 
     function buildIndex (doc = document) {
-      // const dfns = doc.getElementsByTagName ('DFN')
-      const dfns = doc.querySelectorAll('dfn') //, table.grammar td:first-child
-      const index = { }
+      const dfns = doc.getElementsByTagName ('DFN')
+      const index = Object.create (null)
       for (let dfn of dfns) {
         let block = getDefScope (dfn)
-        let text = dfn.innerText.replace(/\s+/, ' ')
-        // TODO multiple dfns with same name
+        let text = dfn.innerText.replace (/\s+/, ' ')
+        // TODO support multiple dfns with same name
         index [text] = { text, dfn, block }
       }
       log (index)
       return index
     }
     
-  function getDefScope (elem) {
-    let block = elem, para = null
-    while (block) {
-      block = block.parentNode
-      para  = block.tagName in { P:1, TR:1 } ? block : para
-      if (block.classList.contains('dfn-scope')) break
-      if (block.tagName === 'BODY') block = null
+    function getDefScope (elem) {
+      let block = elem, para = null
+      while (block) {
+        block = block.parentNode
+        para  = block.tagName in { P:1, TR:1 } ? block : para
+        if (block.classList.contains('dfn-scope')) break
+        if (block.tagName === 'BODY') block = null
+      }
+      return block || para
     }
-    return block || para
-  }
 
-  function getIdiomTag (elem) {
-    while (elem) {
-      if (elem.tagName in { I:1, B:1 } && !elem.classList.contains('noindex'))
-        break
-      else if (elem.tagName in { LI:1, DIV:1, P:1, SECTION:1, BODY:1 })
-        elem = null
-      else elem = elem.parentNode
+    function getIdiomTag (elem) {
+      while (elem) {
+        if (elem.tagName in { I:1, B:1 } && !elem.classList.contains ('noindex'))
+          break
+        else if (elem.tagName in { LI:1, DIV:1, P:1, SECTION:1, BODY:1 })
+          elem = null
+        else elem = elem.parentNode
+      }
+      return elem
     }
-    return elem
-  }
 
-  function getCurrentSection (sections) {
-    const threshold = 55
-    for (let s of sections) {
-      const { top, bottom } = s.getBoundingClientRect ()
-      if (top < threshold && threshold < bottom) return s
+    function getCurrentSection (sections) {
+      const threshold = 25// 75 //55
+      for (let s of sections) {
+        const { top, bottom } = s.getBoundingClientRect ()
+        if (top < threshold && threshold < bottom) return s
+      }
     }
-  }
+
 
   window.addEventListener ('DOMContentLoaded', ()=> {
+    let hoverTimeout, hoverDfn, hoverAs = []
+    let scrollTimeout
+
+    const toc = buildTOC ()
+    document.getElementById ('toc').replaceWith (toc)
+    toc.id = 'toc'
     const index = buildIndex ()
-    const toolsDiv = $('div', '')
-    document.getElementById ('tools').append (toolsDiv)
+    const refIndex = buildTOCIndex ()
+
+    const toolsDiv = document.getElementById ('tooltip')
+
     const header = document.getElementsByTagName('HEADER')[0]
     const sections = Array.from (document.getElementsByTagName('SECTION'))
-    let hoverDfn = null
 
     const onscroll = evt => {
-      if (window.scrollY < 80) header.classList.add ('-hidden')
-      else header.classList.remove ('-hidden')
+      if (window.scrollY < 80) header.style.display = 'none'
+      else header.style.display = 'block'
+
       let current = getCurrentSection (sections)
       if (current) {
-        header.innerHTML = ''
-        const node = current.querySelector('h2').cloneNode(true)
+        let node = current.querySelector('h2')
+        let entry
+        if ((entry = refIndex[node.id])) {
+          hoverAs.forEach (a => a.classList.remove ('-focus'))
+          log (entry)
+          hoverAs = entry
+          hoverAs.forEach(a => a.classList.add ('-focus'))
+        }
+        // Show the node in the header
+        node = node.cloneNode (true)
         node.style.display = null
+        header.innerHTML = ''
         header.append (node)
       }
     }
@@ -94,6 +137,7 @@
     }
 
     const onover = evt => {
+      clearTimeout (hoverTimeout)
       let elem = getIdiomTag (evt.target)
       if (elem) {
         const text = elem.innerText.replace(/\s+/, ' ')
@@ -103,22 +147,33 @@
           log (entry, entry.dfn)
           entry.dfn.classList.add ('-focus')
           hoverDfn = entry.dfn
-          if (!entry.block || entry.block === block) return
+          //if (!entry.block || entry.block === block) return
           const tip = entry.block.cloneNode(true)
+          toolsDiv.classList.add ('-hidden')
+          toolsDiv.classList.remove ('-hidden')
           toolsDiv.innerHTML =''
+          if (!tip.querySelector('h4'))
+            toolsDiv.append ($('h4', text[0].toUpperCase () + text.slice(1)))
           toolsDiv.append (tip)
+          const rect = elem.parentNode.getBoundingClientRect ()
+          const y = Math.max (rect.y, 475)
+          toolsDiv.style.top = y + 'px'
+          
         }
-      else
-        toolsDiv.innerHTML =''
+      else clear ()
       }
-      else
-        toolsDiv.innerHTML =''
+      else clear ()
+    }
+
+    const clear = () => {
+      toolsDiv.classList.add ('-hidden')
     }
 
     onscroll ()
     document.body.addEventListener ('mouseout', onout)
+    // document.body.addEventListener ('mousemove', onmove)
     document.body.addEventListener ('mouseover', onover)
-    let scrollTimeout
+
     window.addEventListener ('scroll', evt => {
       clearTimeout (scrollTimeout)
       scrollTimeout = setTimeout (onscroll, 15)
@@ -129,15 +184,31 @@
 </head>
 <body>
 
-<header class=-hidden>
+<header>
 </header>
 
-
 <div id=tools>
+  <div id=menu>
+  <!-- 🌳 🌱🍁 🍂🌾-->  
+  <h4 style=font-size:3rem;line-height:3rem;height:3rem;margin-top:-.25rem;margin-bottom:.25rem;>🍂</h4>
+  <ul>
+    <li><a href=#url-specification>URL Specification</a></li>
+    <li><a href=#preliminaries>Preliminaries</a></li>
+    <li><a href=#url-model>URL Model</a></li>
+    <li><a href=#parsing>Parsing</a></li>
+    <li><a href=#host-processing >Host processing</a></li>
+    <li><a href=#reference-resolution >Reference Resolution</a></li>
+    <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
+    <li><a href=#validation >Validation</a></li>
+    <li><a href=#percent-coding >Percent Coding</a></li>
+    <li><a href=#printing>Printing</a></li>
+  </ul>
+  </div>
+  <div id=tooltip></div>
 </div>
 
 <article>
-<h1>URL Specification</h1>
+<h1 id=url-specification>URL Specification</h1>
 
 <!----------------------------->
 <section><h2 class=-toc-exclude style=display:none>URL Specification</h2>
@@ -168,10 +239,12 @@
       <strong><em>Unified <span class=url>URL</span> Standard</em></strong>
       that includes a normative specification of <span class=url>URL</span>
       handling by web browsers and that resolves the incompatibilities between
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>,
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a> and the
-      <a href="https://url.spec.whatwg.org/"
-      ><abbr class=-caps>WHATWG-URL</abbr> standard</a>.
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr
+         class=-caps>RFC</abbr> 3986</a>,
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr
+         class=-caps>RFC</abbr> 3987</a> and the
+      <a href="https://url.spec.whatwg.org/"><abbr
+         class=-caps>WHATWG-URL</abbr> standard</a>.
     <li>
       To provide the authors of the <abbr class=-caps>WHATWG</abbr> standard
       with a support document that they can use as a reference in their efforts
@@ -207,7 +280,8 @@
      class=url>URL</span>s and operations on <span class=url>URL</span>s. 
     It does not include a discussion of their history or their use in
     various contexts. It does contain valuable non-normative references to
-    <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a> that can be
+    <a href="https://tools.ietf.org/html/rfc3986"
+    ><abbr class=-caps>RFC</abbr> 3986</a> that can be
     followed for additional information about the concepts involved.
 
   <p class=-inbetween>
@@ -215,9 +289,6 @@
   <ul id=toc>
     <!-- auto generated -->
   </ul>
-  <script>
-    window.addEventListener('DOMContentLoaded', $=> buildTOC())
-  </script>
 </section>
 
 
@@ -232,9 +303,9 @@
   <h4>Sequences</h4>
   <div class="dfn-scope +br">
     <p>
-      This specification uses an algebraic notation for <dfn>sequence</dfn>s that
-      makes no distinction between one-element sequences and their first element. 
-      It uses the following notation:
+      This specification uses an algebraic notation for <dfn>sequence</dfn>s
+      that makes no distinction between one-element sequences and their first
+      element. It uses the following notation:
     <ul class=-inbetween>
       <li>
         The empty sequence is denoted by ε. 
@@ -252,7 +323,8 @@
     <p>
       The word <dfn>token</dfn> is used throughout this specification to mean a
       tagged value, denoted by (<var>type</var> <var>value</var>), where
-      <var>type</var> is taken from a predefined set of <dfn>token-<dfn>type</dfn></dfn>s.
+      <var>type</var> is taken from a predefined set of
+      <dfn>token-<dfn>type</dfn></dfn>s.
     <!-- add to dfn index -->
     <!-- TODO I want to be able to add alt-name attributes to the dfn tags-->
     <div style=display:none><dfn>value</dfn></div>
@@ -280,7 +352,10 @@
     the <i class=common>tag</i> may be used to refer to its
     <i class=common>value</i> directly. For
     example, given a <i class=common>sequence</i> of <i class=common>token</i>s
-    S := (<b class=noindex>dir</b> <var>x</var>・<b class=noindex>file</b> <var>y</var>・<b class=noindex>query</b> 
+    S := (
+      <b class=noindex>dir</b> <var>x</var>・<b
+       class=noindex>file</b> <var>y</var>・<b 
+       class=noindex>query</b> 
     <var>z</var>), the prase
     &ldquo;the <b class=noindex>query</b> of S&rdquo; identifies the
     <i class=common>value</i> <var>z</var> whereas the phrase &ldquo;the
@@ -300,7 +375,8 @@
         <a href="https://www.unicode.org/versions/latest/">Unicode</a>
         <i>code point</i>.
       <li>
-        A <dfn>code point</dfn>, is a natural number <var>n</var> ≤ 1114111.
+        A <dfn>code point</dfn>, is a natural number <span
+          class=-nowrap><var>n</var> ≤ 1114111</span>.
       <li>
         The <dfn>empty string</dfn> is a <i class=common>sequence</i> of zero
         code points. It is denoted by ε. 
@@ -308,7 +384,8 @@
     <p>
       Code points are denoted by a number in <em>hexadecimal</em> notation
       preceded by <b class=noindex>u+</b>, in boldface. In addition, code points
-      that correspond to <i class=common>printable <abbr class=-caps>ASCII</abbr> character</i>s are
+      that correspond to <i class=common>printable <abbr
+        class=-caps>ASCII</abbr> character</i>s are
       often denoted by their corresponding glyph, typeset in monospace and on a
       screened background.
       For example, <b>u+41</b> and <code>A</code> denote the same
@@ -316,23 +393,26 @@
       <i class=common>printable <abbr class=-caps>ASCII</abbr> character</i>s
       are often denoted as a connected sequence of glyphs, typeset likewise.
     <p>
-      The <dfn class=common>printable <abbr class=-caps>ASCII</abbr> character</dfn>s are
+      The <dfn class=common>printable <abbr
+        class=-caps>ASCII</abbr> character</dfn>s are
       codepoints in the range <b>u+20</b> to <b>u+7E</b>, inclusive. Note that
       this includes the space <i class=common>character</i> <b>u+20</b>.
 
 
   <h4>Character Sets</h4>
   <p>
-    A <dfn>character-set</dfn> is a set of <i>character</i>s. 
+    <span class=dfn-scope>A <dfn>character-set</dfn> is a set of
+      <i>character</i>s. 
     A <dfn>character-range</dfn> is the largest 
     <i class=common>character-set</i> that includes a given least
     <i class=common>character</i> <var>c</var> and a greatest
     <i class=common>character</i> <var>d</var>.
     Such a <i>character-range</i> is denoted by
-    { <var>c</var>–<var>d</var> }. 
-    The union of e.g. { <var>a</var>–<var>b</var> }
-    and { <var>c</var>–<var>d</var> }, is denoted by
-    { <var>a</var>–<var>b</var>, <var>c</var>–<var>d</var> }, and this
+    <span class=-nowrap>{ <var>c</var>–<var>d</var> }.</span> 
+    The union of e.g. <span class=-nowrap>{ <var>a</var>–<var>b</var> }</span>
+    and <span class=-nowrap>{ <var>c</var>–<var>d</var> }</span>, is denoted by
+    <span class=-nowrap>{ <var>a</var>–<var>b</var>, 
+      <var>c</var>–<var>d</var> }</span>, and this
     notation is generalised to <var>n</var>-ary unions. 
     Common <i class=common>character-set</i>s that are 
     used throughout this specification are defined below: 
@@ -342,11 +422,11 @@
     <tr><td><dfn>c0-control</dfn> <td> := <td> { <b>u+0</b>–<b>u+1F</b> }
     <tr><td><dfn>printable-<abbr class=-caps>ASCII</abbr></dfn><td> := <td>
       { <b>u+20</b>–<b>u+7E</b> } — i.e. { <code><span style=width:1ch;display:inline-block;padding:0> </span></code>–<code>~</code> }
-    <tr><td> octaldigit <td> := <td> { <code>0</code>–<code>7</code> }
+    <tr><td> <dfn>octal-digit</dfn> <td> := <td> { <code>0</code>–<code>7</code> }
     <tr><td><dfn>digit</dfn> <td> := <td> { <code>0</code>–<code>9</code> }
-    <tr><td>   hexdigit <td> := <td> { <code>0</code>–<code>9</code>, 
+    <tr><td><dfn>hex-digit</dfn> <td> := <td> { <code>0</code>–<code>9</code>, 
       <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }
-    <tr><td> digit-nonzero <td> := <td> { <code>1</code>–<code>9</code> }
+    <tr><td> <dfn>digit-nonzero</dfn> <td> := <td> { <code>1</code>–<code>9</code> }
     <tr><td><dfn>alpha</dfn> <td> := <td> { <code>A</code>–<code>Z</code>, 
       <code>a</code>–<code>z</code> }
     <tr><td> c1-control <td> := <td> { <b>u+80</b>–<b>u+9F</b> }
@@ -358,7 +438,7 @@
   <h4>Grammars</h4>
   <p>
     The notation <var>name</var> ::= <var>expression</var> is used to define
-    the production rules of a grammar, where the <i>expression</i> uses
+    a production rule of a grammar, where the <i>expression</i> uses
     square brackets ( [ _ ] ) <strong>for optional rules</strong>, a postfix
     star ( * ) for zero-or-more, a postfix plus ( + ) for one-or-more, an infix
     vertical line ( | ) for alternatives, monospaced type for literal
@@ -401,6 +481,7 @@
   and <i><span class=url>URL</span>-string</i>s are described in the sections on
   <a href="#parsing">parsing</a> and <a href="#printing">printing</a>.
 
+  <div class=dfn-scope>
   <h4>URL</h4>
     <p>
       An <dfn><i class=url>URL</i></dfn> is a <i>sequence</i> of
@@ -411,9 +492,10 @@
       <b>scheme</b> &lt; <b>authority</b> &lt; <b>drive</b>
       &lt; <b>path-root</b> &lt; <b>dir</b> &lt; <b>file</b>
       &lt; <b>query</b> &lt; <b>fragment</b>.
-
     <p>
       <i class=url>URL</i>s are subject to the following constraints:
+    </div>
+
     <ul>
       <li>
         An <i class=url>URL</i> contains at most one
@@ -568,7 +650,8 @@
     it is subject to two additional constraints:
     <ul>
   <li>
-    If <var>url</var> is <strong>not</strong> a <i>file-<span class=url>URL</span></i> 
+    If <var>url</var> is <strong>not</strong> a
+    <i>file-<span class=url>URL</span></i> 
     then it must not have a <b>drive</b> <i class=common>token</i>.
   <li>
     If <var>url</var> <strong>is</strong> a 
@@ -583,10 +666,16 @@
 <section><h2>Parsing</h2>
 <!------------------------>
   <!--<ul>
-    <li>An URL-string is a string that represents an URL.
-    <li>There are strings that are not URL strings.
-    <li>It is possible for a single URL to be represented by more than one URL string.
-    <li>URL strings are further divided into valid URL strings and invalid URL strings.
+    <li>
+      An URL-string is a string that represents an URL.
+    <li>
+      There are strings that are not URL strings.
+    <li>
+      It is possible for a single URL to be represented by more than one URL
+      string.
+    <li>
+      URL strings are further divided into valid URL strings and invalid URL
+      strings.
   </ul>-->
 
   <p>Parsing is stratified into the following phases:
@@ -612,15 +701,15 @@
 
   <h3>Parser modes</h3>
   <p>
-    Unfortunately, <span class=url>URL</span>-parsing slightly depends on the
-    <b>scheme</b> of the <span class=url>URL</span> being parsed. 
+    Unfortunately, <i class=url>URL</i>-parsing depends slightly on the
+    <b>scheme</b> of the <i class=url>URL</i> being parsed. 
     This has the unfortunate consequence that the parsing of scheme-less
     <i class=url>URL</i>s is ambiguous.
   <p>
     In order to resolve the ambiguity, a <i>parser-mode</i> has to be
-    explicitly specified for potentially scheme-less <span class=url>URL</span>s. 
+    explicitly specified for potentially scheme-less <i class=url>URL</i>s. 
     The supplied <i class=common>parser-mode</i> only influences how
-    scheme-less <span class=url>URL</span>s are parsed.
+    scheme-less <i class=url>URL</i>s are parsed.
 
   <div class="dfn-scope +br">
   <h4>Parser Mode</h4>
@@ -633,20 +722,24 @@
   </div>
 
   <p>
-    In practice, it is possible to start parsing with a supplied <i>parser-mode</i>,
-    and to then update the <i class=common>parser-mode</i> whilst parsing, as soon as a scheme has been detected. 
+    In practice, it is possible to start parsing with a supplied
+    <i class=common>parser-mode</i>,
+    and to then update the <i class=common>parser-mode</i> whilst parsing, as
+    soon as a <i class=common>scheme</i> has been detected. 
     <br>
     For the purpose of the specification however, it is useful to implement
     the mode detection as a separate step, before parsing, as follows. 
 
   <h4>Mode Detection</h4>
     <p>
-      The updated parser-mode
-      (<var>supplied-mode</var> <dfn class=fn>updated-for</dfn> <var>input-string</var>) is defined as follows:
+      The <dfn>updated parser-mode</dfn>
+      (<var>supplied-mode</var> <dfn class=fn>updated-for</dfn>
+       <var>input-string</var>) is defined as follows:
     <p class=-inbetween>
       Let <var>magic</var> be the first <var>n</var> characters of
-      <var>input-string</var>, with <var>n</var> being the least of 6 and the length
-      of <var>input-string</var>. The <i>updated-parser-mode</i> is then defined to be:
+      <var>input-string</var>, with <var>n</var> being the least of 6 and the
+      length of <var>input-string</var>. 
+      The <dfn>updated-parser-mode</dfn> is then defined to be:
       <ul>
         <li>
           <b>file-mode</b> — if  (lowercase <var>magic</var>) :: <span class=rule><code>file</code> <code>:</code> <i>any</i>*</span>
@@ -658,16 +751,21 @@
           <var>supplied-mode</var> — otherwise. 
       </ul>
 
-    <!-- In <b>special</b> mode, the s subscripted rules must be used instead of their unsubscripted counterparts, whenever available. -->
+    <!-- In <b>special</b> mode, the s subscripted rules must be used instead
+      of their unsubscripted counterparts, whenever available. -->
 
   <h3>URL Grammar</h3>
     <p>
-      This section specifies a parameterised grammar for file-<span class=url>URL</span>s,
-      web-<span class=url>URL</span>s, and generic <span class=url>URL</span>s at once.
+      This section specifies a parameterised grammar for
+      <i>file-<span class=url>URL</span></i>s,
+      <i>web-<span class=url>URL</span></i>s, and generic
+      <i class=url>URL</i>s at once.
       The grammar is parameterised by a <i>parser-mode</i>.
-      Unsubscripted rules must be used in <i>generic-mode</i>. 
-      Whenever available, <span class=-caps>F</span>-subscripted rules must be used in <b>file-mode</b> and 
-      <span class=-caps>S</span>-subscripted rules must be used both in <b>file-mode</b> and in <b>web-mode</b>. 
+      Unsubscripted rules must be used in <b>generic-mode</b>. 
+      Whenever available, <span class=-caps>F</span>-subscripted rules must be
+      used in <b>file-mode</b> and 
+      <span class=-caps>S</span>-subscripted rules must be used both in
+      <b>file-mode</b> and in <b>web-mode</b>. 
 
     <table class=grammar>
       <!-- <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
@@ -812,12 +910,12 @@
   <p>
     An IPv4 address-string consists of one up to four dot-separated numbers with an optional trailing dot. The numbers may use decimal, octal or hexadecimal notation, as follows:
 
-  <table>
+  <table class=grammar>
     <tr><td>ip4-address <td> ::= <td> ip4num [<code>.</code> ip4num [<code>.</code> ip4num [<code>.</code> ip4num ] ] ] [<code>.</code>]
     <tr><td>ip4num <td> ::= <td> ip4dec | ip4octal | ip4hex
-    <tr><td>ip4dec <td> ::= <td> <code>0</code> | (digit-nonzero digit*)
-    <tr><td>ip4octal <td> ::= <td> <code>0</code> octaldigit*
-    <tr><td>ip4hex <td> ::= <td> (<code>0x</code> | <code>0X</code>) hexdigit*
+    <tr><td>ip4dec <td> ::= <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
+    <tr><td>ip4octal <td> ::= <td> <code>0</code> <i>octal-digit</i>*
+    <tr><td>ip4hex <td> ::= <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
   </table>
 
   <p>
@@ -837,13 +935,16 @@
     The operations that are defined in this section are used in a subsequent
     chapter to accurately describe the behaviour of a
     <i>parse-resolve-and-normalise</i> algorithm that is referred to as the
-    &ldquo;<a style=margin-left:-.4ch href="https://url.spec.whatwg.org/#concept-basic-url-parser">
-    basic <span class=url>URL</span> parser</a>&rdquo;
+    &ldquo;<a style=margin-left:-.4ch 
+      href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
+      <span class=url>URL</span> parser</a>&rdquo;
     in the <abbr class=-caps>WHATWG URL</abbr> standard.
   <p>
     Reference Resolution as defined in this section does not involve
-    <i><span class=url>URL</span>-string</i>s. It solely operates on <i class=url>URL</i>s as defined in the section
-    <a href=#model><span class=url>URL</span> Model</a> above. In contrast with the previously
+    <i><span class=url>URL</span>-string</i>s. It solely operates on
+    <i class=url>URL</i>s as defined in the section
+    <a href=#model><span class=url>URL</span> Model</a> above.
+    In contrast with the previously
     mentioned sections in <abbr class=-caps>RFC</abbr> 3986 and in the
     <abbr class=-caps>WHATWG</abbr> standard, it does not do additional 
     normalisation, which is relegated to the section
@@ -852,20 +953,23 @@
     <h4>The Order of an <i class=url>URL</i></h4>
   <p>
     A property that is particularly useful is the <i>order</i> of an
-    <i class=url>URL</i>. Colloquially, the order is the
+    <i class=url>URL</i>. Colloquially, the <i class=common>order</i> is the
     <i class=common>type</i> of the first <i class=common>token</i>
-    of an <i class=url>URL</i>. The order
-    may be used as an argument to specify various prefixes of an <i class=url>URL</i>.
+    of an <i class=url>URL</i>. The <i class=common>order</i>
+    may be used as an argument to specify various prefixes of an
+    <i class=url>URL</i>.
 
   <div class="dfn-scope +br">
     <p class=-br>
-      The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn class=fn>ord</dfn> <var>url</var>) is
+      The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn class=fn>ord</dfn>
+      <var>url</var>) is
       defined to be:
     <ul>
       <li>
         <b>fragment</b> if <var>url</var> is the empty <i class=url>URL</i>.
       <li>
-        The <i class=common>type</i> of its first <i class=common>token</i> otherwise.
+        The <i class=common>type</i> of its first <i class=common>token</i>
+        otherwise.
     </ul>
   </div>
 
@@ -877,10 +981,12 @@
       the <em>shortest</em> prefix of <var>url</var> that contains:
       <ul>
         <li>
-          all <i class=common>token</i>s of <em>url</em> with a type strictly
+          all <i class=common>token</i>s of <em>url</em> with a
+          <i class=common>type</i> strictly
           smaller than <var>order</var> and
         <li>
-          all <b>dir</b> <i class=common>token</i>s with a type weakly smaller
+          all <b>dir</b> <i class=common>token</i>s with a
+          <i class=common>type</i> weakly smaller
           than <var>order</var>.
     </ul>
   </div>
@@ -888,7 +994,8 @@
   <p>
     Based on the <i class=common>order</i> and the
     <i class=common>order-limited prefix</i> one can define
-    &ldquo;<i class=common>goto</i>&rdquo; and &ldquo;<i class=common>non-strict goto</i>&rdquo; operations that are
+    &ldquo;<i class=common>goto</i>&rdquo; and
+    &ldquo;<i class=common>non-strict goto</i>&rdquo; operations that are
     analogous to the &ldquo;merge&rdquo; operation and its non-strict
     counterpart that are defined in section
     <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform
@@ -899,25 +1006,30 @@
     the risk of incorrect assumptions about commutativity. 
     The operations are not commutative, but they are associative.
 
+  <div class="dfn-scope">
   <h4>Goto</h4>
   <p>
     The <dfn>goto</dfn> operation
-    (<var>url<sub>1</sub></var> <dfn class=op>goto</dfn> <var>url<sub>2</sub></var>) is defined
-    to return <br>
+    (<var>url<sub>1</sub></var> <dfn class=op>goto</dfn>
+     <var>url<sub>2</sub></var>) is defined to return
+     <br>
     the <em>shortest</em> <i class=url>URL</i> that has
-    <var>url<sub>1</sub></var> <b class=fn>upto</b> (<b class=fn>ord</b> <var>url<sub>2</sub></var>) as a
+    <var>url<sub>1</sub></var> <b class=fn>upto</b>
+    (<b class=fn>ord</b> <var>url<sub>2</sub></var>) as a
     prefix and <var>url<sub>2</sub></var> as a postfix.
 
   <h4>Non-Strict Goto</h4>
   <p class=-br>
     The <dfn>non-strict goto</dfn>
-    (<var>url<sub>1</sub></var> <dfn class=op>~goto</dfn> <var>url<sub>2</sub></var>) is defined
-    to be<br>
+    (<var>url<sub>1</sub></var> <dfn class=op>~goto</dfn>
+     <var>url<sub>2</sub></var>) is defined to be
+     <br>
     (<var>url<sub>1</sub></var> <b class=op>goto</b> <var>url<sub>2</var>')
      where <var>url<sub>2</var>' is <var>url<sub>2</var> with its <b>scheme</b>
     <i class=common>token</i> removed if it case-insensitively compares equal
     to the <b>scheme</b> <i class=common>token</i> of <em>url<sub>1</sub></em>,
     or <em>url<sub>2</sub></em> otherwise.<br><br>
+  </div>
 
   <h4>Properties of the Goto operations</h4>
   <p class=-br>
@@ -925,17 +1037,30 @@
     as follows:
   <ul>
     <li>
-      <i class=op>ord</i> (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>) is the least type of {<i class=op>ord</i> <var>url<sub>1</sub></var>, <i class=op>ord</i> <var>url<sub>2</sub></var>}.
+      <i class=op>ord</i> (<var>url<sub>1</sub></var> <i class=op>goto</i>
+        <var>url<sub>2</sub></var>) is the least type of
+        {<i class=op>ord</i> <var>url<sub>1</sub></var>,
+         <i class=op>ord</i> <var>url<sub>2</sub></var>}.
     <li>
-      (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>) <i class=op>goto</i> <var>url<sub>3</sub></var> = <var>url<sub>1</sub></var> <i class=op>goto</i> (<var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>3</sub></var>).
+      (<var>url<sub>1</sub></var> <i class=op>goto</i>
+       <var>url<sub>2</sub></var>) <i class=op>goto</i>
+       <var>url<sub>3</sub></var> = <var>url<sub>1</sub></var>
+       <i class=op>goto</i> (<var>url<sub>2</sub></var> <i class=op>goto</i>
+       <var>url<sub>3</sub></var>).
     <li>
-      ε <i class=op>goto</i> <var>url<sub>2</sub></var> = <var>url<sub>2</sub></var>.
+      ε <i class=op>goto</i> <var>url<sub>2</sub></var> =
+      <var>url<sub>2</sub></var>.
     <li>
-      <var>url<sub>1</sub></var> <i class=op>goto</i> ε = <var>url<sub>1</sub></var> — if <var>url<sub>1</sub></var> does not have a <b>fragment</b>.
+      <var>url<sub>1</sub></var> <i class=op>goto</i> ε =
+      <var>url<sub>1</sub></var> — if <var>url<sub>1</sub></var> does not
+      have a <b>fragment</b>.
     <li>
       all of the above are true for <i class=op>~goto</i> as well.
     <li>
-      <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>) but not necessarily of (<var>url<sub>1</sub></var> <i class=op>~goto</i> <var>url<sub>2</sub></var>).
+      <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var>
+      <i class=op>goto</i> <var>url<sub>2</sub></var>) but not necessarily of
+      (<var>url<sub>1</sub></var> <i class=op>~goto</i>
+      <var>url<sub>2</sub></var>).
   </ul>
 
   <div class="dfn-scope +br">
@@ -943,7 +1068,9 @@
   <p>
     There is an additional operation on <i class=url>URL</i>s called
     <dfn>force</dfn> that it is used as an error-recovery measure for
-    <i>web-<span class=url>URL</span></i>s and for <i>file-<span class=url>URL</span></i>s. Force has no effect on other <i class=url>URL</i>s.
+    <i>web-<span class=url>URL</span></i>s and for
+    <i>file-<span class=url>URL</span></i>s.
+    Force has no effect on other <i class=url>URL</i>s.
 
   <ul><li>
     To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
@@ -969,7 +1096,8 @@
         Remove all <b>dir</b> or <b>file</b> <i class=common>token</i>s that
         precede <var>token</var> and remove <var>token</var> as well. 
         Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
-        an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to <var>auth</var>. 
+        an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
+        <var>auth</var>. 
       <li>
         Set the <b>path-root</b> of the <i class=url>URL</i> to 
         <code>/</code>. 
@@ -1006,7 +1134,8 @@
       The <dfn>pre-resolution</dfn> of <var>url<sub>1</sub></var> against
       <var>url<sub>2</sub></var> is defined to be:
     <ul>
-      <li><var>url<sub>2</sub></var> <i class=op>~goto</i> <var>url<sub>1</sub></var>
+      <li>
+        <var>url<sub>2</sub></var> <i class=op>~goto</i> <var>url<sub>1</sub></var>
         — if <var>url<sub>2</sub></var> is a <i>base-<i class=url>URL</i></i> or
         if <var>url<sub>1</sub></var> has a <b>fragment</b> <i class=common>token</i>.
       <li>
@@ -1051,32 +1180,49 @@
   <a href="https://tools.ietf.org/html/rfc3986#section-6.2">Normalization and 
   Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
   <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
-  particular normal form. The <abbr class=-caps>WHATWG</abbr> standard, does, but it does so 
-  implicitly.
+  particular normal form. The <abbr class=-caps>WHATWG</abbr> standard, does, 
+  but it does so implicitly.
 <p>
   I think it is nice to define the equivalences via a congruence relation.
   The rules below are specified in such a way that directing them from left
-  to right results in a set of terminating rewrite rules. An <i class=url>URL</i> is in normal
-  form if no more rewrite rules can be applied. 
+  to right results in a set of terminating rewrite rules. 
+  An <i class=url>URL</i> is in normal form if no more rewrite rules can be
+  applied. 
 
 <h3>Path Segment Normalisation</h3>
 <table class=grammar>
-  <tr><td><b>dir</b>  <var>x</var> <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
-  <tr><td><b>file</b> <var>x</var> <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
-
-  <tr><td><b>dir</b>  <var>x</var>・<b>dir</b> <var>y</var> <td> ≈ <td> ε                                
-    <td> — <td> if <var>y</var> :: <i>dots</i> and <strong>not</strong> <var>x</var> :: <i>dots</i>
-  <tr><td><b>dir</b>  <var>x</var>・<b>file</b> <var>y</var> <td> ≈ <td> ε                                
-    <td> — <td> if <var>y</var> :: <i>dots</i> and <strong>not</strong> <var>x</var> :: <i>dots</i>
-
-  <tr><td><b>path-root</b> <var>x</var>・<b>dir</b> <var>y</var>  <td> ≈ <td><b>path-root</b> <var>x</var>
+  <tr>
+    <td><b>dir</b>  <var>x</var>
+    <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
+  <tr>
+    <td><b>file</b> <var>x</var>
+    <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
+  <tr>
+    <td><b>dir</b>  <var>x</var>・<b>dir</b> <var>y</var>
+    <td> ≈ <td> ε                                
+    <td> — <td> if <var>y</var> :: <i>dots</i> 
+      and <strong>not</strong> <var>x</var> :: <i>dots</i>
+  <tr>
+    <td><b>dir</b>  <var>x</var>・<b>file</b> <var>y</var>
+    <td> ≈ <td> ε                                
+    <td> — <td> if <var>y</var> :: <i>dots</i> 
+      and <strong>not</strong> <var>x</var> :: <i>dots</i>
+  <tr>
+    <td><b>path-root</b> <var>x</var>・<b>dir</b> <var>y</var> 
+    <td> ≈ <td><b>path-root</b> <var>x</var>
     <td> — <td> if <var>y</var> :: <i>dots</i>
-  <tr><td><b>path-root</b> <var>x</var>・<b>file</b> <var>y</var> <td> ≈ <td><b>path-root</b> <var>x</var>
+  <tr>
+    <td><b>path-root</b> <var>x</var>・<b>file</b> <var>y</var>
+    <td> ≈ <td><b>path-root</b> <var>x</var>
     <td> — <td> if <var>y</var> :: <i>dots</i>
-
-  <tr class=-inbetween><td colspan=10>where,
-  <tr><td>dot <td> ::= <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
-  <tr><td>dots <td> ::= <td colspan=10> <i>dot</i> <i>dot</i>
+  <tr class=-inbetween>
+    <td colspan=10>where,
+  <tr>
+    <td>dot
+    <td> ::=
+    <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
+  <tr>
+    <td>dots <td> ::= <td colspan=10> <i>dot</i> <i>dot</i>
 </table>
 
 
@@ -1090,12 +1236,36 @@
 
 <h3>Scheme-based Authority Normalisation</h3>
   <table>
-    <tr><td><b>scheme</b> <code>file</code> <td>・<td><b>authority</b> (<b>host</b> <code>localhost</code>)          <td> ≈ <td> <b>scheme</b> <code>file</code> <td>・<td><b>authority</b> ε
-    <tr><td><b>scheme</b> <code>http</code> <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>80</code>)  <td> ≈ <td> <b>scheme</b> <code>http</code> <td>・<td><b>authority</b> <var>xs</var>
-    <tr><td><b>scheme</b> <code>ws</code>   <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>80</code>)  <td> ≈ <td> <b>scheme</b> <code>ws</code>   <td>・<td><b>authority</b> <var>xs</var>
-    <tr><td><b>scheme</b> <code>ftp</code>  <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>21</code>)  <td> ≈ <td> <b>scheme</b> <code>ftp</code>  <td>・<td><b>authority</b> <var>xs</var>
-    <tr><td><b>scheme</b> <code>wss</code>  <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) <td> ≈ <td> <b>scheme</b> <code>wss</code>  <td>・<td><b>authority</b> <var>xs</var>
-    <tr><td><b>scheme</b> <code>https</code><td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) <td> ≈ <td> <b>scheme</b> <code>https</code><td>・<td><b>authority</b> <var>xs</var>
+    <tr>
+      <td><b>scheme</b> <code>file</code> 
+      <td>・<td><b>authority</b> (<b>host</b> <code>localhost</code>)          
+      <td> ≈ <td> <b>scheme</b> <code>file</code> 
+      <td>・<td><b>authority</b> ε
+    <tr>
+      <td><b>scheme</b> <code>http</code> 
+      <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>80</code>)  
+      <td> ≈ <td> <b>scheme</b> <code>http</code> 
+      <td>・<td><b>authority</b> <var>xs</var>
+    <tr>
+      <td><b>scheme</b> <code>ws</code>   
+      <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>80</code>)  
+      <td> ≈ <td> <b>scheme</b> <code>ws</code>   
+      <td>・<td><b>authority</b> <var>xs</var>
+    <tr>
+      <td><b>scheme</b> <code>ftp</code>  
+      <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>21</code>)  
+      <td> ≈ <td> <b>scheme</b> <code>ftp</code>  
+      <td>・<td><b>authority</b> <var>xs</var>
+    <tr>
+      <td><b>scheme</b> <code>wss</code>  
+      <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) 
+      <td> ≈ <td> <b>scheme</b> <code>wss</code>  
+      <td>・<td><b>authority</b> <var>xs</var>
+    <tr>
+      <td><b>scheme</b> <code>https</code>
+      <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) 
+      <td> ≈ <td> <b>scheme</b> <code>https</code>
+      <td>・<td><b>authority</b> <var>xs</var>
   </table>
 
 
@@ -1124,42 +1294,47 @@
 <section><h2>Percent Coding</h2>
 <!----------------------------->
 
-Percent encoding is the process of replacing certain characters in a string
-with a percent-escape-sequence. 
+<div class=todo>
+  percent encoded bytes,
+  escape sequence, ao</div>
 
 <h3>Percent Encoding</h3>
 
 <p>
   Unfortunately, like parsing, <i>percent-encoding</i> is scheme-dependent. 
-  The consequence is that a <i>percent-encoding-mode</i> must be 
-  manually supplied to specify the encoding behaviour for 
+  The consequence is that a <i>percent-encode-mode</i> must be 
+  manually supplied to specify the desired outcome for 
   scheme-less <span class=url>URL</span>s.
+  The supplied <i class=common>percent-encode-mode</i> has no influence on
+  <i class=url>URL</i>s
+  that do have a <b>scheme</b>. 
+  
 
 <div class="dfn-scope" style=margin-bottom:.5rem>
-<h4>Percent Encode Mode</h4>
+<h4>Encode Mode</h4>
 <p>
   There are four distinct <dfn>percent-encode-mode</dfn>s:
 <p class="-center">
-  <dfn><b>generic</b></dfn>,  
-  <dfn><b>minimal</b></dfn>, 
-  <dfn><b>special</b></dfn>, and
+  <dfn><b>generic</b></dfn>,  
+  <dfn><b>minimal</b></dfn>, 
+  <dfn><b>special</b></dfn>, and
   <dfn><b>minimal-special</b></dfn>.
 <p>
 </div>
 
-<p>
-  The supplied <i>percent-encode-mode</i> has no influence on <i class=url>URL</i>s
-  that do have a <b>scheme</b>. 
-
 <h4>Mode Detection</h4>
   <p>
-    The <i>percent-encode-mode</i> for a given <i class=url>URL</i> <var>url</var>, 
-    and a manually supplied default mode <var>supplied-mode</var> is defined to be:
+    The <i>percent-encode-mode</i> for a given <i class=url>URL</i>
+    <var>url</var>, and a manually supplied default mode
+    <var>supplied-mode</var> is defined to be:
     <ul>
       <li>
-        <b>special</b> — if <var>url</var> is a <i>file-<span class=url>URL</span></i> or if <var>url</var> is a <i>web-<span class=url>URL</span></i>,
+        <b>special</b> — if <var>url</var> is a
+        <i>file-<span class=url>URL</span></i> or if <var>url</var> is a
+        <i>web-<span class=url>URL</span></i>,
       <li>
-        <b>generic</b> — if otherwise <var>url</var> is a <i>base-<span class=url>URL</span></i>,
+        <b>generic</b> — if otherwise <var>url</var> is a
+        <i>base-<span class=url>URL</span></i>,
       <li>
         <b>minimal</b> — if otherwise <var>url</var> has a <b>scheme</b>, and
       <li>
@@ -1176,27 +1351,34 @@ with a percent-escape-sequence.
 <div class="dfn-scope +br">
 <h4>Percent Encode Set</h4>
 <p>
-  The <dfn>percent-encode-set</dfn> for a given <i class=common>token</i> (<var>type</var> <var>value</var>)
-  and a <i class=common>percent-encode-mode</i> <var>mode</var>
-  is defined to be a subset of the <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
+  The <dfn>percent-encode-set</dfn> for a given <i class=common>token</i>
+  (<var>type</var> <var>value</var>) and a
+  <i class=common>percent-encode-mode</i> <var>mode</var>
+  is defined to be a subset of the
+  <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
   as indicated by the table below, as follows:
   <ul>
     <li>
-      If <var>type</var> is <b>username</b> or <b>password</b> the encode set is given by the row named <i>userinfo</i>.
+      If <var>type</var> is <b>username</b> or <b>password</b> the encode set
+      is given by the row named <i>userinfo</i>.
     <li>
-      If <var>type</var> is <b>host</b> then the encode set is given by the row named <i>host</i>. 
+      If <var>type</var> is <b>host</b> then the encode set is given by the row
+      named <i>host</i>. 
     <li>
-      If <var>type</var> is <b>dir</b> or <b>file</b> then the encode set is given by the row named
+      If <var>type</var> is <b>dir</b> or <b>file</b> then the encode set is
+      given by the row named
       <i class=rule>path</i> in <b>generic</b> mode,
       <i class=rule>path-m</i> in <b>minimal</b> mode,
       <i class=rule>path-s</i> in <b>special</b> mode and
       <i class=rule>path-ms</i> in <b>minimal-special</b> mode. 
     <li>
-      If <var>type</var> is <b>query</b> then the encode set is given by the row named
+      If <var>type</var> is <b>query</b> then the encode set is given by the
+      row named
       <i class=rule>query-s</i> in <b>special</b> mode,
       and by the row named <i class=rule>query</i> otherwise.  
     <li>
-      If <var>type</var> is <b>fragment</b> then the encode set is given by the row named <i>fragment</i>. 
+      If <var>type</var> is <b>fragment</b> then the encode set is given by the
+      row named <i>fragment</i>. 
     <li>
       Otherwise the encode set is the empty set. 
   </ul>
@@ -1286,7 +1468,8 @@ with a percent-escape-sequence.
 <ul>
   <li>
     To print to an <abbr class=-caps>ASCII</abbr>
-    <i><span class=url>URL</span>-string</i>, percent encode any \ printable-ascii
+    <i><span class=url>URL</span>-string</i>, 
+    percent encode any \ printable-ascii
   <li>
     Otherwise percent encode <i>c0-control</i>, DEL, c1-control, surrogates and
     non-chars. 
