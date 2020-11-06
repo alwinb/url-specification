@@ -19,7 +19,7 @@
     }
 
     function buildTOC (doc = document) {
-      const heads = doc.getElementsByTagName ('H2')
+      const heads = doc.querySelectorAll ('H2')
       const ul = $('ul')
       for (let h of heads) {
         if (h.classList.contains('-toc-exclude')) continue
@@ -111,10 +111,18 @@
     const sections = Array.from (document.getElementsByTagName('SECTION'))
 
     const onscroll = evt => {
+      let current;
       if (window.scrollY < 80) header.style.display = 'none'
       else header.style.display = 'block'
-
-      let current = getCurrentSection (sections)
+      if (window.scrollY < 25) {
+        if ((entry = refIndex['url-specification'])) {
+          hoverAs.forEach (a => a.classList.remove ('-focus'))
+          log (entry)
+          hoverAs = entry
+          hoverAs.forEach(a => a.classList.add ('-focus'))
+        }
+      }
+      else current = getCurrentSection (sections)
       if (current) {
         let node = current.querySelector('h2')
         let entry
@@ -189,12 +197,12 @@
 
 <div id=tools>
   <div id=menu>
-  <!-- 🌳 🌱🍁 🍂🌾-->  
-  <h4 style=font-size:3rem;line-height:3rem;height:3rem;margin-top:-.25rem;margin-bottom:.25rem;>🍂</h4>
+  <!-- 🌳🐎🦒🌿🌲🐘🌱🍁 🍂🌾 🐺🕊🐾🦝🍂 -->  
+  <h4 style=font-size:3rem;line-height:3rem;height:3rem;margin-top:-.5rem;margin-bottom:.5rem;>🍂</h4>
   <ul>
-    <li><a href=#url-specification>URL Specification</a></li>
+    <li><a href=#url-specification>Introduction</a></li>
     <li><a href=#preliminaries>Preliminaries</a></li>
-    <li><a href=#url-model>URL Model</a></li>
+    <li><a href=#url-model><span class=url>URL</span> Model</a></li>
     <li><a href=#parsing>Parsing</a></li>
     <li><a href=#host-processing >Host processing</a></li>
     <li><a href=#reference-resolution >Reference Resolution</a></li>
@@ -300,8 +308,8 @@
     which the rest of the specification is built. 
 
 
-  <h4>Sequences</h4>
   <div class="dfn-scope +br">
+  <h4>Sequences</h4>
     <p>
       This specification uses an algebraic notation for <dfn>sequence</dfn>s
       that makes no distinction between one-element sequences and their first
@@ -313,10 +321,11 @@
         The concatenation of two sequences <var>S</var> and <var>T</var> is
         denoted by <var>S</var>・<var>T</var>. 
     </ul>
-    <p>
+  </div>    
+
+  <p style=margin-top:-.5rem>
     Parentheses are used for disambiguation and as visual aides. Paired 
     parentheses are not part of a sequence-constructing operation. 
-  </div>    
 
   <div class="dfn-scope +br">
     <h4>Tokens</h4>
@@ -418,20 +427,60 @@
     used throughout this specification are defined below: 
 
   <table class=grammar>
-    <tr><td><dfn>any</dfn> <td> := <td> { <b>u+0</b>–<b>u+10FFFF</b> }
-    <tr><td><dfn>c0-control</dfn> <td> := <td> { <b>u+0</b>–<b>u+1F</b> }
-    <tr><td><dfn>printable-<abbr class=-caps>ASCII</abbr></dfn><td> := <td>
-      { <b>u+20</b>–<b>u+7E</b> } — i.e. { <code><span style=width:1ch;display:inline-block;padding:0> </span></code>–<code>~</code> }
-    <tr><td> <dfn>octal-digit</dfn> <td> := <td> { <code>0</code>–<code>7</code> }
-    <tr><td><dfn>digit</dfn> <td> := <td> { <code>0</code>–<code>9</code> }
-    <tr><td><dfn>hex-digit</dfn> <td> := <td> { <code>0</code>–<code>9</code>, 
-      <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }
-    <tr><td> <dfn>digit-nonzero</dfn> <td> := <td> { <code>1</code>–<code>9</code> }
-    <tr><td><dfn>alpha</dfn> <td> := <td> { <code>A</code>–<code>Z</code>, 
-      <code>a</code>–<code>z</code> }
-    <tr><td> c1-control <td> := <td> { <b>u+80</b>–<b>u+9F</b> }
-    <tr><td>    latin-1 <td> := <td> { <b>u+A0</b>–<b>u+FF</b> }
-    <tr><td>  surrogate <td> := <td> { <b>u+D800</b>–<b>u+DFFF</b> }
+    <tr>
+      <td><dfn>any</dfn> 
+      <td> := 
+      <td> { <b>u+0</b>–<b>u+10FFFF</b> }
+    <tr>
+      <td><dfn>control-c0</dfn> 
+      <td> := 
+      <td> { <b>u+0</b>–<b>u+1F</b> }
+    <tr>
+      <td><dfn>c0-space</dfn> 
+      <td> := 
+      <td> { <b>u+0</b>–<b>u+20</b> }
+    <tr>
+      <td><dfn>printable-<abbr class=-caps>ASCII</abbr></dfn>
+      <td> := 
+      <td> { <b>u+20</b>–<b>u+7E</b> } — i.e. { <code><span style=width:1ch;display:inline-block;padding:0> </span></code>–<code>~</code> }
+    <tr>
+      <td> <dfn>octal-digit</dfn> 
+      <td> := 
+      <td> { <code>0</code>–<code>7</code> }
+    <tr>
+      <td><dfn>digit</dfn> 
+      <td> := 
+      <td> { <code>0</code>–<code>9</code> }
+    <tr>
+      <td><dfn>hex-digit</dfn> 
+      <td> := 
+      <td> { <code>0</code>–<code>9</code>, 
+        <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }
+    <tr>
+      <td> <dfn>digit-nonzero</dfn> 
+      <td> := 
+      <td> { <code>1</code>–<code>9</code> }
+    <tr>
+      <td><dfn>alpha</dfn> 
+      <td> := 
+      <td> { <code>A</code>–<code>Z</code>, 
+        <code>a</code>–<code>z</code> }
+    <tr>
+      <td>del-c1 
+      <td> := 
+      <td> { <b>u+7F</b>–<b>u+9F</b> }
+    <tr>
+      <td>control-c1 
+      <td> := 
+      <td> { <b>u+80</b>–<b>u+9F</b> }
+    <tr>
+      <td>latin-1 
+      <td> := 
+      <td> { <b>u+A0</b>–<b>u+FF</b> }
+    <tr>
+      <td>surrogate 
+      <td> := 
+      <td> { <b>u+D800</b>–<b>u+DFFF</b> }
   </table>
 
 
@@ -692,8 +741,8 @@
     Before parsing, preprocess the input string <var>input</var> as follows:
   <ul>
     <li>
-      Remove all leading and trailing <i>c0-control</i> and <b>u+20</b> 
-      (space) <i class=common>character</i>s from <var>input</var>.
+      Remove all leading and trailing <i>c0-space</i>
+      <i class=common>character</i>s from <var>input</var>.
     <li>
       Remove all <b>u+9</b> (tab), <b>u+A</b> (line-feed) and <b>u+D</b>
       (carriage-return) <i class=common>character</i>s from <var>input</var>.
@@ -715,7 +764,7 @@
   <h4>Parser Mode</h4>
     <p>
       There are three distinct <dfn>parser-mode</dfn>s:
-    <p class="-center -inbetween">
+    <p class="-center">
       <dfn><b>web-mode</b></dfn>, 
       <dfn><b>file-mode</b></dfn>, and
       <dfn><b>generic-mode</b></dfn>.
@@ -768,53 +817,122 @@
       <b>file-mode</b> and in <b>web-mode</b>. 
 
     <table class=grammar>
-      <!-- <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
-      <tr><td>url <td> ::= <td> [ scheme <code>:</code> ] (auth-path | path) [ <code>?</code> query ] [ <code>#</code> fragment ]
-      <tr><td>auth-path <td> ::= <td> s s authority [ path-root [ dir s ]* [ file ] ]
-      <tr><td>path <td> ::= <td> [ path-root ] path-rel
+      <!-- <tr><td>url 
+        <td> ::= 
+      <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
+      <tr>
+        <td>url 
+        <td> ::= 
+        <td> [ scheme <code>:</code> ] (auth-path | path) [ <code>?</code> query ] [ <code>#</code> fragment ]
+      <tr>
+        <td>auth-path 
+        <td> ::= 
+        <td> s s authority [ path-root [ dir s ]* [ file ] ]
+      <tr>
+      <td>path 
+        <td> ::= 
+        <td> [ path-root ] path-rel
 
       <tr class=-inbetween>
-        <td colspan=3>Modified <i>auth-path</i> rule for <i>file-<span class=url>URL</span></i>s:
+        <td colspan=3>Modified <i>auth-path</i> rule in <b>file-mode</b>:
       <tr>
-        <td>auth-path<sub>F</sub> <td> ::= <td> ([ s [s] ] drive) | s s host) [ path-root [ dir s ]* [ file ] ]
+        <td>auth-path<sub>F</sub> 
+        <td> ::= 
+        <td> auth-drive [ path-root [ dir s ]* [ file ] ]
+
+      <tr>
+        <td>auth-drive
+        <td> ::= 
+        <td> [ s [s] ] drive | s s host [ s drive ]
 
       <tr class=-inbetween>
         <td colspan=3>This refers to the following rules:
 
-      <tr><td>scheme <td> ::= <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i> | <code>+</code> | <code>-</code> | <code>.</code>)*
-      <tr><td>authority <td> — <td> shall be defined in the next subsection,
-      <tr><td>host <td> — <td> shall be defined in the next subsection,
-      <tr><td>drive <td> ::= <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
-      <tr><td>path-root <td> ::= <td> s
-      <tr><td>dir <td> ::= <td> pchar*
-      <tr><td>file <td> ::= <td> pchar+
-      <tr><td>query <td> ::= <td> qchar*
-      <tr><td>fragment <td> ::= <td> <i>any</i>*
+      <tr>
+        <td>scheme 
+        <td> ::= 
+        <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i> | <code>+</code> | <code>-</code> | <code>.</code>)*
+
+      <tr>
+        <td>authority <td> — <td> shall be defined in the next subsection,
+      <tr>
+        <td>host <td> — <td> shall be defined in the next subsection,
+      <tr>
+        <td>drive 
+        <td> ::= 
+        <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
+      <tr>
+        <td>path-root 
+        <td> ::= 
+        <td> s
+      <tr>
+        <td>dir 
+        <td> ::= 
+        <td> pchar*
+      <tr>
+        <td>file 
+        <td> ::= 
+        <td> pchar+
+      <tr>
+        <td>query 
+        <td> ::= 
+        <td> qchar*
+      <tr>
+        <td>fragment 
+        <td> ::= 
+        <td> <i>any</i>*
 
       <tr class=-inbetween>
-        <td colspan=3>These rules are based on the following character-sets:
-      <tr><td>s <td> ::= <td> { <code>/</code> }
-      <tr><td>pchar <td> := <td> any \ { <code>/</code>, <code>#</code>, <code>?</code> }
-      <tr><td>qchar <td> := <td> any \ { <code>#</code> }
+        <td colspan=3>
+          These rules are based on the following character-sets:
+      <tr>
+        <td>s 
+        <td> ::= 
+        <td> { <code>/</code> }
+      <tr>
+        <td>pchar
+        <td> := 
+        <td> any \ { <code>/</code>, <code>#</code>, <code>?</code> }
+      <tr>
+        <td>qchar 
+        <td> := 
+        <td> any \ { <code>#</code> }
 
       <tr class=-inbetween>
-        <td colspan=3>The <i class=common>character-set</i>s are modified for <i>file-<span class=url>URL</span></i>s and <i>web-<span class=url>URL</span></i>s:
-      <tr><td>s<sub>S</sub> <td> ::= <td> { <code>/</code>, <code>\</code> }
+        <td colspan=3>The <i class=common>character-set</i>s are
+          modified in <b>file-mode</b> and in <b>web-mode</b>:
+      <tr><td>s<sub>S</sub> 
+        <td> ::= 
+        <td> { <code>/</code>, <code>\</code> }
       <tr><td>pchar<sub>S</sub> <td> := <td> any \ { <code>/</code>, <code>\</code>, <code>#</code>, <code>?</code> }
     </table>
 
   <h3>Authority Grammar</h3>
     <table class=grammar>
-      <tr><td>authority <td> ::= <td> ε  |  [ credentials <code>@</code> ] host [ <code>:</code> port ]
-      <tr><td>credentials <td> ::= <td> username [ <code>:</code> password ]
+      <tr><td>authority 
+        <td> ::= 
+        <td> ε  |  [ credentials <code>@</code> ] host [ <code>:</code> port ]
+      <tr><td>credentials 
+        <td> ::= 
+        <td> username [ <code>:</code> password ]
 
       <tr class=-inbetween><td colspan=3>This refers to the following rules:
 
-      <tr><td>username <td> ::= <td> uchar*
-      <tr><td>password <td> ::= <td> pchar*
-      <tr><td>host <td> ::= <td> <code>[</code> ip6-address <code>]</code> | opaque-host
-      <tr><td>opaque-host <td> ::= <td> hchar+
-      <tr><td>port <td> ::= <td> ε | digit+
+      <tr><td>username 
+        <td> ::= 
+        <td> uchar*
+      <tr><td>password 
+        <td> ::= 
+        <td> pchar*
+      <tr><td>host 
+        <td> ::= 
+        <td> <code>[</code> ip6-address <code>]</code> | opaque-host
+      <tr><td>opaque-host 
+        <td> ::= 
+        <td> hchar+
+      <tr><td>port 
+        <td> ::= 
+        <td> ε | digit+
 
       <tr class=-inbetween>
         <td colspan=3>These rules are based on the following character-sets:
@@ -953,7 +1071,7 @@
     <h4>The Order of an <i class=url>URL</i></h4>
   <p>
     A property that is particularly useful is the <i>order</i> of an
-    <i class=url>URL</i>. Colloquially, the <i class=common>order</i> is the
+    <span class=-nowrap><i class=url>URL</i>.</span> Colloquially, the <i class=common>order</i> is the
     <i class=common>type</i> of the first <i class=common>token</i>
     of an <i class=url>URL</i>. The <i class=common>order</i>
     may be used as an argument to specify various prefixes of an
@@ -1063,7 +1181,6 @@
       <var>url<sub>2</sub></var>).
   </ul>
 
-  <div class="dfn-scope +br">
   <h4>Force</h4>
   <p>
     There is an additional operation on <i class=url>URL</i>s called
@@ -1072,36 +1189,45 @@
     <i>file-<span class=url>URL</span></i>s.
     Force has no effect on other <i class=url>URL</i>s.
 
-  <ul><li>
-    To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
-    <ul>
-      <li>
-        If <var>url</var> does not have an <b>authority</b> then set its
-        <b>authority</b> token to (<b>authority</b> ε).
-      <li>
-        If <var>url</var> does not a <b>drive</b> then set its 
-        <b>path-root</b> token to (<b>path-root</b> <code>/</code>).
-    </ul>
-    </ul><ul>
+  <div class="dfn-scope +br">
+  <ul>
+    <li class=+br>
+      To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
+      <ul>
+        <li>
+          If <var>url</var> does not have an <b>authority</b> then set its
+          <b>authority</b> token to 
+          <span class=-nowrap>(<b>authority</b> ε)</span>.
+        <li>
+          If <var>url</var> does not have a <b>drive</b> then set its 
+          <b>path-root</b> token to 
+          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
+      </ul>
+    </li>
     <li>
       To <dfn>force</dfn> a <i>web-<span class=url>URL</span></i>
       <var>url</var>:
-    <ul>
-      <li>
-        If <var>url</var> does not have an <b>authority</b> 
-        <i cass=common>token</i>, or if is (<b>authority</b> ε) then let
-        <var>token</var> be the first <b>dir</b> or
-        <b>file</b> <i class=common>token</i> whose value is not ε. 
-        If no such <i class=common>token</i> exists, fail. 
-        Remove all <b>dir</b> or <b>file</b> <i class=common>token</i>s that
-        precede <var>token</var> and remove <var>token</var> as well. 
-        Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
-        an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
-        <var>auth</var>. 
-      <li>
-        Set the <b>path-root</b> of the <i class=url>URL</i> to 
-        <code>/</code>. 
-    </ul>
+      <ul>
+        <li>
+          If <var>url</var> has an <b>authority</b> token and the
+          <i>value</i> of the token is is not ε
+          — then return <var>url</var> as-is. 
+        <li>
+          Otherwise let <var>token</var> be the first <b>dir</b> or
+          <b>file</b> <i class=common>token</i> whose value is not ε. 
+          If no such <i class=common>token</i> exists, <strong>fail</strong>.
+        <li> 
+          Remove all <b>dir</b> or <b>file</b> <i class=common>token</i>s that
+          precede <var>token</var> and remove <var>token</var> as well. 
+        <li>
+          Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
+          an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
+          <var>auth</var>. 
+        <li>
+          Set the <b>path-root</b> token of <var>url</var> to
+          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
+      </ul>
+    </li>
   </ul>
   </div>
   <!--<div class=todo>
@@ -1110,15 +1236,28 @@
 
   <p>
     The <i>force</i> operation has some unpleasant mathematical properties
-    that will be discussed in the chapter 
+    with respect to the <i>goto</i> operations. It has similar issues
+    with <i>normalisation</i>, which will be discussed in the chapter 
     <a>Equivalences and Normalisation</a>. 
+
+  <h4>Non-Congruence</h4>
+  <p>
+    The <i>force</i> operation is not congruent with the <i>goto</i> operations.
+  <p class=-center>
+    <i class=op>force</i>
+    ( (<i class=op>force</i> <var>url<sub>1</sub></var>) <i class=op>goto</i>
+    (<i class=op>force</i> <var>url<sub>2</sub></var>) )  ≠  
+    <i class=op>force</i> (<var>url<sub>1</sub></var> 
+      <i class=op>goto</i> <var>url<sub>2</sub></var>)
+  <!-- <p>
+    An example is the case where
+    url1 is the URL that is represented by
+    http:// -->
 
   <div class=todo>
     Clean up the definition a bit. 
-    Plus, the properties can be mentioned here already. 
-    It breaks the monoid laws, IIRC.
-    But it is also not congruent with normalisation. 
-    Bah!
+    Mention force in the chapter on Normalisation. 
+    I may add a buch more inequalities here, too
   </div>
 
 
@@ -1135,9 +1274,11 @@
       <var>url<sub>2</sub></var> is defined to be:
     <ul>
       <li>
-        <var>url<sub>2</sub></var> <i class=op>~goto</i> <var>url<sub>1</sub></var>
-        — if <var>url<sub>2</sub></var> is a <i>base-<i class=url>URL</i></i> or
-        if <var>url<sub>1</sub></var> has a <b>fragment</b> <i class=common>token</i>.
+        <var>url<sub>2</sub></var> <i class=op>~goto</i>
+          <var>url<sub>1</sub></var>
+        — if <var>url<sub>2</sub></var> is a
+        <i>base-<span class=url>URL</span></i> or the
+        <i>order</i> of <var>url<sub>1</sub></var> is <b>fragment</b>.
       <li>
         <var>url<sub>1</sub></var> — otherwise. 
   </ul>
@@ -1151,8 +1292,8 @@
   <p>
     The <dfn>resolution</dfn> of <var>url1</var> against <var>url2</var> is
     defined to be the <i>pre-resolution</i> of <var>url1</var> against
-    <var>url2</var>, if it is not ε and its <i>order</i> is <b>scheme</b> or
-    <b>fragment</b>.
+    <var>url2</var> — if its <i>order</i> is <b>scheme</b> or
+    <b>fragment</b> and it is not ε. 
     Otherwise resolution <strong>fails</strong>. 
   </div>
 
@@ -1188,6 +1329,19 @@
   to right results in a set of terminating rewrite rules. 
   An <i class=url>URL</i> is in normal form if no more rewrite rules can be
   applied. 
+
+<div class=todo>
+  I like the idea of defining the concept of a normalisation function first, 
+  as a function that is congruent with the goto laws, then I'd have to do a
+  little bit extra to point out the relationship between equivalence classes
+  and normalisation.
+  <ul>
+  <li>norm ((norm url1) goto (norm url2)) = norm (url1 goto url2)
+  <li>norm ((norm url1) ~goto (norm url2)) = norm (url1 ~goto url2)
+  </ul>
+  But I do want to keep things accessible, so not go in too deep here.
+</div>
+
 
 <h3>Path Segment Normalisation</h3>
 <table class=grammar>
@@ -1233,6 +1387,9 @@
     <tr><td><b>port</b> ε <td> ≈ <td>ε
   </table>
 
+<div class=todo>
+  Oh, drive letter normalisation
+</div>
 
 <h3>Scheme-based Authority Normalisation</h3>
   <table>
@@ -1268,11 +1425,6 @@
       <td>・<td><b>authority</b> <var>xs</var>
   </table>
 
-
-<ul class=todo>
-  <li>norm ((norm url1) goto (norm url2)) = norm (url1 goto url2)
-  <li>norm ((norm url1) ~goto (norm url2)) = norm (url1 ~goto url2)
-</ul>
 </section>
 
 
@@ -1325,7 +1477,7 @@
 <h4>Mode Detection</h4>
   <p>
     The <i>percent-encode-mode</i> for a given <i class=url>URL</i>
-    <var>url</var>, and a manually supplied default mode
+    <var>url</var>, and a supplied default mode
     <var>supplied-mode</var> is defined to be:
     <ul>
       <li>
@@ -1391,13 +1543,15 @@
 <table id=percent-encode-sets>
   <col>
   <colgroup span=8>
-  <colgroup span=8>
+  <colgroup span=1>
+  <colgroup span=7>
   <colgroup span=6>
   <colgroup span=5>
   <tr>
     <th>
     <th colspan=8><b>u+20</b>–<b>u+27</b>
-    <th colspan=8><b>u+2F</b>–<b>u+40</b>
+    <th colspan=1><!-- <b>u+2F</b> -->
+    <th colspan=7><b>u+3A</b>–<b>u+40</b>
     <th colspan=6><b>u+5B</b>–<b>u+60</b>
     <th colspan=5><b>u+7B</b>–<b>u+7E</b>
     <th>
