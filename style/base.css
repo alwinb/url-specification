@@ -3,7 +3,13 @@
 
 html.debug {
   /* show the 1rem baseline rhythm */
-  background:repeating-linear-gradient(to bottom, #0000, #0000 calc(1rem - 1px), #ccc calc(1rem - 1px), #ccc 1rem, #0000 1rem);
+  background:repeating-linear-gradient(
+    to bottom,
+    var(--bgcolor, #0000),
+    var(--bgcolor, #0000) calc(1rem - 1px),
+    #ccc calc(1rem - 1px),
+    #ccc 1rem,
+    var(--bgcolor, #0000) 1rem);
 }
 
 html.debug * {
@@ -65,6 +71,9 @@ header,main,aside,article,footer,nav,div,dd,dt,fieldset,legend,figcaption,h3,h4,
 }
 .\+br {
   margin-bottom:1rem;
+}
+.\+br\/2 {
+  margin-bottom:.5rem;
 }
 .-screen {
   opacity:.2;
