@@ -172,8 +172,8 @@ section {
   margin-bottom:5rem;
 }
 h3 {
-  margin-top:1rem;
-  margin-bottom:1rem;
+  margin-top:1.5rem;
+  margin-bottom:.5rem;
   font-size:.89rem;
 }
 
@@ -193,7 +193,6 @@ sup, sub {
 sub, sup, a, var, dfn, code, b, i, h4, em, strong, abbr, .-caps,
 span.url, i.url, .-caps {
   line-height:0;
-  height:0;
 }
 
 
@@ -413,15 +412,15 @@ a {
 }
 dfn, i, a:hover {
 /*  text-decoration:underline;*/
-  --w:1px;
-  background:linear-gradient(to bottom,
-    #0000,
-    #0000 calc(1em),
-    currentColor calc(1em), 
-    currentColor calc(1em), 
-    currentColor calc(1em + var(--w)), 
-    #0000 calc(1em - var(--w)),
-    #0000 );
+  background-image:linear-gradient(to top,
+    #0001 1px,
+    currentColor 1px, 
+    currentColor 2px, 
+    #0000 2px);
+    background-size:100% calc(1em);
+    background-position:center;
+    background-repeat:no-repeat;
+
   text-shadow:
      2px 0px 0 var(--bgcolor),
      1px 0 0 var(--bgcolor),
