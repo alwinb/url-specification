@@ -43,7 +43,9 @@ function buildIndex (doc = document) {
   const dfns = doc.getElementsByTagName ('DFN')
   const index = Object.create (null)
   for (let dfn of dfns) {
-    let { block } = getContext (dfn)
+    const context = getContext (dfn)
+    if (!context) continue
+    let { block } = context
     let text = dfn.innerText.replace (/\s+/, ' ')
     // TODO support multiple dfns with same name
     index [text] = index [text]||[]
@@ -191,7 +193,7 @@ function main () {
       toolsDiv.classList.add ('-hidden')
       toolsDiv.innerHTML =''
       for (let entry of entries) {
-        //if (!entry.block || entry.block === block) return
+        if (!entry.block || entry.block === block) return
         const tip = entry.block.cloneNode(true)
         if (!tip.querySelector('h4'))
           toolsDiv.append ($('h4', text[0].toUpperCase () + text.slice(1)))

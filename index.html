@@ -160,6 +160,13 @@
       tagged value, denoted by (<var>type</var> <var>value</var>), where
       <var>type</var> is taken from a predefined set of
       <dfn>token-type</dfn>s.
+    The <i class=common>value</i> of a <i class=common>token</i> may be a
+    <i class=common>sequence</i> of
+    <i class=common>token</i>s itself, in which case the
+    <i class=common>token</i> may be referred
+    to as a <dfn>compound-token</dfn> for clarity.
+    <!--and the tokens present in its value may be referred to as
+    <dfn>sub-token</dfn>s.-->
     <!-- add to dfn index -->
     <!-- TODO I want to be able to add alt-name attributes to the dfn tags-->
     <div style=display:none><dfn>value</dfn></div>
@@ -168,18 +175,10 @@
     Both <i>token-type</i> constants and their corresponding
     <i class=common>token</i>-constructing operator are typeset in boldface.
     For example, <b class=noindex>scheme</b> denotes a <i>token-type</i>, whilst
-    (<b class=noindex>scheme</b> <var>value</var>) denotes a <i>token</i>.
-  <br>
-    Again, parentheses are used to disambiguate and as visual aides. 
-    They are not part of the <i class=common>token</i>-constructing operator. 
-  <p>
-    The <i class=common>value</i> of a <i class=common>token</i> may be a
-    <i class=common>sequence</i> of
-    <i class=common>token</i>s itself, in which case the
-    <i class=common>token</i> may be referred
-    to as a <dfn>compound-token</dfn> for clarity.
-    <!--and the tokens present in its value may be referred to as
-    <dfn>sub-token</dfn>s.-->
+    <span class=-nowrap>(<b class=noindex>scheme</b> <var>value</var>)</span>
+    denotes a <i>token</i>. Again, parentheses are used to disambiguate and as
+    visual aides. They are not part of the
+    <i class=common>token</i>-constructing operator. 
   <p>
     When a collection of <i class=common>token</i>s contains exactly one
     <i class=common>token</i> (<var>tag</var> <var>value</var>) for a given
@@ -353,8 +352,9 @@
     <dfn><span class=url>URL</span>-string</dfn> is a
     special kind of <i>string</i> that <em>represents</em> an
     <i class=url>URL</i></span>. Conversions between <i class=url>URL</i>s
-  and <i><span class=url>URL</span>-string</i>s are described in the sections on
-  <a href="#parsing">parsing</a> and <a href="#printing">printing</a>.
+  and <i class=common><span class=url>URL</span>-string</i>s are described in
+  the sections on <a href="#parsing">parsing</a>
+  and <a href="#printing">printing</a>.
 
   <div class=dfn-scope>
   <h4>URL</h4>
@@ -846,7 +846,7 @@
     <p>
       As such, collapsing the multiples of slashes, cannot be expressed within 
       the grammar. Instead, the <i>force</i> operation as defined in the 
-      chapter on <a>Reference Resolution</a> implements this behaviour. 
+      section on <a href=#reference-resolution>Reference Resolution</a> implements this behaviour. 
 
 </section>
 
@@ -914,12 +914,13 @@
     Reference Resolution as defined in this section does not involve
     <i><span class=url>URL</span>-string</i>s. It solely operates on
     <i class=url>URL</i>s as defined in the section
-    <a href=#model><span class=url>URL</span> Model</a> above.
+    <a href=#url-model><span class=url>URL</span> Model</a> above.
     In contrast with the previously
     mentioned sections in <abbr class=-caps>RFC</abbr> 3986 and in the
     <abbr class=-caps>WHATWG</abbr> standard, it does not do additional 
     normalisation, which is relegated to the section
-    <a>Equivalences and Normalisation</a> instead.
+    <a href=#equivalences-and-normalisation>Equivalences and Normalisation</a>
+    instead.
 
   <h3>Order and Prefix operations</h3>
 
@@ -1063,7 +1064,7 @@
   <div class="dfn-scope +br">
   <h4>Forced File URL</h4>
     <p class=-br>
-      To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
+      To <dfn class=noindex>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
       <ul>
         <li>
           If <var>url</var> does not have an <b>authority</b> then set its
@@ -1079,7 +1080,7 @@
   <div class="dfn-scope +br">
   <h4>Forced Web URL</h4>
     <p class=-br>
-      To <dfn>force</dfn> a <i>web-<span class=url>URL</span></i>
+      To <dfn class=noindex>force</dfn> a <i>web-<span class=url>URL</span></i>
       <var>url</var>:
       <ul>
         <li>
@@ -1196,20 +1197,21 @@
   <a href="https://tools.ietf.org/html/rfc3986#section-6.2">Normalization and 
   Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
   <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
-  particular normal form. The <abbr class=-caps>WHATWG</abbr> standard does, 
-  but it does so implicitly.
-<p>
+  particular normal form. The <abbr class=-caps>WHATWG</abbr> standard
+  does, however. 
+
+<!-- <p>
   I think it is nice to define the equivalences via a congruence relation.
-  The rules below are specified in such a way that directing them from left
-  to right results in a set of terminating rewrite rules. 
+  The equations that follow in this section can be directed from left
+  to right to obtain a set of terminating rewrite rules.
   An <i class=url>URL</i> is in normal form if no more rewrite rules can be
-  applied. 
+  applied.
 
 <div class=todo>
   I like the idea of redefining the the concept of a normalisation function
   first, aligning it with mathematical practice. Thus, define it as a function
-  that is congruent with the goto laws (this then, 
-  is &lsquo;URL algebra&rsquo;). 
+  that is congruent with the goto laws (this then,
+  is &lsquo;URL algebra&rsquo;).
   I may have to do a little bit extra to point out the relationship between
   equivalence classes and normalisation.
   <ul>
@@ -1217,12 +1219,40 @@
   <li>norm ((norm url1) ~goto (norm url2)) = norm (url1 ~goto url2)
   </ul>
   But I do want to keep things accessible, so not go in too deep here.
-</div>
+</div> -->
 
 
 <h3>Path Segment Normalisation</h3>
 
+<p>
+  Path segment normalisation involves the interpretation of
+  <i>dotted-segment</i>s. Colloquially, a single-dot segment has 
+  the meaning of &ldquo;select the current directory&rdquo;
+  whereas a double-dot segment has the meaning
+  of &ldquo;select the parent directory&rdquo;. 
+  Dotted segments are defined by the following rules, where
+  the addition of <code>%2e</code> and <code>%2E</code> has been motivated
+  by security concerns. Again this is in accordance with
+  the <abbr class=-caps>WHATWG</abbr> standard.
+</p>
 
+<div class="dfn-scope +br">
+<dfn style=display:none>dotted-segment</dfn>
+<table class=grammar>
+  <tr>
+    <td><dfn>dot</dfn>
+    <td> ::=
+    <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
+  <tr>
+    <td><dfn>dots</dfn> <td> ::= <td colspan=10> <i>dot</i>  <i>dot</i>
+</table>
+</div>
+
+<p>
+  Path equivalence is defined by the following equations.
+  The equations must be exhaustively applied from left-to-right
+  to normalise an <i class=url>URL</i>. 
+</p>
 
 <table class=grammar>
   <tr>
@@ -1249,36 +1279,25 @@
     <td><b>path-root</b> <var>x</var>・<b>file</b> <var>y</var>
     <td> ≈ <td><b>path-root</b> <var>x</var>
     <td> — <td> if <var>y</var> :: <i>dots</i>
-  <tr class=-inbetween>
-    <td colspan=10>where,
-  <tr>
-    <td>dot
-    <td> ::=
-    <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
-  <tr>
-    <td>dots <td> ::= <td colspan=10> <i>dot</i> <i>dot</i>
 </table>
 
 
-<h3>Authority Normalisation</h3>
+<h3>Authority and Drive Letter Normalisation</h3>
+<p>
+  Authority equivalence is defined by the following equations.
+  Like path normalisation,
+  the equations must be exhaustively applied from left-to-right
+  to normalise an <i class=url>URL</i>. 
+</p>
+
   <table>
     <tr><td><b>username</b> ε・<b>password</b> ε <td> ≈ <td>ε
     <tr><td><b>password</b> ε <td> ≈ <td>ε
     <tr><td><b>port</b> ε <td> ≈ <td>ε
-  </table>
-
-<h3>Drive Letter Normalisation</h3>
-  <table>
-    <tr><td><b>drive</b> (<var>alpha</var> <code>|</code>)
+    <tr><td><b>drive</b>  <var>x</var><code>|</code>
       <td> ≈ <td>
-      <b>drive</b> (<var>alpha</var> <code>:</code>)
+      <b>drive</b>  <var>x</var><code>:</code>
   </table>
-
-<div class=todo>
-  Pattern matching on strings in a way to allow the rule above. 
-  Maybe use the sequence concatenation operator, or use different notation
-  for string concatenation/ pattern matching. 
-</div>
 
 <h3>Scheme-based Authority Normalisation</h3>
   <table>
@@ -1397,9 +1416,16 @@
 
 <h3>Percent Encoding URLs</h3>
 
+<p>
+  Percent encoding can be extended from <i class=common>string</i>s to
+  <i class=url>URL</i>s by percent encoding a subset of the tokens
+  of an <i class=url>URL</i>. This means that instead of a single 
+  percent-encode-set, a <i>percent-encode-profile</i> is required as an
+  additional argument to the percent-encode-operation on <i class=url>URL</i>s.
+
 <h4>Percent Encode Profile</h4>
   <p>
-    A <dfn>percent-encode-profile</dfn> is mapping that maps 
+    A <dfn>percent-encode-profile</dfn> is a mapping that maps 
     each <i>token-type</i> in the set 
     { <b>username</b>, <b>password</b>, <b>host</b>, <b>dir</b>,
       <b>file</b>, <b>query</b>, <b>fragment</b> } 
@@ -1483,11 +1509,11 @@
 </script>
 
 <p>
-  Unfortunately, like parsing, the canonical percent-encoding
+  Unfortunately, like parsing, the percent-encoding
   of <span class=url>URL</span>s as specified by the 
   <abbr class=-caps>WHATWG</abbr> standard is scheme dependent. 
-  The consequence is that a <i class=common>percent-encode-profile</i> must be 
-  manually specified for scheme-less <span class=url>URL</span>s.
+  The consequence is that for scheme-less <span class=url>URL</span>s,
+  a <i class=common>percent-encode-profile</i> must be manually specified. 
 
 <h4>Encode Profile Selection</h4>
   <p>
@@ -1509,6 +1535,9 @@
     </ul>
 
 
+<div class=todo>
+  Wrap this up. 
+</div>
 
 </section>
 
@@ -1596,11 +1625,9 @@
 
 <div class=todo>
   <p>
-    This is very much under development. 
-  I like the idea of using a post-order traversal,
-  that seems most clean, and it can also be used to express other 
-  operations, a generic map and fold, which is useful for example
-  for percent coding.
+    This is under development. 
+  I like the idea of using a post-order traversal, or an algebraic fold,
+  that seems most clean.
 </div>
 
 <ul>
@@ -1624,8 +1651,8 @@
     Let output be the empty string, then, for each of the
     <i class=common>token</i>s (<var>tag</var>, <var>value</var>) of
     <var>url2</var> in tree order, convert the <i class=common>token</i> to a
-    <i class=common>string</i> according to the following table and append
-    it to the output.
+    <i class=common>string</i>, depending on its <i>type</i> according to the
+    following table, and append it to the output.
 </ul>
 
 <table id=printer>
