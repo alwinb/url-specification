@@ -1,7 +1,9 @@
-"use strict"
+"use strict"; { /* miniurl */
+
 const { setPrototypeOf:setProto, assign } = Object
 const log = console.log.bind (console)
 const raw = String.raw
+
 
 // Preliminaries
 // -------------
@@ -92,14 +94,14 @@ const resolve = (url1, url2) => {
 
 // ### The Force operation
 
-const force_f = url => {
+const forceFileUrl = url => {
   url = assign ({ }, url)
   if (url.host == null) url.host = ''
   if (url.drive == null) url.root = '/'
   return url
 }
 
-const force_w = url => {
+const forceWebUrl = url => {
   url = assign ({ }, url)
   let str = url.host
   const dirs = url.dirs ? url.dirs.slice () : []
@@ -118,14 +120,17 @@ const force_w = url => {
 const force = url => {
   const scheme = low (url.scheme)
   const s = scheme in specials
-  if (scheme === 'file') return force_f (url)
-  else if (s) return force_w (url)
+  if (scheme === 'file') return forceFileUrl (url)
+  else if (s) return forceWebUrl (url)
   else return url
 }
 
 
 // Printing
 // --------
+
+// Work in progress, using a post order traversal. 
+// I'd like to make that more clean
 
 const reduce = red => url => {
   let [hasCreds, hasAuth] = [false, false]
@@ -248,22 +253,25 @@ const normalise = url => {
 // --------------
 
 // ### Percent Encode Tables
+// This encodes the percent encode tables in
+// the spec, using bitfields. 
 
-// This is an encoding of the exact table in the spec,
-// Each set is identofied by a power of 2, 
-// to be used as bitflags
+let charInfo, isInSet
+{ 
+  
+// ### There are _nine_ distinct percent encode sets.
+// These are numbered from 1<<8 to 1<<0, so they 
+// can be used as bitmasks. 
 
-{
-const
-  user    = 1<<8, // aka userinfo
+const user = 1<<8,
   host    = 1<<7,
-  dir     = 1<<6, // aka path
-  dir_s   = 1<<5, // aka path_s
-  dir_ms  = 1<<4, // aka path_ms
-  dir_m   = 1<<3, // aka path_m
+  dir     = 1<<6,
+  dir_s   = 1<<5,
+  dir_ms  = 1<<4,
+  dir_m   = 1<<3,
   query   = 1<<2,
   query_s = 1<<1,
-  hash    = 1<<0
+  fragment = 1<<0
 
 const u20_u27 = [
 /* ( ) */ 0b111100111,
@@ -273,8 +281,7 @@ const u20_u27 = [
 /* ($) */ 0,
 /* (%) */ 0,
 /* (&) */ 0,
-/* (') */ 0b000000010,
-]
+/* (') */ 0b000000010 ]
 
 const u2f = [
 /* (/) */ 0b111111110, ]
@@ -303,48 +310,36 @@ const u7B_u7E = [
 /* (~) */ 0 ]
 
 const lookup = c => 
-  (32 <= c  && c <= 35 ) ? u20_u27 [c -  32] :
-  (c === 47            ) ? u2f     [c -  47] :
-  (58 <= c  && c <= 64 ) ? u3A_u40 [c -  58] :
-  (91 <= c  && c <= 96 ) ? u5B_u60 [c -  91] :
-  (123 <= c && c <= 126) ? u7B_u7E [c - 123] : 0
-
+  // Escape C0 controls, DEL and C1 controls
+  (c <= 31 || 127 <= c && c < 160) ? ~0 :
+  // Lookup tables
+  (0x20 <= c && c <= 0x27) ? u20_u27 [c - 0x20] :
+  (c === 0x2f            ) ? u2f     [c - 0x2f] :
+  (0x3a <= c && c <= 0x40) ? u3A_u40 [c - 0x3a] :
+  (0x5b <= c && c <= 0x60) ? u5B_u60 [c - 0x5b] :
+  (0x7b <= c && c <= 0x7e) ? u7B_u7E [c - 0x7b] : 
+  // Escape surrogate halves and non-characters
+  (0xD800 <= c && c <= 0xDFFF) ? ~0 :
+  (0xFDD0 <= c && c <= 0xFDEF || (c <= 0x10FFFF && ((c >> 1) & 0x7FFF) === 0x7FFF)) ? ~0 : 0
+  
 
 // ### Encode Profiles
 
-const [pass, file] = [user, dir]
+const [username, password, file] = [user, user, dir]
 const
-  generic = { user, pass, host, dir, file, query, hash },
-  minimal = { user, pass, host, dir:dir_m,  file:dir_m,  query, hash },
-  special = { user, pass, host, dir:dir_s,  file:dir_s,  query:query_s, hash },
-  minspec = { user, pass, host, dir:dir_ms, file:dir_ms, query:query_s, hash }
+  _generic = { username, password, host, dir, file, query, fragment },
+  _minimal = { username, password, host, dir:dir_m,  file:dir_m,  query, fragment },
+  _special = { username, password, host, dir:dir_s,  file:dir_s,  query:query_s, fragment },
+  _minspec = { username, password, host, dir:dir_ms, file:dir_ms, query:query_s, fragment }
 
-
-log (
-  lookup ('|'.charCodeAt(0) & generic.host),
-  lookup (' '.charCodeAt(0) & generic.host),
-  lookup ('!'.charCodeAt(0) & generic.host),
-)
-
-
-
-function charInfo (c) {
-  // Escape C0 controls, DEL and C1 controls
-  if (c <= 31 || 127 <= c && c < 160) return ~0
-  // Lookup tables for 32-35, 47, 58-64, 91-96, 123-126
-  if (32 <= c && c <= 35) return u20_u27 [c - 32]
-  if (c === 47) return u2f [c-47]
-  if (58 <= c && c <= 64) return u3A_u40 [c - 58]
-  if (91 <= c && c <= 96) return u5B_u60 [c - 91]
-  if (123 <= c && c <= 126) return u7B_u7E [c - 123]
-  // Escape surrogate halves and non-characters
-  if (0xD800 <= c && c <= 0xDFFF) return ~0
-  if (0xFDD0 <= c && c <= 0xFDEF || (c <= 0x10FFFF && ((c >> 1) & 0x7FFF) === 0x7FFF)) return ~0
-  // Don't escape anything else
-  return 0
+isInSet = function (cp, { name, minimal, special }) {
+  const profile = minimal && special ? _minspec :
+    special ? _special : minimal ? _minimal : _generic
+  return lookup (cp) & profile[name]
 }
 
 }
+
 
 // Parsing
 // -------
@@ -404,26 +399,24 @@ const
 
 function parse (input, mode = 'http') {
   let [_, scheme, rest, query, hash ] = phase1.exec (input)
-  let drive, drive2, auth, root, dirs, file, __
+  let match, drive, drive2, auth, root, dirs, file
 
   const type = (scheme || mode) .toLowerCase ()
   const s = type in specials
+  const _authPath = type === 'file' ? fAuthPath : s ? sauthPath : authPath
 
-  let match = 
-    ( type === 'file' ? fAuthPath
-    : s ? sauthPath
-    : authPath) .exec (rest)
-
-  if (match) [_, drive, auth, drive2, root, dirs, file] = match
-  else [_, root, dirs, file] = (s ? sPathExp : pathExp).exec (rest)
-
-  drive = drive2 ? drive2 : drive ? drive : null
-
+  if ((match = _authPath.exec (rest))) {
+    [_, drive, auth, drive2, root, dirs, file] = match
+    drive = drive2 ? drive2 : drive ? drive : null
+  }
+  else {
+    const _path = s ? sPathExp : pathExp;
+    [_, root, dirs, file] = _path.exec (rest)
+  }
   if (dirs) {
     dirs = (dirs = dirs.split (s ? /[/\\]/g : '/'), dirs)
     dirs.pop ()
   }
-
   const r = { scheme, drive, root, dirs, file, query, hash }
   return (auth != null) ? assign (r, parseAuth (auth)) : r
 }
@@ -467,22 +460,17 @@ function test (test) {
 // Test 
 // ----
 
-var  sample =  {
-    input: 'http:foo.com',
-    base: 'http://example.org/foo/bar',
-    href: 'http://example.org/foo/foo.com',
-    failure: undefined
-  }
-
-
-//log ({sample, input:parse(sample.base), result:test (sample)})
-
-
-module.exports = {
+const miniurl = {
   ord, upto, goto, _goto, isBase, preResolve, resolve, 
   print, parse,
-  parseResolveAndNormalise, test
+  parseResolveAndNormalise, test,
+  isInSet
 }
 
+if (typeof module === 'undefined')
+  globalThis.miniurl = miniurl
+else 
+  module.exports = miniurl
 
 
+/* end */ }
