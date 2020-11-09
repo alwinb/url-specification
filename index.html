@@ -8,7 +8,7 @@
   <title>URL Specification</title>
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
-  <script src="scripts/pct.js"></script>
+  <script src="miniurl/miniurl.js"></script>
   <script src="scripts/main.js"></script>
 </head>
 <body>
@@ -153,6 +153,7 @@
     parentheses are not part of a sequence-constructing operation. 
 
   <div class="dfn-scope +br">
+    <dfn style=display:none>type</dfn>
     <h4>Tokens</h4>
     <p>
       The word <dfn>token</dfn> is used throughout this specification to mean a
@@ -376,7 +377,7 @@
         <i class=common>token</i> per <i class=common>type</i>, 
         except for <b>dir</b> <i class=common>token</i>s, of which it may have
         any finite amount.
-      <li>
+      <li class=dfn-scope><dfn style=display:none>path-root-constraint</dfn>
         If an <i class=url>URL</i> has an <b>authority</b> or a
         <b>drive</b> <i class=common>token</i>, and it has a <b>dir</b> or a
         <b>file</b> token, then it also has a <b>path-root</b>
@@ -441,8 +442,12 @@
         <span class=url>URL</span> that is not <i>special</i>. -->
         A <dfn>web-scheme</dfn> is a <i class=common>string</i>
         <var>scheme</var> such that
-        <span class=-nowrap>lowercase (<var>scheme</var>) <td>::<td>
-            <code>http</code> | <code>https</code> | <code>ws</code> | 
+        <!-- <span class=-nowrap>lowercase (<var>scheme</var>)
+            :: <code>http</code> [<code>s</code>]
+             |  <code>ws</code> [<code>s</code>]
+             |   <code>ftp</code>. -->
+        <span class=-nowrap>lowercase (<var>scheme</var>) ::
+            <code>http</code> | <code>https</code> | <code>ws</code> |
             <code>wss</code> | <code>ftp</code>.
     </div>
 
@@ -459,6 +464,7 @@
 
 
     <div class=dfn-scope>
+      <dfn style=display:none>authority</dfn>
     <h4>Authority</h4>
     <p class=-br>
       An <dfn>Authority</dfn> is a sequence of tokens ordered by their type, 
@@ -634,11 +640,12 @@
       <i>file-<span class=url>URL</span></i>s,
       <i>web-<span class=url>URL</span></i>s, and generic
       <i class=url>URL</i>s at once.
-      The grammar is parameterised by a <i>parser-mode</i>.
-      Unsubscripted rules must be used in <b>generic-mode</b>. 
-      Whenever available, <span class=-caps>F</span>-subscripted rules must be
-      used in <b>file-mode</b> and 
-      <span class=-caps>S</span>-subscripted rules must be used both in
+      The grammar is parameterised by a <i>parser-mode</i>. 
+      Thus, it contains a number of rules that are modified depending on the
+      <i class=common>parser-mode</i>. Specifically, 
+      <span class=-nowrap><span class=-caps>F</span>-subscripted</span>
+      rules must be used in <b>file-mode</b> and 
+      <span class=-caps>S</span>-subscripted rules must be used in both
       <b>file-mode</b> and in <b>web-mode</b>. 
 
     <table class=grammar>
@@ -648,20 +655,21 @@
       <tr>
         <td>url 
         <td> ::= 
-        <td> [ scheme <code>:</code> ] (auth-path | path) [ <code>?</code> query ] [ <code>#</code> fragment ]
+        <td> [ scheme <code>:</code> ] (<i>auth-path</i> | <i>path</i>)
+          [ <code>?</code> query ] [ <code>#</code> fragment ]
       <tr>
-        <td>auth-path 
+        <td><dfn>auth-path</dfn> 
         <td> ::= 
         <td> s s authority [ path-root [ dir s ]* [ file ] ]
       <tr>
-      <td>path 
+      <td><dfn>path</dfn>
         <td> ::= 
         <td> [ path-root ] path-rel
 
       <tr class=-inbetween>
         <td colspan=3>Modified <i>auth-path</i> rule in <b>file-mode</b>:
       <tr>
-        <td>auth-path<sub>F</sub> 
+        <td>auth-path<sub>F</sub><dfn style=display:none>auth-path</dfn>
         <td> ::= 
         <td> auth-drive [ path-root [ dir s ]* [ file ] ]
 
@@ -687,7 +695,7 @@
         <td> ::= 
         <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
       <tr>
-        <td>path-root 
+        <td><dfn>path-root</dfn> 
         <td> ::= 
         <td> <i>s</i>
       <tr>
@@ -724,9 +732,9 @@
         <td> <i>any</i> \ { <code>#</code> }
 
       <tr class=-inbetween>
-        <td colspan=3>The <i class=common>character-set</i>s are
+        <td colspan=3>These <i class=common>character-set</i>s are
           modified in <b>file-mode</b> and in <b>web-mode</b>:
-      <tr><td>s<sub>S</sub> 
+      <tr><td>s<sub>S</sub> <dfn style=display:none>s</dfn>
         <td> ::= 
         <td> { <code>/</code>, <code>\</code> }
       <tr><td>pchar<sub>S</sub> <dfn style=display:none>pchar</dfn>
@@ -736,7 +744,7 @@
 
   <h3>Authority Grammar</h3>
     <table class=grammar>
-      <tr><td>authority 
+      <tr><td><dfn>authority</dfn> 
         <td> ::= 
         <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
       <tr><td>credentials 
@@ -818,7 +826,9 @@
       It is tempting to try to express this behaviour on the level of the
       grammar. For example one might consider using the following rule:
 
-    <p class="-inbetween -center">auth-path  :=  s* authority [ path-root [ dir s ]* [ file ] ]
+    <p class="-inbetween -center">auth-path  := 
+      <i>s</i>* <i>authority</i>
+        [ <i>path-root</i> [ dir <i>s</i> ]* [ file ] ]
 
     <p>
       However, the examples above <em>do</em> behave differently with 
@@ -911,7 +921,8 @@
     normalisation, which is relegated to the section
     <a>Equivalences and Normalisation</a> instead.
 
-    <h4>The Order of an <span class=url>URL</span></h4>
+  <h3>Order and Prefix operations</h3>
+
   <p>
     A property that is particularly useful is the <i>order</i> of an
     <span class=-nowrap><i class=url>URL</i>.</span>
@@ -922,6 +933,7 @@
     <i class=url>URL</i>.
 
   <div class="dfn-scope +br">
+  <h4>The Order of an <span class=url>URL</span></h4>
     <p class=-br>
       The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn class=fn>ord</dfn>
       <var>url</var>) is
@@ -933,9 +945,8 @@
         The <i class=common>type</i> of its first <i class=common>token</i>
         otherwise.
     </ul>
-  </div>
 
-  <div class="dfn-scope +br">
+  <h4>Order-Limited Prefix</h4>
     <p class=-br>
       The <dfn>order-limited prefix</dfn>
       (<var>url</var> <dfn class=op>upto</dfn> <var>order</var>)
@@ -953,6 +964,7 @@
     </ul>
   </div>
 
+  <h3>Goto Operations</h3>
   <p>
     Based on the <i class=common>order</i> and the
     <i class=common>order-limited prefix</i> one can define
@@ -992,20 +1004,6 @@
     or <em>url<sub>2</sub></em> otherwise.<br><br>
   </div>
 
-  <p>
-    Be aware that the <i>goto</i> operation does more than just 
-    sequence concatenation. It may create a <b>path-root</b> token to satisfy
-    the constraints of the <i class=url>URL</i> model. 
-    An example can be useful. If <var>url<sub>1</sub></var> is the
-    <i class=url>URL</i> that is represented by
-    <code>//host</code> and <var>url<sub>2</sub></var> is the
-    <i class=url>URL</i> represented
-    by <code>foo/bar</code> then <var>url<sub>1</sub></var> <i class=op>goto</i>
-    <var>url<sub>2</sub></var> is represented by
-    <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even though
-    neither <var>url<sub>1</sub></var> nor <var>url<sub>2</sub></var> has 
-    one.
-
   <h4>Goto Properties</h4>
   <p class=-br>
     The Goto operations have a number of pleasing mathematical properties, 
@@ -1038,7 +1036,23 @@
       <var>url<sub>2</sub></var>).
   </ul>
 
-  <h4>Force</h4>
+  <p>
+    Be aware that the <i>goto</i> operation does a bit more than 
+    sequence concatenation. In some cases it creates a <b>path-root</b>
+    token to satisfy the <i>path-root-constraint</i>
+    of the <i class=url>URL</i> model. 
+    An example can be useful. If <var>url<sub>1</sub></var> is the
+    <i class=url>URL</i> that is represented by
+    <code>//host</code> and <var>url<sub>2</sub></var> is the
+    <i class=url>URL</i> represented
+    by <code>foo/bar</code> then (<var>url<sub>1</sub></var> <i class=op>goto</i>
+    <var>url<sub>2</sub></var>) is represented by
+    <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even though
+    neither <var>url<sub>1</sub></var> nor <var>url<sub>2</sub></var> has 
+    one.
+
+
+  <h3>Forcing</h3>
   <p>
     There is an additional operation on <i class=url>URL</i>s called
     <dfn>force</dfn> that it is used as an error-recovery measure for
@@ -1047,8 +1061,8 @@
     Force has no effect on other <i class=url>URL</i>s.
 
   <div class="dfn-scope +br">
-  <ul>
-    <li class=+br>
+  <h4>Forced File URL</h4>
+    <p class=-br>
       To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
       <ul>
         <li>
@@ -1060,8 +1074,11 @@
           <b>path-root</b> token to 
           <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
       </ul>
-    </li>
-    <li>
+  </div>
+
+  <div class="dfn-scope +br">
+  <h4>Forced Web URL</h4>
+    <p class=-br>
       To <dfn>force</dfn> a <i>web-<span class=url>URL</span></i>
       <var>url</var>:
       <ul>
@@ -1085,27 +1102,30 @@
           <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
       </ul>
     </li>
-  </ul>
   </div>
   <!--<div class=todo>
     Make this clean
   </div>-->
 
+  <h4>Force Properties</h4>
   <p>
     The <i>force</i> operation has some unpleasant mathematical properties
-    with respect to the <i>goto</i> operations. It has similar issues
-    with <i>normalisation</i>, which will be discussed in the chapter 
-    <a>Equivalences and Normalisation</a>. 
-
-  <h4>Force Non-Properties</h4>
-  <p>
-    The <i>force</i> operation is not congruent with the <i>goto</i> operations.
+    with respect to the <i>goto</i> operations. 
   <p class="-center -nowrap">
     <i class=op>force</i>
     ((<i class=op>force</i> <var>url<sub>1</sub></var>)  <i class=op>goto</i> 
     (<i class=op>force</i> <var>url<sub>2</sub></var>))  ≠  
     <i class=op>force</i> (<var>url<sub>1</sub></var> 
        <i class=op>goto</i>  <var>url<sub>2</sub></var>)
+  <!-- <p class="-center -nowrap">
+    <i class=op>force</i>
+    (<var>url<sub>1</sub></var>  <i class=op>goto</i> 
+    (<i class=op>force</i> <var>url<sub>2</sub></var>))  ≠ 
+    <i class=op>force</i> (<var>url<sub>1</sub></var>
+       <i class=op>goto</i>  <var>url<sub>2</sub></var>) -->
+
+<!-- force (url1  goto  (force url2))  ≠  force (url1  goto  url2)  -->
+
   <!-- <p>
     An example is the case where
     url1 is the URL that is represented by
@@ -1123,6 +1143,9 @@
     Based on the <i>goto</i> and <i>force</i> operations defined above,
     it is now possible to define a <i>resolution</i> operation that is
     compatible with the <abbr class=-caps>WHATWG</abbr> standard. 
+    Note that resolution, defined as such, may return an <i class=url>URL</i> 
+    that is not a <i>base-<span class=url>URL</span></i>.
+    This is in accordance with the <abbr class=-caps>WHATWG</abbr> standard.
 
   <div class="dfn-scope +br">
     <dfn style=display:none>pre-resolve</dfn>
@@ -1140,12 +1163,6 @@
         <li>
           <var>url<sub>1</sub></var> — otherwise. 
     </ul>
-
-    <!--<p>
-      The condition 1. checks for the presence of a <b>fragment</b>
-      <i class=common>token</i> to emulate the behaviour of the
-      parse-and-resolve algorithm of the <abbr class=-caps>WHATWG</abbr>
-      standard.  -->
 
     <dfn style=display:none>resolve</dfn>
     <h4>Resolution</h4>
@@ -1166,10 +1183,6 @@
       <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>, 
       subsequently <i>force</i>d. 
   </div>
-  <p>
-    Note that resolution, defined as such, may return an <i class=url>URL</i> 
-    that is not a <i>base-<span class=url>URL</span></i>.
-    This is in accordance with the <abbr class=-caps>WHATWG</abbr> standard.
 
 </section>
 
@@ -1193,10 +1206,12 @@
   applied. 
 
 <div class=todo>
-  I like the idea of defining the concept of a normalisation function first, 
-  as a function that is congruent with the goto laws, then I'd have to do a
-  little bit extra to point out the relationship between equivalence classes
-  and normalisation.
+  I like the idea of redefining the the concept of a normalisation function
+  first, aligning it with mathematical practice. Thus, define it as a function
+  that is congruent with the goto laws (this then, 
+  is &lsquo;URL algebra&rsquo;). 
+  I may have to do a little bit extra to point out the relationship between
+  equivalence classes and normalisation.
   <ul>
   <li>norm ((norm url1) goto (norm url2)) = norm (url1 goto url2)
   <li>norm ((norm url1) ~goto (norm url2)) = norm (url1 ~goto url2)
@@ -1307,31 +1322,106 @@
 <section><h2>Percent Coding</h2>
 <!----------------------------->
 
-<div class=todo>
-  percent encoded bytes,
-  escape sequence, ao</div>
+<p>
+  The following defines the grammar for percent-coded strings. 
+</p>
 
-<h3>Percent Encoding</h3>
+<table class=grammar>
+  <tr>
+    <td>percent-coded-string
+    <td> ::=
+    <td>( <i>percent-coded-bytes</i>  |  <i>percent-code-invalid</i>  |  <i>uncoded</i> )*
+  <tr>
+    <td><dfn>percent-coded-bytes</dfn>
+    <td> ::=
+    <td> percent-code+
+  <tr>
+    <td><dfn>percent-code</dfn>
+    <td> ::=
+    <td> <code>%</code>  <i>hex-digit</i>  <i>hex-digit</i>
+  <tr>
+    <td><dfn>percent-code-invalid</dfn>
+    <td> ::=
+    <td> <code>%</code> [ <i>hex-digit</i> ]
+  <tr>
+    <td><dfn>uncoded</dfn>
+    <td> ::=
+    <td> <i>non-pct</i>+
+  <tr>
+    <td><dfn>non-pct</dfn>
+    <td> ::=
+    <td> <i>any</i> \ { <code>%</code> }
+</table>
+
+<p>
+  There is
+    an ambiguity in this grammar due to the overlap between <i>percent-code</i>
+    and <i>percent-code-invalid</i> combined with <i>uncoded</i>. 
+    This must be resolved by using the <i>percent-code</i> rule instead of
+    the <i>percent-code-invalid</i> rule whenever possible.
+
+
+<h3>Percent Decoding</h3>
+
+
+<p>
+  Percent decoding of strings is stratified into the following phases. 
+<ul>
+  <li>
+    Analysing the string into coded and uncoded parts. 
+  <li>
+    Converting the percent-coded-bytes to sequences of unicode characters.
+  <li>
+    Recomposing the string.
+</ul>
 
 <div class=todo>
-  I need to decide what parts of the following should be under printing, 
-  or under normalisation instead. 
-  The section on percent coding should only describe
-  encoding and decoding, and only make a mention of the concept of a percent
-  encode set. The other sections can refer to that and supply the encode sets. 
-  There's a bit more to it though, because I really like the
-  idea of having normalisation be congruent with the goto laws, and that might
-  fail with the percent-encode-modes as they are now. 
+  Wrap this up. 
+  Also this needs to discuss encoding overrides. 
 </div>
 
 
-<h3>Percent Encode Sets</h3>
+<h3>Percent Encoding Strings</h3>
 
-<!-- <div class=todo>
-  Allright, this is a bit clumsy, I don't like it much yet.
-</div> -->
+<h4>Percent Encode Set</h4>
+  <p>
+    A <dfn>percent-encode-set</dfn> is a subset of the
+    <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
+    that is used as a configuration argument to a
+    <i>percent-encode</i> operation on <i>string</i>s.
 
-<table id=percent-encode-sets>
+<p class=todo>
+  To <i>percent-encode</i> a given <i class=common>string</i> <var>string</var>,
+  using a given <i class=common>percent-encode-set</i> <var>encode-set</var>,
+  …
+
+<h3>Percent Encoding URLs</h3>
+
+<h4>Percent Encode Profile</h4>
+  <p>
+    A <dfn>percent-encode-profile</dfn> is mapping that maps 
+    each <i>token-type</i> in the set 
+    { <b>username</b>, <b>password</b>, <b>host</b>, <b>dir</b>,
+      <b>file</b>, <b>query</b>, <b>fragment</b> } 
+    to a <i>percent-encode-set</i>. 
+    A <i class=common>percent-encode-profile</i> is used as a configuration
+    argument to the <i>percent-encode</i> operation on <i class=url>URL</i>s.
+
+<div class="dfn-scope +br">
+<h4>Percent Encode Profiles</h4>
+  <p>
+  There are <em>four</em> distinct <i class=common>percent-encode-profile</i>s 
+  that are relevant to <i class=url>URL</i> printing. 
+  They are specified by the following tables. (A table can be selected by
+  clicking on one of the profile names below). 
+<p class=-center>
+  <dfn onclick="encodeTable.show({})">generic</dfn>,
+  <dfn onclick="encodeTable.show({special:true})">special</dfn>,
+  <dfn onclick="encodeTable.show({minimal:true})">minimal</dfn> and
+  <dfn onclick="encodeTable.show({special:true, minimal:true})">minimal-special</dfn>.
+</div>
+
+<div id=percent-encode-sets class=+br><table>
   <col>
   <colgroup span=8>
   <colgroup span=1>
@@ -1347,147 +1437,77 @@
     <th colspan=5><b>u+7B</b>–<b>u+7E</b>
     <th>
 </table>
-
-<script>
-  const [special, minimal] = [true, true]
-  const encodeSets = [
-    // { name:'url' },
-    { name:'userinfo' },
-    { name:'host' },
-    { name:'path' },
-    { name:'path', special },
-    { name:'path', special, minimal },
-    { name:'path', minimal },
-    { name:'query' },
-    { name:'query', special },
-    { name:'fragment' },
-  ]
-
-  const table = document.getElementById ('percent-encode-sets')
-  for (let x of encodeSets) {
-    const tr = $ ('tr')
-    let sub = x.minimal ? 'm' : ''
-    sub += x.special ? 's' : ''
-    let name = [x.name]
-    if (sub) name.push ('-' + sub)
-    tr.append ($('th', ...name))
-    table.append (tr)
-
-    for (let i=0x20; i<=0x7e; i++) {
-      // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
-      if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
-        const hs = isInSet (i, x)
-        const str = String.fromCharCode(i)
-        const code = $('code', str == ' ' ? ' ' : str)
-        code.title = 'u+'+i.toString(16).toUpperCase() 
-        const td = $('td', code)
-        if (!hs) td.classList.add ('-screen')
-        if (!hs) td.classList.add ('-screen')
-        tr.append(td)
-      }
-    }
-    tr.append($('td', '  '))
-    
-  }
-</script>
-
-<h3>Percent Decoding</h3>
-  <div class=todo>
-    <ul>
-      <li>
-        Decode to byte sequence
-      <li>
-        Decode to code point
-      <li>
-        Recompose string
-    </ul>
-  </div>
-
-
-
-<h3>Percent Coding Normal Forms</h3>
-
-<p>
-  Unfortunately, like parsing, <i>percent-encoding</i> is scheme-dependent. 
-  The consequence is that a <i>percent-encode-mode</i> must be 
-  manually supplied to specify the desired outcome for 
-  scheme-less <span class=url>URL</span>s.
-  The supplied <i class=common>percent-encode-mode</i> has no influence on
-  <i class=url>URL</i>s
-  that do have a <b>scheme</b>. 
-  
-
-<div class="dfn-scope" style=margin-bottom:.5rem>
-<h4>Encode Mode</h4>
-<p>
-  There are four distinct <dfn>percent-encode-mode</dfn>s:
-<p class="-center">
-  <dfn><b>generic</b></dfn>,  
-  <dfn><b>minimal</b></dfn>, 
-  <dfn><b>special</b></dfn>, and
-  <dfn><b>minimal-special</b></dfn>.
-<p>
 </div>
 
-<h4>Mode Detection</h4>
+<script>
+
+  const encodedTypes = ['username', 'password', 'host', 'dir', 'file', 'query', 'fragment']
+
+  class EncodeTableView {
+
+    constructor () {
+      this.div = document.getElementById ('percent-encode-sets')
+      this.template = this.div.firstChild
+    }
+
+    show ({ special = false, minimal = false } = { }) {
+      const table = this.template.cloneNode (true)
+      this.div.innerHTML = ''
+      this.div.append (table)
+      for (let name of encodedTypes) {
+        const tr = $ ('tr', $('th', $('b', name, '  ')))
+        for (let i=0x20; i<=0x7e; i++) {
+          // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
+          if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
+            const _has = miniurl.isInSet (i, { name, minimal, special })
+            const td = $('td', $('code', String.fromCharCode (i)))
+              if (!_has) td.classList.add ('-screen')
+              td.title = 'u+'+i.toString(16).toUpperCase ()
+            tr.append(td)
+          }
+        }
+        tr.append ($('td', '  '))
+        table.append (tr)
+      }
+      let title = []
+      if (minimal) title.push ('minimal')
+      if (special) title.push ('special')
+      title = title.join ('-')
+      table.append ($('caption', title ? title : 'generic', ' ', 'percent encode profile'))
+    }
+  }
+
+  const encodeTable = new EncodeTableView ()
+  encodeTable.show ({ })
+
+</script>
+
+<p>
+  Unfortunately, like parsing, the canonical percent-encoding
+  of <span class=url>URL</span>s as specified by the 
+  <abbr class=-caps>WHATWG</abbr> standard is scheme dependent. 
+  The consequence is that a <i class=common>percent-encode-profile</i> must be 
+  manually specified for scheme-less <span class=url>URL</span>s.
+
+<h4>Encode Profile Selection</h4>
   <p>
-    The <i>percent-encode-mode</i> for a given <i class=url>URL</i>
-    <var>url</var>, and a supplied default mode
-    <var>supplied-mode</var> is defined to be:
+    The <i>canonical-percent-encode-profile</i> for a given <i class=url>URL</i>
+    <var>url</var> and a default profile <var>supplied-profile</var>
+    is defined to be:
     <ul>
       <li>
-        <b>special</b> — if <var>url</var> is a
+        <i>special</i> — if <var>url</var> is a
         <i>file-<span class=url>URL</span></i> or if <var>url</var> is a
         <i>web-<span class=url>URL</span></i>,
       <li>
-        <b>generic</b> — if otherwise <var>url</var> is a
+        <i>generic</i> — if otherwise <var>url</var> is a
         <i>base-<span class=url>URL</span></i>,
       <li>
-        <b>minimal</b> — if otherwise <var>url</var> has a <b>scheme</b>, and
+        <i>minimal</i> — if otherwise <var>url</var> has a <b>scheme</b>, or
       <li>
-        <var>supplied-mode</var> — otherwise. 
+        <var>supplied-profile</var> — otherwise. 
     </ul>
 
-<p>
-  When percent encoding a <i>token</i>, the set of characters that must
-  be percent-encoded in the <i>token</i>'s <i>value</i> depends on the
-  <i>percent-encode-mode</i> <strong>and</strong> on the <i>token-type</i>. 
-
-<div class="dfn-scope +br">
-<h4>Percent Encode Set</h4>
-<p>
-  The <dfn>percent-encode-set</dfn> for a given <i class=common>token</i>
-  (<var>type</var> <var>value</var>) and a
-  <i class=common>percent-encode-mode</i> <var>mode</var>
-  is defined to be a subset of the
-  <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
-  as indicated by the table below, as follows:
-  <ul>
-    <li>
-      If <var>type</var> is <b>username</b> or <b>password</b> the encode set
-      is given by the row named <i>userinfo</i>.
-    <li>
-      If <var>type</var> is <b>host</b> then the encode set is given by the row
-      named <i>host</i>. 
-    <li>
-      If <var>type</var> is <b>dir</b> or <b>file</b> then the encode set is
-      given by the row named
-      <i class=rule>path</i> in <b>generic</b> mode,
-      <i class=rule>path-m</i> in <b>minimal</b> mode,
-      <i class=rule>path-s</i> in <b>special</b> mode and
-      <i class=rule>path-ms</i> in <b>minimal-special</b> mode. 
-    <li>
-      If <var>type</var> is <b>query</b> then the encode set is given by the
-      row named
-      <i class=rule>query-s</i> in <b>special</b> mode,
-      and by the row named <i class=rule>query</i> otherwise.  
-    <li>
-      If <var>type</var> is <b>fragment</b> then the encode set is given by the
-      row named <i>fragment</i>. 
-    <li>
-      Otherwise the encode set is the empty set. 
-  </ul>
-</div>
 
 
 </section>
@@ -1541,7 +1561,7 @@
   <li>Presence of credentials; credentials are deprecated. 
   <li>Invalid URL code points in specific tokens. But I want to limit that,
     so that the model can be used to store unencoded strings. I think then,
-    that this only applies to the host and the drive. 
+    that this only applies to the host and the drive.
   <li>Web URL with empty authority. I will allow absent authorities though. 
     Failing on them is relegated to the Force and Resolve operations. 
   <li>Invalid percent sequences
@@ -1596,6 +1616,8 @@
     <i>printable-<abbr class=-caps>ASCII</abbr></i>, depending on the 
     <i class=common>token</i>, as indicated by the percent coding table. 
 </ul>
+
+
 
 <ul>
   <li>

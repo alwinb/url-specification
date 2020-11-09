@@ -557,6 +557,15 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 /* Specific elements
 /* ============= */
 
+#percent-encode-sets {
+  caption-side: bottom;
+}
+
+#percent-encode-sets caption {
+  margin-top:.5rem;
+  margin-bottom:.5rem;
+}
+
 #percent-encode-sets colgroup:not(:first-child) {
   border-left:1px solid #0002;
 }
