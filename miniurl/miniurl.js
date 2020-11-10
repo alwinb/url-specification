@@ -4,6 +4,13 @@ const { setPrototypeOf:setProto, assign } = Object
 const log = console.log.bind (console)
 const raw = String.raw
 
+// Miniurl
+// =======
+// Miniurl is a very small example implementation
+// of the URL Specification
+// Like the specification itself it is not quite
+// complete yet, but it is coming along quite nicely.
+
 
 // Preliminaries
 // -------------
@@ -20,9 +27,9 @@ const tags = {
   user:2.1, pass:2.2,
   creds:2.5,
   host:2.6, port:2.7,
-  auth:3, drive:5,
-  root:6, dirs:7, file:8,
-  query:9, hash:10
+  auth:3, drive:4,
+  root:5, dirs:6, file:7,
+  query:8, hash:9
 }
 
 const specials = { http:1, https:2, ws:3, wss:4, ftp:5, file:6 }
@@ -103,16 +110,18 @@ const forceFileUrl = url => {
 
 const forceWebUrl = url => {
   url = assign ({ }, url)
-  let str = url.host
-  const dirs = url.dirs ? url.dirs.slice () : []
-  while (!str && dirs.length) str = dirs.shift ()
-  if (!str) { str = url.file; delete url.file }
-  if (str) {
-    const auth = parseAuth (str)
-    auth.dirs = dirs
-    assign (url, auth)
+  if (!url.host) {
+    let str = url.host
+    const dirs = url.dirs ? url.dirs.slice () : []
+    while (!str && dirs.length) str = dirs.shift ()
+    if (!str) { str = url.file; delete url.file }
+    if (str) {
+      const auth = parseAuth (str)
+      auth.dirs = dirs
+      assign (url, auth)
+    }
+    else throw new Error ('Cannot force <'+print(url)+'>')
   }
-  else throw new Error ('Cannot force <'+print(url)+'>')
   url.root = '/'
   return url
 }
@@ -205,9 +214,15 @@ const dots = seg =>
 
 const normalise = url => {
 
+  const r = assign ({}, url)
+
+  // ### Scheme normalisation
+
+  const scheme = low (r.scheme)
+  r.scheme = scheme
+
   // ### Authority normalisation
 
-  const r = assign ({}, url)
   if (r.pass === '') delete r.pass
   if (!r.pass && r.user === '') delete r.user
   if (r.port === '') delete r.port
@@ -235,7 +250,6 @@ const normalise = url => {
 
   // ### Scheme-based authority normalisation
 
-  const scheme = low (url.scheme)
   if (url.port === 80 && (scheme === 'http' || scheme === 'ws'))
     delete r.port
   else if (url.port === 443 && (scheme === 'https' || scheme === 'wss'))
@@ -252,16 +266,13 @@ const normalise = url => {
 // Percent Coding
 // --------------
 
-// ### Percent Encode Tables
-// This encodes the percent encode tables in
-// the spec, using bitfields. 
+// ### Percent Encode Sets
 
-let charInfo, isInSet
-{ 
+let charInfo, isInSet; { 
   
-// ### There are _nine_ distinct percent encode sets.
-// These are numbered from 1<<8 to 1<<0, so they 
-// can be used as bitmasks. 
+// There are _nine_ distinct percent encode sets in the spec.
+// These are represented here by numbers 1<<8 to 1<<0, so that
+// they can be used as bitmasks. 
 
 const user = 1<<8,
   host    = 1<<7,
@@ -272,6 +283,8 @@ const user = 1<<8,
   query   = 1<<2,
   query_s = 1<<1,
   fragment = 1<<0
+
+// Lookup tables
 
 const u20_u27 = [
 /* ( ) */ 0b111100111,
@@ -322,7 +335,6 @@ const lookup = c =>
   (0xD800 <= c && c <= 0xDFFF) ? ~0 :
   (0xFDD0 <= c && c <= 0xFDEF || (c <= 0x10FFFF && ((c >> 1) & 0x7FFF) === 0x7FFF)) ? ~0 : 0
   
-
 // ### Encode Profiles
 
 const [username, password, file] = [user, user, dir]
@@ -340,6 +352,9 @@ isInSet = function (cp, { name, minimal, special }) {
 
 }
 
+const percentEncode = (url, { minimal, special }) =>
+  null // TODO
+  
 
 // Parsing
 // -------
@@ -349,7 +364,9 @@ isInSet = function (cp, { name, minimal, special }) {
 const TRIM = /^[\x00-\x20]+|[\x00-\x20]+$|[\t\n\r]+/g
 const preprocess = input => input.replace (TRIM, '')
 
-// ### URL Parser
+// ### Grammar
+// This does not follow the spec exactly,
+// it uses three passes, instead
 
 const group = _ => '(?:' + _ + ')'
 const opt   = _ => '(?:' + _ + ')?'
@@ -364,7 +381,7 @@ const
 
 const
   auth     = raw `[/]{2}([^/]*)`,
-  fauth    = raw `(\[[:.0-9a-fA-F]*\]|[^\0\t\n\r #/:<>?@[\\\]^]*)`,
+  port     = '[:]([0-9]*)',
   drive    = raw `([a-zA-Z][|:])`,
   root     = raw `([/])`,
   dirs     = raw `(.*[/])`,
@@ -372,9 +389,17 @@ const
   path     = opt (root) + opt (dirs) + opt (file)
 
 const
-  authpath = dummy + auth + dummy + opt (root + opt (dirs) + opt (file)),
-  authdrive = group ('[/]{0,2}' + drive + '|' + '[/]{2}' + fauth + opt ('[/]' + drive)),
-  fauthpath = authdrive + opt (root + opt (dirs) + opt (file))
+  user     = '([^:]*)',
+  pass     = '[:](.*)',
+  fhost    = raw `(\[[:.0-9a-fA-F]*\]|[^\0\t\n\r #/:<>?@[\\\]^]*)`,
+  host     = raw `(\[[:.0-9a-fA-F]*\]|[^\0\t\n\r #/:<>?@[\\\]^]+)`,
+  creds    = user + opt (pass) + '[@]'
+
+const
+  authpath  = dummy + auth + dummy + opt (root + opt (dirs) + opt (file)),
+  authdrive = group ('[/]{0,2}' + drive + '|' + '[/]{2}' + fhost + opt ('[/]' + drive)),
+  fauthpath = authdrive + opt (root + opt (dirs) + opt (file)),
+  authExp   = Rexp (opt (creds) + host + opt (port))
 
 const   phase1  = Rexp (opt (scheme) + rest + opt (search) + opt (hash))
 const  pathExp  = Rexp (path)
@@ -382,18 +407,6 @@ const sPathExp  = Rexp (path .replace(/[/]/g, raw `/\\`))
 const authPath  = Rexp (authpath)
 const sauthPath = Rexp (authpath .replace(/[/]/g, raw `/\\`))
 const fAuthPath = Rexp (fauthpath .replace(/[/]/g, raw `/\\`))
-
-
-// ### Authority Parser
-
-const
-  user = '([^:]*)',
-  pass = '[:](.*)',
-  host = raw `(\[[:.0-9a-fA-F]*\]|[^\0\t\n\r #/:<>?@[\\\]^]+)`,
-  creds = user + opt (pass) + '[@]',
-  port = '[:]([0-9]*)',
-  //
-  authExp = Rexp (opt (creds) + host + opt (port))
 
 // ### Putting it together
 
@@ -443,9 +456,7 @@ function parseAuth (input) {
 const parseResolveAndNormalise = (input, baseUrl = { }) => {
   input = preprocess (input)
   const url = parse (input, baseUrl.scheme || 'http')
-  const resolved = force (resolve (url, baseUrl))
-  // todo: normalise
-  return normalise (resolved)
+  return normalise (force (resolve (url, baseUrl)))
 }
 
 function test (test) {
@@ -462,7 +473,7 @@ function test (test) {
 
 const miniurl = {
   ord, upto, goto, _goto, isBase, preResolve, resolve, 
-  print, parse,
+  parse, normalise, print,
   parseResolveAndNormalise, test,
   isInSet
 }
