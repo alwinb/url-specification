@@ -55,8 +55,9 @@
     The goals of this document are,
   <ul class=-prose>
     <li>
-      To provide a modular, concise formal specification that is compatible
-      with, and covers all of the <a href="https://url.spec.whatwg.org/"
+      To provide a modular, concise formal specification of
+      <span class=url>URL</span>s that is behaviourally equivalent with, and covers
+      all of the <a href="https://url.spec.whatwg.org/"
       ><abbr class=-caps>WHATWG-URL</abbr> standard</a> with the one exception
       being their specification of the web <abbr class=-caps>API</abbr>'s
       setters and the url-encoded form format.
@@ -98,8 +99,11 @@
       <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.
     <li>
       This document is licensed under a
-      <a href="https://creativecommons.org/licenses/by/4.0/">
-      Creative Commons - <abbr class=-caps>CC BY</abbr> 4.0</a> license. 
+      <a href="https://creativecommons.org/licenses/by-sa/2.0/">
+      Creative Commons - <abbr class=-caps>CC BY-SA</abbr> 2.0</a> license. 
+    <li>
+      The development of this specification can be discussed on
+      <a href="https://github.com/alwinb/url-specification">GitHub</a>. 
   </ul>
 </section>
 
@@ -108,7 +112,7 @@
 <section class=-short><h2 class=-toc-exclude>Structure of this document</h2>
 <!----------------------------->
   <p>
-    As of this writing, this document has a compact format that is focused
+    As of this writing, this specification has a compact format that is focused
     specifically on the definition and specification of <span
      class=url>URL</span>s and operations on <span class=url>URL</span>s. 
     It does not include a discussion of their history or their use in
@@ -189,7 +193,7 @@
     S := (<b class=noindex>dir</b> <var>x</var>・<b
        class=noindex>file</b> <var>y</var>・<b 
        class=noindex>query</b> 
-    <var>z</var>), the prase
+    <var>z</var>), the phrase
     &ldquo;the <b class=noindex>query</b> of S&rdquo; identifies the
     <i class=common>value</i> <var>z</var> whereas the phrase &ldquo;the
     <b class=noindex>query</b> <i class=common>token</i> of
@@ -353,8 +357,8 @@
     special kind of <i>string</i> that <em>represents</em> an
     <i class=url>URL</i></span>. Conversions between <i class=url>URL</i>s
   and <i class=common><span class=url>URL</span>-string</i>s are described in
-  the sections on <a href="#parsing">parsing</a>
-  and <a href="#printing">printing</a>.
+  the sections <a href="#parsing">Parsing</a>
+  and <a href="#printing">Printing</a>.
 
   <div class=dfn-scope>
   <h4>URL</h4>
@@ -558,11 +562,15 @@
       strings.
   </ul>-->
 
-  <p>Parsing is stratified into the following phases:
+  <p>
+    Parsing is the process of converting an
+    <i><span class=url>URL</span>-string</i> to an <i class=url>URL</i>. 
+    <br>
+    Parsing is stratified into the following phases:
 
   <ol>
     <li>Preprocessing.
-    <li> Selecting the parser mode.
+    <li> Selecting a parser mode.
     <li> Parsing.
     <li> Decoding and parsing the host.
   </ol>
@@ -765,7 +773,7 @@
       <tr><td><dfn>opaque-host</dfn> 
         <td> ::= 
         <td> <i>hchar</i>+
-      <tr><td>port 
+      <tr><td><dfn>port</dfn> 
         <td> ::= 
         <td> ε | <i>digit</i>+
 
@@ -795,7 +803,7 @@
     section of <abbr class=-caps>RFC</abbr> 3986. 
 
 
-  <h3>Syntax Tree</h3>
+  <h3>URL Model</h3>
   <div class=todo>
     The grammar and the model, are very closely related. 
     (So close even that I'm pondering if I can merge them). 
@@ -906,7 +914,7 @@
     Resolution</a> of <abbr class=-caps>RFC</abbr> 3986. 
     The operations that are defined in this section are used in a subsequent
     chapter to accurately describe the behaviour of a
-    <i>parse-resolve-and-normalise</i> algorithm that is referred to as the
+    <em>parse-resolve-and-normalise</em> algorithm that is referred to as the
     &ldquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
       <span class=url>URL</span> parser</a>&rdquo;
     in the <abbr class=-caps>WHATWG URL</abbr> standard.
@@ -1084,9 +1092,12 @@
       <var>url</var>:
       <ul>
         <li>
+          Set the <b>path-root</b> token of <var>url</var> to
+          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
+        <li>
           If <var>url</var> has an <b>authority</b> token and the
           <i>value</i> of the token is is not ε
-          — then return <var>url</var> as-is. 
+          — then return.
         <li>
           Otherwise let <var>token</var> be the first <b>dir</b> or
           <b>file</b> <i class=common>token</i> whose value is not ε. 
@@ -1098,9 +1109,6 @@
           Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
           an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
           <var>auth</var>. 
-        <li>
-          Set the <b>path-root</b> token of <var>url</var> to
-          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
       </ul>
     </li>
   </div>
@@ -1134,7 +1142,6 @@
 
   <div class=todo>
     Clean up the definition a bit. 
-    Mention force in the chapter on Normalisation. 
     I may add a buch more inequalities here, too
   </div>
 
@@ -1159,8 +1166,8 @@
           <var>url<sub>2</sub></var> <i class=op>~goto</i>
             <var>url<sub>1</sub></var>
           — if <var>url<sub>2</sub></var> is a
-          <i>base-<span class=url>URL</span></i> or the
-          <i>order</i> of <var>url<sub>1</sub></var> is <b>fragment</b>.
+          <i>base-<span class=url>URL</span></i> or 
+          <var>url<sub>1</sub></var>'s first token is a <b>fragment</b> token.
         <li>
           <var>url<sub>1</sub></var> — otherwise. 
     </ul>
@@ -1171,8 +1178,8 @@
       The <dfn>resolution</dfn> of <var>url<sub>1</sub></var> against
       <var>url<sub>2</sub></var> is defined to be the <i>pre-resolution</i> of
       <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
-      — if its <i>order</i> is <b>scheme</b> or <b>fragment</b> and it is not ε. 
-      Otherwise resolution <strong>fails</strong>. 
+      — if its first <i class=common>token</i> is a <b>scheme</b>– or a
+      <b>fragment</b> token. Otherwise resolution <strong>fails</strong>. 
   </div>
 
   <div class="dfn-scope +br">
@@ -1198,7 +1205,7 @@
   Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
   <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
   particular normal form. The <abbr class=-caps>WHATWG</abbr> standard
-  does, however. 
+  does, however implicitly. 
 
 <!-- <p>
   I think it is nice to define the equivalences via a congruence relation.
@@ -1342,24 +1349,48 @@
 <!----------------------------->
 
 <p>
-  The following defines the grammar for percent-coded strings. 
+  This section is analogous to the section 
+  <a href="https://tools.ietf.org/html/rfc3986#section-2">Characters</a> 
+  in <abbr class=-caps>RFC</abbr> 3986 and the section 
+  <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded
+    bytes</a> of the <abbr class=-caps>WHATWG</abbr> standard. 
+  On an abstract level, <em>percent encoding</em> provides a means to use 
+  use characters within <i class=common>token</i>s, that are not otherwise
+  allowed by the <i class=url>URL</i> grammar.
+  The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em>
+  specify the  semantics of percent-encoded-bytes in the components of an
+  <i class=url>URL</i> other than in the host. 
+  This effectively means that the interpretation of percent-encoded-bytes 
+  in other <i class=common>token</i>s is left unspecified, and any
+  percent-encoded bytes that are present <em>are not interpreted</em>.
+  However, it does prescribe that certain characters must be <em>encoded</em>… 
+
+<div class=todo>
+  I'd like to see if there's a way to add
+  this back in without breaking compatibility. Just making a mention of the
+  semantics and prescribing a percent-encoding-normal-form could do. 
+  It might be a better fit for the Normalisation section.
+</div>
+  
+<p>
+  The following defines the grammar for percent encoded strings.
 </p>
 
 <table class=grammar>
   <tr>
-    <td>percent-coded-string
+    <td>pct-encoded-string
     <td> ::=
-    <td>( <i>percent-coded-bytes</i>  |  <i>percent-code-invalid</i>  |  <i>uncoded</i> )*
+    <td>( <i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i> )*
   <tr>
-    <td><dfn>percent-coded-bytes</dfn>
+    <td><dfn>pct-encoded-bytes</dfn>
     <td> ::=
-    <td> percent-code+
+    <td> <i>pct-encoded-byte</i>+
   <tr>
-    <td><dfn>percent-code</dfn>
+    <td><dfn>pct-encoded-byte</dfn>
     <td> ::=
     <td> <code>%</code>  <i>hex-digit</i>  <i>hex-digit</i>
   <tr>
-    <td><dfn>percent-code-invalid</dfn>
+    <td><dfn>pct-invalid</dfn>
     <td> ::=
     <td> <code>%</code> [ <i>hex-digit</i> ]
   <tr>
@@ -1374,22 +1405,24 @@
 
 <p>
   There is
-    an ambiguity in this grammar due to the overlap between <i>percent-code</i>
-    and <i>percent-code-invalid</i> combined with <i>uncoded</i>. 
-    This must be resolved by using the <i>percent-code</i> rule instead of
-    the <i>percent-code-invalid</i> rule whenever possible.
+    an ambiguity in this grammar due to the overlap between
+    <i>pct-encoded-byte</i>
+    and <i>pct-invalid</i> combined with <i>uncoded</i>. 
+    This must be resolved by using the <i>pct-encoded-byte</i> rule instead of
+    the <i>pct-invalid</i> rule whenever possible.
 
 
-<h3>Percent Decoding</h3>
-
+<h3>Percent Decoding Strings</h3>
 
 <p>
   Percent decoding of strings is stratified into the following phases. 
 <ul>
   <li>
-    Analysing the string into coded and uncoded parts. 
+    Analysing the string into <i>pct-encoded-bytes</i>, <i>pct-invalid</i> and 
+    <i>uncoded</i> parts according to the grammar in the previous subsection.
   <li>
-    Converting the percent-coded-bytes to sequences of unicode characters.
+    Converting the percent-coded-bytes to sequences of unicode characters,
+    whilst leaving the <i>pct-invalid</i> and <i>uncoded</i> parts unmodified.
   <li>
     Recomposing the string.
 </ul>
@@ -1402,6 +1435,12 @@
 
 <h3>Percent Encoding Strings</h3>
 
+<p>
+  To <i>percent-encode</i> a <i class=common>string</i>, a set of 
+  <i class=common>character</i>s must be provided as an argument to specify
+  <em>which</em> <i class=common>character</i>s are to be
+  <i>percent-encode</i>d. Such a set is called a <i>percent-encode-set</i>.
+
 <h4>Percent Encode Set</h4>
   <p>
     A <dfn>percent-encode-set</dfn> is a subset of the
@@ -1410,18 +1449,26 @@
     <i>percent-encode</i> operation on <i>string</i>s.
 
 <p class=todo>
+  I'm not entirely sure about restricting the encode sets to printable ASCII. 
+  In any case, the additional 'non-url codepoints' must be encoded. But It makes
+  sense to mandate that and not make it configurable via the encode set.
+  …
+
+<p class=todo>
   To <i>percent-encode</i> a given <i class=common>string</i> <var>string</var>,
   using a given <i class=common>percent-encode-set</i> <var>encode-set</var>,
   …
+
 
 <h3>Percent Encoding URLs</h3>
 
 <p>
   Percent encoding can be extended from <i class=common>string</i>s to
-  <i class=url>URL</i>s by percent encoding a subset of the tokens
-  of an <i class=url>URL</i>. This means that instead of a single 
-  percent-encode-set, a <i>percent-encode-profile</i> is required as an
-  additional argument to the percent-encode-operation on <i class=url>URL</i>s.
+  <i class=url>URL</i>s by percent encoding the tokens' 
+  <i class=common>value</i>s of an <i class=url>URL</i>. This means that instead
+  of a single <i class=common>percent-encode-set</i>,
+  a <i>percent-encode-profile</i> is required as an argument to the
+  percent-encode-operation on <i class=url>URL</i>s.
 
 <h4>Percent Encode Profile</h4>
   <p>
@@ -1437,9 +1484,9 @@
 <h4>Percent Encode Profiles</h4>
   <p>
   There are <em>four</em> distinct <i class=common>percent-encode-profile</i>s 
-  that are relevant to <i class=url>URL</i> printing. 
-  They are specified by the following tables. (A table can be selected by
-  clicking on one of the profile names below). 
+  that are relevant for this specification. 
+  They are specified by the following tables. A table can be selected by
+  clicking on one of the profile names below. 
 <p class=-center>
   <dfn onclick="encodeTable.show({})">generic</dfn>,
   <dfn onclick="encodeTable.show({special:true})">special</dfn>,
@@ -1510,8 +1557,7 @@
 
 <p>
   Unfortunately, like parsing, the percent-encoding
-  of <span class=url>URL</span>s as specified by the 
-  <abbr class=-caps>WHATWG</abbr> standard is scheme dependent. 
+  of <span class=url>URL</span>s is scheme dependent. 
   The consequence is that for scheme-less <span class=url>URL</span>s,
   a <i class=common>percent-encode-profile</i> must be manually specified. 
 
@@ -1550,7 +1596,7 @@
   The <abbr class=-caps>WHATWG</abbr> makes a distinction between
   <i class=noindex>validation-errors</i> and <i class=noindex>failures</i>.
   As such, the <em>validity</em> of an <span class=url>URL</span>
-  is a three-state concept. There is accept, accepts-with-notice, or reject. 
+  is a three-state concept. There is accept, accepts-with-warnings, or reject. 
   This distinction can be made within the parser, the model, and the 
   operations. 
 
@@ -1559,15 +1605,12 @@
 </div>
 
 <h3>Parser</h3>
-<p class=-br>
-  The parser <em>can</em> reject. There are <i>string</i>s that are not URL-strings. 
-  <br>This can happen due to the following rules:
-<ul>
-  <li>authority, due to
-  <li>port – non-digit in port
-  <li>host – empty or forbidden code points
-  <li>ip6-address – 
-</ul>
+  <p>
+    The parser <em>can</em> reject. There <em>are</em>
+    <i class=common>string</i>s that are not <span class=url>URL</span>-strings.
+    <br>This can happen within the <i>authority</i>, <i>port</i>, <i>host</i>
+    and <i>ip6-address</i> rules. 
+
 <p class=-br>
   It can accept with validation warnings,
 <ul>
@@ -1579,9 +1622,11 @@
   <li>Invalid escape sequences
   <li>Any credentials at all
 </ul>
+<p>It is possible to modify the grammar to arrive at a <em>strict</em>
+  URL grammar, fairly easily.
 
 <p>The host parser can reject on  (ao) invalid IPv4 address. 
-  It can accept-with-notice an IPv4 address that uses hexadecimal or octal
+  It can accept-with-warnings an IPv4 address that uses hexadecimal or octal
   notation.
 
 <h3>Model</h3>
@@ -1605,7 +1650,6 @@
 <div class=todo>
   Whenever force needs to be employed, a validation warning should be issued. 
   That means, I will have to add a small step that detects if this is the case. 
-  (By the way, it should always set the path root, that's not the case now).
   <br>
   Alright, it may be quite clean, to restrict the domain of these functions,
   and make that explicit, and then resort to forcing and recovery wherever 
