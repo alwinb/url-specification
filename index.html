@@ -1729,5 +1729,41 @@
 </section>
 
 
+<!------------------------->
+<section><h2>Concluding</h2>
+<!------------------------->
+
+<p>This final section specifies the behaviour of the 
+  <i>parse-resolve-and-normalise</i> operation that is referred to as the
+  &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
+  <span class=url>URL</span> parser</a>&rsquo;
+  in the <abbr class=-caps>WHATWG URL</abbr> standard.
+
+<div class=todo>
+  It's easy!<br>
+  parse-resolve-and-normalise (string, base) :=
+  <ul>
+  <li>preprocess string 
+  <li>detect the parser mode, with the fallback mode as indicated by the base
+  <li>parse the preprocessed string according to the grammar to obtain url1
+  <li>force resolve url1 against base
+  <li>normalise and percent encode the result. 
+</ul>  
+
+That results in an URL (model). 
+One can then wrap around that to describe the URL class of web browsers:
+
+<ul>
+  <li>the username and password accessors return ε if absent or the value of the
+    corresponding token otherwise
+  <li>the href accessor returns the printed URL
+  <li>…
+</ul>
+
+</div>
+
+</section>
+
+
 </body>
 </html>
