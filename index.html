@@ -48,28 +48,35 @@
   <p>
     This document provides a concise formal specification of
     <span class=url>URL</span>s and the language of
-    <span class=url>URL</span>s. It is a <em>reverse specification</em> of the
-    <a href="https://url.spec.whatwg.org/"><abbr class=-caps>WHATWG-URL</abbr>
+    <span class=url>URL</span>s. It is a <em>reverse specification</em> and a 
+    generalisation of the 
+    <a href="https://url.spec.whatwg.org/"><abbr class=-caps>WHATWG URL</abbr>
       standard</a>.
+    It aims to be fully compatible with the 
+    <abbr class=-caps>WHATWG</abbr> standard
+    but in addition, it specifies
+    elementary operations for reference resolution and it
+    provides a formal grammar. 
+      
   <p class=-inbetween>
     The goals of this document are,
   <ul class=-prose>
     <li>
       To provide a modular, concise formal specification of
-      <span class=url>URL</span>s that is behaviourally equivalent with, and covers
-      all of the <a href="https://url.spec.whatwg.org/"
-      ><abbr class=-caps>WHATWG-URL</abbr> standard</a> with the one exception
-      being their specification of the web <abbr class=-caps>API</abbr>'s
-      setters and the url-encoded form format.
+      <span class=url>URL</span>s that is behaviourally equivalent with, and 
+      covers all of the <a href="https://url.spec.whatwg.org/"
+      ><abbr class=-caps>WHATWG URL</abbr> standard</a> with the exception of
+      the web <abbr class=-caps>API</abbr>'s setters and the url-encoded
+      form format.
     <li>
       To define a general model for <span class=url>URL</span>s that can
       express relative references and to define reference resolution by means
-      of a number of elementary operations, in such a way that the end result
-      is compatible with the
-      <abbr class=-caps>WHATWG URL</abbr> standard.
+      of a number of elementary operations, in such a way that the end result is 
+      in agreement with the <abbr class=-caps>WHATWG</abbr> standard.
     <li>
-      To enable and support efforts <em>towards</em> a single
-      <strong><em>Unified <span class=url>URL</span> Standard</em></strong>
+      To enable and support efforts towards a single
+      <strong><em>Unified <span class=url style=font-style:italic>URL</span>
+        Standard</em></strong>
       that includes a normative specification of <span class=url>URL</span>
       handling by web browsers and that resolves the incompatibilities between
       <a href="https://tools.ietf.org/html/rfc3986"><abbr
@@ -77,11 +84,11 @@
       <a href="https://tools.ietf.org/html/rfc3987"><abbr
          class=-caps>RFC</abbr> 3987</a> and the
       <a href="https://url.spec.whatwg.org/"><abbr
-         class=-caps>WHATWG-URL</abbr> standard</a>.
-    <li>
+         class=-caps>WHATWG</abbr> standard</a>.
+    <!-- <li>
       To provide the authors of the <abbr class=-caps>WHATWG</abbr> standard
-      with a support document that they can use as a reference in their efforts
-      to standardise the behaviour of web browsers.
+      with a support document that is useful to them in their efforts to
+      understand and standardise the behaviour of web browsers. -->
   </ul>
 </section>
 
@@ -90,9 +97,12 @@
 <section class=-short>
 <h2 class=-toc-exclude>Status of this document</h2>
 <!----------------------------->
+  <p class=note>
+    This is a development version of the specification. 
+
   <ul>
     <li>
-      This is version 0.2.0 of the specification. This is a development 
+      This is version 0.3.0 of the specification. This is a development 
       version. 
     <li>
       The versioning scheme is specified by

@@ -374,21 +374,23 @@ td:nth-child(2n+2) {
 }
 
 
-.todo::before {
-  content:'TODO';
-  color:var(--acolor);
-  font:var(--sans);
-  font-variant:all-small-caps;
-  font-size:.9rem;
-}
-.todo {
+.todo, .note {
   font:var(--sans-italic);
   margin-bottom:1rem;
   padding:.5rem;
   background-color:var(--highlight);
   font-size:.61rem;
 }
-
+.note::before, .todo::before {
+  content:'TODO ';
+  color:var(--acolor);
+  font:var(--sans);
+  font-variant:all-small-caps;
+  font-size:.9rem;
+}
+.note::before {
+  content:'NB ';
+}
 
 /* Typography for Idioms
 /* ============= */
