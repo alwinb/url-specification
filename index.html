@@ -335,7 +335,7 @@
     grouping and disambiguation. 
 
 
-  <h4>Pattern Matching</h4>
+  <h4>Pattern Testing</h4>
   <p>
     The shorthand notation <var>string</var> :: <var>rule</var> is used to
     express that a <i class=common>string</i> <var>string</var> can be
@@ -437,46 +437,6 @@
     </ul>
 
 
-    <div class="dfn-scope +br">
-    <h4>Base-URL</h4>
-    <p>
-      A <dfn>base-<span class=url>URL</span></dfn> is an <i>
-      <i class=url>URL</i></i> that has a <i><b>scheme</b></i>
-      and that has in addition, an <i><b>authority</b></i> or a
-      <i><b>path-root</b></i>.
-    </div>
-
-
-    <div class="dfn-scope +br">
-    <h4>Web-URL</h4>
-      <p class=-br>
-        A <dfn>web-<span class=url>URL</span></dfn> is an
-        <i class=url>URL</i> that has a <i>web-<b>scheme</b></i>.
-        <!-- A <dfn>non-special <span class=url>URL</span></dfn> is an
-        <span class=url>URL</span> that is not <i>special</i>. -->
-        A <dfn>web-scheme</dfn> is a <i class=common>string</i>
-        <var>scheme</var> such that
-        <!-- <span class=-nowrap>lowercase (<var>scheme</var>)
-            :: <code>http</code> [<code>s</code>]
-             |  <code>ws</code> [<code>s</code>]
-             |   <code>ftp</code>. -->
-        <span class=-nowrap>lowercase (<var>scheme</var>) ::
-            <code>http</code> | <code>https</code> | <code>ws</code> |
-            <code>wss</code> | <code>ftp</code>.
-    </div>
-
-    <div class="dfn-scope +br">
-    <h4>File-URL</h4>
-      <p>
-        A <dfn>file-<span class=url>URL</span></dfn> is an
-        <i class=url>URL</i> that has a <i>file-<b>scheme</b></i>.
-        A <dfn>file-<b>scheme</b></dfn> is a <i class=common>string</i>
-        <var>scheme</var> such that
-        <span class=-nowrap>lowercase (<var>scheme</var>) :: <code>file</code>. 
-    </div>
-
-
-
     <div class=dfn-scope>
       <dfn style=display:none>authority</dfn>
     <h4>Authority</h4>
@@ -538,21 +498,96 @@
     </ul>
   </div>
 
+
+  <h3>Types and Shapes</h3>
+
+  <div class="dfn-scope +br">
+  <h4>Web-URL</h4>
+    <p class=-br>
+      A <dfn>web-<span class=url>URL</span></dfn> is an
+      <i class=url>URL</i> that has a <i>web-<b>scheme</b></i>.
+      <!-- A <dfn>non-special <span class=url>URL</span></dfn> is an
+      <span class=url>URL</span> that is not <i>special</i>. -->
+      A <dfn>web-scheme</dfn> is a <i class=common>string</i>
+      <var>scheme</var> such that
+      <!-- <span class=-nowrap>lowercase (<var>scheme</var>)
+          :: <code>http</code> [<code>s</code>]
+           |  <code>ws</code> [<code>s</code>]
+           |   <code>ftp</code>. -->
+      <span class=-nowrap>lowercase (<var>scheme</var>) ::
+          <code>http</code> | <code>https</code> | <code>ws</code> |
+          <code>wss</code> | <code>ftp</code>.
+  </div>
+
+  <div class="dfn-scope +br">
+  <h4>File-URL</h4>
+    <p>
+      A <dfn>file-<span class=url>URL</span></dfn> is an
+      <i class=url>URL</i> that has a <i>file-<b>scheme</b></i>.
+      A <dfn>file-<b>scheme</b></dfn> is a <i class=common>string</i>
+      <var>scheme</var> such that
+      <span class=-nowrap>lowercase (<var>scheme</var>) :: <code>file</code>. 
+  </div>
+
+  <div class="dfn-scope +br">
+  <h4>Base-URL</h4>
+    <p>
+      A <dfn>base-<span class=url>URL</span></dfn> is an <i>
+      <i class=url>URL</i></i> that has a <b>scheme</b>
+      and that has in addition, an <b>authority</b> or a
+      <b>path-root</b>.
+    </div>
+
+  <div class="dfn-scope +br">
+  <h4>Resolved-URL</h4>
+    <p>
+      A <dfn>resolved-<span class=url>URL</span></dfn> is an <i>
+      <i class=url>URL</i></i> whose first token is either a <b>scheme</b>
+      <i class=common>token</i> or a <b>fragment</b> <i class=common>token</i>. 
+    </div>
+
+
+
   <h3>Additional Constraints</h3>
-  <p class=-br>
-    If an <i class=url>URL</i> <var>url</var> has a <b>scheme</b> then 
-    it is subject to two additional constraints:
+    <p class=-br>
+      If an <i class=url>URL</i> <var>url</var> has a <b>scheme</b> then 
+      it is subject to additional constraints:
     <ul>
-  <li>
-    If <var>url</var> is <strong>not</strong> a
-    <i>file-<span class=url>URL</span></i> 
-    then it must not have a <b>drive</b> <i class=common>token</i>.
-  <li>
-    If <var>url</var> <strong>is</strong> a 
-    <i>file-<span class=url>URL</span></i>, and it has an <b>authority</b>,
-    then the authority must not contain a <b>username</b>, <b>password</b> or
-    <b>port</b>.
-</ul>
+      <li>
+        If <var>url</var> is a
+        <i>web-<span class=url>URL</span></i> that has an
+        <b>authority</b>, then it must not be ε.
+      <li>
+        If <var>url</var> is <strong>not</strong> a
+        <i>file-<span class=url>URL</span></i> 
+        then it must not have a <b>drive</b> <i class=common>token</i>.
+      <li>
+        If <var>url</var> <strong>is</strong> a 
+        <i>file-<span class=url>URL</span></i>, and it has an <b>authority</b>,
+        then the authority must not contain a <b>username</b>, <b>password</b>
+        or <b>port</b>.
+    </ul>
+
+
+  <h3>Strict URLs</h3>
+  <p class=todo>This is work in progress
+  <p class=-br>The following validation warnings apply:</p>
+  <ul>
+    <li>
+      A valid URL must not have credentials; credentials are deprecated. 
+    <li>
+      A valid URL must not have a <b>drive</b> <var>drive</var> such that
+      <var>drive</var> :: alpha <code>|</code>. 
+    <li>
+      A valid URL must not contain tokens that have values that contain invalid
+      percent-encode sequences. 
+    <li>
+      Non-URL code points in tokens are allowed, so that the model can be used
+      be used to store unencoded strings. 
+      I think that this then must only be checked with the host
+  </ul>
+
+
 </section>
 
 
@@ -682,7 +717,7 @@
       <tr>
       <td><dfn>path</dfn>
         <td> ::= 
-        <td> [ path-root ] path-rel
+        <td> [ path-root ] [ dir s ]* [ file ]
 
       <tr class=-inbetween>
         <td colspan=3>Modified <i>auth-path</i> rule in <b>file-mode</b>:
@@ -702,7 +737,8 @@
       <tr>
         <td>scheme 
         <td> ::= 
-        <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i> | <code>+</code> | <code>-</code> | <code>.</code>)*
+        <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i>
+          | <code>+</code> | <code>-</code> | <code>.</code>)*
 
       <tr>
         <td>authority <td> — <td> is defined in the next subsection,
@@ -817,9 +853,10 @@
   <div class=todo>
     The grammar and the model, are very closely related. 
     (So close even that I'm pondering if I can merge them). 
-    If you record the use of each rule whose name corresponds to 
-    a token-type as a token, then you end up with an URL as defined in the Model section. 
-    With the port, being once exception, and the definition of a host needs a bit of work too. 
+    If you record the use of each rule whose name corresponds to a token-type
+    as a token, then you end up with an URL as defined in the Model section. 
+    With the port, being once exception, and the definition of a host needs
+    a bit of work too. 
   </div>
 
   <h3>A note about repeated slashes</h3>
@@ -864,7 +901,8 @@
     <p>
       As such, collapsing the multiples of slashes, cannot be expressed within 
       the grammar. Instead, the <i>force</i> operation as defined in the 
-      section on <a href=#reference-resolution>Reference Resolution</a> implements this behaviour. 
+      section on <a href=#reference-resolution>Reference Resolution</a>
+      implements this behaviour. 
 
 </section>
 
@@ -1002,8 +1040,8 @@
   <h4>Goto</h4>
   <p>
     The <dfn>goto</dfn> operation
-    (<var>url<sub>1</sub></var> <dfn class=op>goto</dfn>
-     <var>url<sub>2</sub></var>) is defined to return
+    <span class=-nowrap>(<var>url<sub>1</sub></var> <dfn class=op>goto</dfn>
+     <var>url<sub>2</sub></var>)</span> is defined to return
      <br>
     the <em>shortest</em> <i class=url>URL</i> that has
     <var>url<sub>1</sub></var> <b class=fn>upto</b>
@@ -1012,9 +1050,9 @@
 
   <h4>Non-Strict Goto</h4>
   <p class=-br>
-    The <dfn>non-strict goto</dfn>
-    (<var>url<sub>1</sub></var> <dfn class=op>~goto</dfn>
-     <var>url<sub>2</sub></var>) is defined to be
+    The <dfn>non-strict goto</dfn> operation
+    <span class=-nowrap>(<var>url<sub>1</sub></var> <dfn class=op>~goto</dfn>
+     <var>url<sub>2</sub></var>)</span> is defined to be
      <br>
     (<var>url<sub>1</sub></var> <b class=op>goto</b> <var>url<sub>2</var>')
      where <var>url<sub>2</var>' is <var>url<sub>2</var> with its <b>scheme</b>
@@ -1169,8 +1207,9 @@
     <dfn style=display:none>pre-resolve</dfn>
     <h4>Pre-Resolution</h4>
       <p class=-br>
-        The <dfn>pre-resolution</dfn> of <var>url<sub>1</sub></var> against
-        <var>url<sub>2</sub></var> is defined to be:
+        The <dfn>pre-resolution</dfn> of 
+        <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
+        is defined to be:
       <ul>
         <li>
           <var>url<sub>2</sub></var> <i class=op>~goto</i>
@@ -1188,8 +1227,8 @@
       The <dfn>resolution</dfn> of <var>url<sub>1</sub></var> against
       <var>url<sub>2</sub></var> is defined to be the <i>pre-resolution</i> of
       <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
-      — if its first <i class=common>token</i> is a <b>scheme</b>– or a
-      <b>fragment</b> token. Otherwise resolution <strong>fails</strong>. 
+      — if it is a <i>resolved-<span class=url>URL</span></i>.
+      Otherwise resolution <strong>fails</strong>. 
   </div>
 
   <div class="dfn-scope +br">
@@ -1273,6 +1312,18 @@
 
 <table class=grammar>
   <tr>
+    <td><b>drive</b>  <var>x</var> <code>|</code>
+    <td> ≈
+    <td><b>drive</b>  <var>x</var> <code>:</code>
+  <tr>
+    <td><b>path-root</b> <var>x</var>・<b>dir</b> <var>y</var> 
+    <td> ≈ <td><b>path-root</b> <var>x</var>
+    <td> — <td> if <var>y</var> :: <i>dots</i>
+  <tr>
+    <td><b>path-root</b> <var>x</var>・<b>file</b> <var>y</var>
+    <td> ≈ <td><b>path-root</b> <var>x</var>
+    <td> — <td> if <var>y</var> :: <i>dots</i>
+  <tr>
     <td><b>dir</b>  <var>x</var>
     <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
   <tr>
@@ -1288,14 +1339,6 @@
     <td> ≈ <td> ε                                
     <td> — <td> if <var>y</var> :: <i>dots</i> 
       and <strong>not</strong> <var>x</var> :: <i>dots</i>
-  <tr>
-    <td><b>path-root</b> <var>x</var>・<b>dir</b> <var>y</var> 
-    <td> ≈ <td><b>path-root</b> <var>x</var>
-    <td> — <td> if <var>y</var> :: <i>dots</i>
-  <tr>
-    <td><b>path-root</b> <var>x</var>・<b>file</b> <var>y</var>
-    <td> ≈ <td><b>path-root</b> <var>x</var>
-    <td> — <td> if <var>y</var> :: <i>dots</i>
 </table>
 
 
@@ -1304,20 +1347,26 @@
   Authority equivalence is defined by the following equations.
   Like path normalisation,
   the equations must be exhaustively applied from left-to-right
-  to normalise an <i class=url>URL</i>. 
+  to normalise an <i class=url>URL</i>. This has the same effect as removing
+  any empty <b>port</b> or <b>password</b> token, and if the
+  <span class=url>URL</span> does not have a <b>password</b> after that, 
+  to also remove any empty <b>username</b> token. 
 </p>
+<p class=todo>Actually there's a bug in here. This fails to remove an empty
+  <b>username</b> if the password is already removed. 
 
   <table>
     <tr><td><b>username</b> ε・<b>password</b> ε <td> ≈ <td>ε
     <tr><td><b>password</b> ε <td> ≈ <td>ε
     <tr><td><b>port</b> ε <td> ≈ <td>ε
-    <tr><td><b>drive</b>  <var>x</var><code>|</code>
-      <td> ≈ <td>
-      <b>drive</b>  <var>x</var><code>:</code>
   </table>
 
 <h3>Scheme-based Authority Normalisation</h3>
   <table>
+    <tr>
+      <td colspan=3><b>scheme</b> <var>scheme</var> 
+      <td> ≈ 
+      <td colspan=3><b>scheme</b> (lowercase <var>scheme</var>)
     <tr>
       <td><b>scheme</b> <code>file</code> 
       <td>・<td><b>authority</b> (<b>host</b> <code>localhost</code>)          
@@ -1439,7 +1488,7 @@
 
 <div class=todo>
   Wrap this up. 
-  Also this needs to discuss encoding overrides. 
+  Note that the decoding of the percent-coded-bytes must use UTF8. 
 </div>
 
 
@@ -1463,6 +1512,8 @@
   In any case, the additional 'non-url codepoints' must be encoded. But It makes
   sense to mandate that and not make it configurable via the encode set.
   …
+  Furthermore, this needs to discuss the encoding override, which is only 
+  allowed for the query; all other tokens must use UTF8.
 
 <p class=todo>
   To <i>percent-encode</i> a given <i class=common>string</i> <var>string</var>,
@@ -1524,7 +1575,7 @@
 
 <script>
 
-  const encodedTypes = ['username', 'password', 'host', 'dir', 'file', 'query', 'fragment']
+  const encodedTypes = ['url', 'username', 'password', 'host', 'dir', 'file', 'query', 'fragment']
 
   class EncodeTableView {
 
@@ -1611,7 +1662,10 @@
   operations. 
 
 <div class=todo>
-  This is work in progress
+  This is work in progress. 
+  I think I will add a sub validation to the preliminaries,
+  and then fold this into the other sections. 
+  I've already started to do that with the model.
 </div>
 
 <h3>Parser</h3>
@@ -1620,9 +1674,147 @@
     <i class=common>string</i>s that are not <span class=url>URL</span>-strings.
     <br>This can happen within the <i>authority</i>, <i>port</i>, <i>host</i>
     and <i>ip6-address</i> rules. 
+  <p>
+    The host parser can reject on  (ao) invalid IPv4 address. 
+    It can accept-with-warnings an IPv4 address that uses hexadecimal or octal
+    notation.
 
+
+<h3>Strict URL Grammar</h3>
+
+  <table class=grammar>
+    <!-- <tr><td>url 
+      <td> ::= 
+    <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
+    <tr>
+      <td>url 
+      <td> ::= 
+      <td> [ scheme <code>:</code> ] (<i>auth-path</i> | <i>path</i>)
+        [ <code>?</code> query ] [ <code>#</code> fragment ]
+    <tr>
+      <td><dfn>auth-path</dfn> 
+      <td> ::= 
+      <td> <code>//</code> authority [ path-root  path-rel ]
+    <tr>
+      <td><dfn>path</dfn>
+      <td> ::= 
+      <td> [ path-root ]  path-rel
+    <tr>
+      <td><dfn>path-rel</dfn>
+      <td> ::= 
+      <td> [ dir <code>/</code> ]* [ file ]
+
+    <tr class=-inbetween>
+      <td colspan=3>Modified <i>auth-path</i> rule in <b>file-mode</b>:
+    <tr>
+      <td>auth-path<sub>F</sub><dfn style=display:none>auth-path</dfn>
+      <td> ::= 
+      <td> auth-drive [ path-root  path-rel ]
+
+    <tr>
+      <td>auth-drive
+      <td> ::= 
+      <td> [ <code>/</code> ] drive  |  <code>//</code> host [ <code>/</code> drive ]
+
+    <tr class=-inbetween>
+      <td colspan=3>This refers to the following rules:
+
+    <tr>
+      <td>scheme 
+      <td> ::= 
+      <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i>
+        | <code>+</code> | <code>-</code> | <code>.</code>)*
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  <i>host</i> [ <code>:</code> port ]
+    <tr><td><dfn>host</dfn> 
+      <td> ::= 
+      <td> <code>[</code> ip6-address <code>]</code> | <i>opaque-host</i>
+    <tr>
+      <td><dfn>opaque-host</dfn> 
+      <td> ::= 
+      <td> <i>hchar-strict</i>+
+    <tr>
+      <td><dfn>port</dfn> 
+      <td> ::= 
+      <td> ε | <i>digit</i>+
+
+    <tr>
+      <td>drive 
+      <td> ::= 
+      <td> <i>alpha</i> <code>:</code>
+    <tr>
+      <td><dfn>path-root</dfn> 
+      <td> ::= 
+      <td> <code>/</code>
+    <tr>
+      <td>dir 
+      <td> ::= 
+      <td> <i>pchar-strict</i>*
+    <tr>
+      <td>file 
+      <td> ::= 
+      <td> <i>pchar-strict</i>+
+    <tr>
+      <td>query 
+      <td> ::= 
+      <td> <i>url-char</i>*
+    <tr>
+      <td>fragment 
+      <td> ::= 
+      <td> <i>url-char</i>*
+
+    <tr class=-inbetween>
+      <td colspan=3>
+        These rules are based on the following character-sets:
+    <tr>
+      <td><dfn>url-char</dfn> 
+      <td> := 
+      <td> <i>any</i> \ <i>c0-space</i> \ {
+        <code><span style=display:inline-block;width:1ch> </span></code>,
+        <code>"</code>,
+        <code>#</code>,
+        <code>%</code>,
+        <code>&lt;</code>,
+        <code>&gt;</code>,
+        <code>[</code>,
+        <code>\</code>,
+        <code>]</code>,
+        <code>^</code>,
+        <code>`</code>,
+        <code>{</code>,
+        <code>|</code>,
+        <code>}</code>
+       } \ del-c1 \ surrogate \ non-char
+    <tr>
+      <td><dfn>pchar-strict</dfn>
+      <td> := 
+      <td> <i>url-char</i> \ { <code>/</code>, <code>?</code> }
+    <tr>
+      <td><dfn>hchar-strict</dfn>
+      <td> :=
+      <td> <i>url-char</i> \ { <code>/</code>, <code>:</code>, 
+          <code>?</code>, <code>@</code> }
+  </table>
+
+<p>
+  The differences between the strict URL grammar and the URL grammar 
+  for parsing are:
+  <ul>
+    <li>
+      The separator <span>s</span> is replaced by <code>/</code>.
+    <li>
+      Drives must end with <code>:</code> and must be 
+      preceded by one <code>/</code> (review this).
+    <li>
+      Credentials are not allowed at all.
+    <li>
+      The character sets are restricted. 
+  </ul>
 <p class=-br>
-  It can accept with validation warnings,
+  Thus, the parser can accept with validation warnings,
 <ul>
   <li>Invalid separator: backslash instead of slash
   <li>Drive letter preceded by <code>//</code>
@@ -1632,24 +1824,7 @@
   <li>Invalid escape sequences
   <li>Any credentials at all
 </ul>
-<p>It is possible to modify the grammar to arrive at a <em>strict</em>
-  URL grammar, fairly easily.
 
-<p>The host parser can reject on  (ao) invalid IPv4 address. 
-  It can accept-with-warnings an IPv4 address that uses hexadecimal or octal
-  notation.
-
-<h3>Model</h3>
-<p class=-br>The following validation warnings apply:</p>
-<ul>
-  <li>Presence of credentials; credentials are deprecated. 
-  <li>Invalid URL code points in specific tokens. But I want to limit that,
-    so that the model can be used to store unencoded strings. I think then,
-    that this only applies to the host and the drive.
-  <li>Web URL with empty authority. I will allow absent authorities though. 
-    Failing on them is relegated to the Force and Resolve operations. 
-  <li>Invalid percent sequences
-</ul>
 
 <h3>Operations</h3>
 <p>
@@ -1684,6 +1859,13 @@
   that seems most clean.
 </div>
 
+<p class=todo>
+  There are <i>unprintable</i> URLs. These are URLs that would cause a 
+  'reparse-bug' in WHATWG parlance. This happens when the first path
+  segment is ε and the URL does not have an authority. Something similar may
+  happen with the drive. These URLs need to be converted to printable URLs
+  before they can be printed. 
+  
 <ul>
   <li>
     To print to an <abbr class=-caps>ASCII</abbr>

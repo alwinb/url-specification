@@ -18,7 +18,7 @@
   }
 }
 
-header {
+header, #menu {
   background:var(--bgcolor);
 }
 
