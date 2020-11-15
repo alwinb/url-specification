@@ -251,12 +251,12 @@ h1 {
 
 header {
   height:3rem;
-  width:28rem;
+  width:36rem;
   position:fixed;
   top:0;
   left:3rem;
   z-index:100;
-  padding:0 1.75rem;
+  padding:0 9.75rem 0 1.75rem;
   margin:0;
 }
 
@@ -273,6 +273,7 @@ header h2 {
 
 #tools {
   position:fixed;
+  z-index:100;
   top:0;
   left:31rem;
   width:8rem;

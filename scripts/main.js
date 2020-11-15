@@ -164,8 +164,6 @@ function main () {
   new PageObserver (onSection)
 
   function onSection ({ section, scrollY, range, direction, _header = true }) {
-    if (scrollY < 80) header.style.display = 'none'
-    else header.style.display = 'block'
     let entry, node = section.querySelector('h1,h2')
     if ((entry = refIndex[node.id])) {
       hoverAs.forEach (a => a.classList.remove ('-focus'))
@@ -173,10 +171,16 @@ function main () {
       hoverAs.forEach (a => a.classList.add ('-focus'))
     }
     // Show the node in the header
-    node = node.cloneNode (true)
-    node.style.display = null
-    header.innerHTML = ''
-    header.append (node)
+    if (node.tagName === 'H2') {
+      header.style.display = 'block'
+      node = node.cloneNode (true)
+      node.style.display = null
+      header.innerHTML = ''
+      header.append (node)
+    }
+    else {
+      header.style.display = 'none'
+    }
   }
 
   function onIdiom ({ elem, block }) {
