@@ -1,0 +1,120 @@
+/* Vertical Rhythm
+/* =============== */
+
+html.debug {
+  /* show the 1rem baseline rhythm */
+  background:repeating-linear-gradient(
+    to bottom,
+    var(--bgcolor, #0000),
+    var(--bgcolor, #0000) calc(1rem - 1px),
+    #ccc calc(1rem - 1px),
+    #ccc 1rem,
+    var(--bgcolor, #0000) 1rem);
+}
+
+html.debug * {
+  outline:1px solid rgba(0,0,0,.6);
+  opacity:.9;
+}
+
+/* Establish a vertial rhythm by using
+  one rem unit as a global line-height unit */
+
+html {
+  font-size:24px;
+  font-size:var(--line-height-global, 24px);
+  line-height:1;
+  font-family:Sans-Serif;
+  margin:0;
+  padding:0;
+}
+
+body {
+  font-size:16px;
+  font-size:var(--font-size-body, 16px);
+  line-height:1rem;
+  margin:0;
+  padding:0;
+}
+
+* {
+  font-size:inherit;
+  box-sizing:border-box;
+  line-height:1rem;
+}
+
+/* Block elements followed by a blank line */
+hr,p,ol,ul,dl,table,form,blockquote,pre,figure,img,video,canvas,h1,h2,section {
+  display:block;
+  margin-top:0;
+  margin-bottom:1rem;
+}
+
+/* No extra line after :last-child */
+hr:last-child,p:last-child,ol:last-child,ul:last-child,dl:last-child,table:last-child,form:last-child,blockquote:last-child,pre:last-child,figure:last-child,img:last-child,video:last-child,canvas:last-child,h1:last-child,h2:last-child {
+  margin-bottom:0;
+}
+
+/* Block elements without extra line */
+header,main,aside,article,footer,nav,div,dd,dt,fieldset,legend,figcaption,h3,h4,h5,h6,label {
+  display:block;
+  margin-top:0;
+  margin-bottom:0;
+}
+
+
+/* CSS Micro framework
+/* ============= */
+
+.-br {
+  margin-bottom:0;
+}
+.\+br {
+  margin-bottom:1rem;
+}
+.\+br\/2 {
+  margin-bottom:.5rem;
+}
+.-screen {
+  opacity:.2;
+}
+.-inbetween {
+  margin-top:-.5rem;
+  margin-bottom:.5rem;
+}
+.-inbetween +.-inbetween {
+  margin-top:.5rem;
+}
+tr.-inbetween {
+  height:2rem;
+}
+.-nowrap {
+  white-space:nowrap;
+}
+:not(table).-center {
+  text-align:center;
+}
+
+/* Inline lists */
+
+ol, ul {
+  counter-reset: list-counter;
+}
+li {
+  counter-increment: list-counter;
+}
+.-inline, ol.-inline {
+  display:inline;
+}
+.-inline > li {
+  display:inline-block;
+}
+.-inline > li::before {
+  content: counter(list-counter) '. ';
+}
+.-inline > li::after {
+  content:' ';
+}
+.-inline > li:last-child::after {
+  content:none;
+}

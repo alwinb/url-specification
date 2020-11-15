@@ -1,0 +1,740 @@
+/* Colours
+/* ============= */
+
+:root {
+  --acolor:#2B6679;
+  --highlight:#2B667930;
+  --bgcolor:#FFF9DE;
+  --bgcolor-alpha:#FFFBDF00;
+  --bg2:#EBDBB2;
+  --screen:#CCBB9B66;
+}
+
+@media screen {
+  html {
+    background-color:var(--bgcolor);
+    /background:linear-gradient(var(--bgcolor), var(--bgcolor));
+    /border-image: linear-gradient(var(--acolor), var(--acolor)) 1 1 / 20rem 0rem 0rem 10rem / 24rem 12rem 22rem 7.5rem;
+  }
+}
+
+header, #menu {
+  background:var(--bgcolor);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color:var(--acolor);
+}
+
+a, a:hover, b:hover, i:hover  {
+  color:var(--acolor);
+}
+
+code {
+  background:var(--screen);
+  border-radius:3px;
+  padding:.05em .23em .11em .23em;
+}
+
+#menu a.-focus, #menu a:hover {
+  color:var(--acolor);
+}
+
+
+/* Fonts
+/* ============= */
+
+/* 
+font:
+  [ [ <'font-style'> || <font-variant-css21> || <'font-weight'> || <'font-stretch'> ]?
+    <'font-size'> [ / <'line-height'> ]? <'font-family'> ]
+  | caption | icon | menu | message-box | small-caption | status-bar
+
+where
+  <font-variant-css21> = [ normal | small-caps ]
+*/
+
+:root {
+  --sans: calc(2rem/3)/1rem var(---sans);
+  --sans-bold: bold calc(2rem/3)/1rem var(---sans);
+  --sans-italic: italic calc(2rem/3)/1rem var(---sans);
+  --serif: calc(2rem/3)/1rem var(---serif);
+  --serif-bold: bold calc(2rem/3)/1rem var(---serif);
+  --serif-italic: italic calc(2rem/3)/1rem var(---serif);
+  --serif-bold-italic: bold italic calc(2rem/3)/1rem var(---serif);
+  --mono: calc(2rem/3)/1rem var(---mono);
+}
+
+:root {
+  ---serif: 'Times New Roman', 'Times', 'Times New Roman', Serif;
+  ---sans: Helvetica, Sans-Serif;
+  ---mono: 'Hack', 'Monaco', 'Menlo', MonoSpace;
+}
+
+body {
+  font:var(--serif);
+}
+
+h1 {
+  font:var(--sans-bold);
+}
+
+h2, h3, h4 {
+  font:var(--sans);
+}
+
+h2 {
+  letter-spacing:0.01em;
+}
+
+h3 {
+  font-variant:all-small-caps;
+  letter-spacing:0.028em;
+}
+
+h4, a {
+  font:var(--sans);
+  letter-spacing:0.012em;
+}
+
+b {
+  font:var(--sans-bold);
+}
+
+dfn, i, var, em {
+  font:var(--serif-italic);
+}
+
+.op, .fn, i.op, i.fn {
+  font:var(--sans);
+}
+
+strong {
+  font:var(--serif-bold);
+}
+
+strong em {
+  font:var(--serif-bold-italic);
+}
+
+code, pre {
+  font:var(--mono);
+}
+
+abbr, .url {
+  font-variant:all-small-caps;
+}
+
+th {
+  font-weight:unset;
+}
+
+#menu a {
+  font:var(--serif);
+}
+
+#menu a.-focus {
+  font:var(--sans);
+}
+
+:not(body, html) {
+  font-size:inherit;
+}
+
+
+
+/* Typographic Scale
+/* ============= */
+
+html {
+  font-size:25px; /* set the rem */
+}
+
+body {
+  font-size:0.7rem;
+}
+
+h1 {
+  font-size:1.7rem;
+  line-height:2rem;
+  margin-bottom:2rem;
+}
+
+h2 {
+  margin-top:1rem;
+  margin-bottom:1rem;
+  font-size:.9rem;
+}
+section.-short {
+  margin-bottom:2rem;
+}
+section {
+  margin-bottom:5rem;
+}
+h3 {
+  margin-top:1.5rem;
+  margin-bottom:.5rem;
+  font-size:.89rem;
+}
+
+h4 {
+  font-size:0.914em;
+  font-size:0.64rem;
+}
+
+sup, sub {
+  font-size:.75em;
+}
+
+/* convert to inline-block
+   this is a hack to prevent these items
+   from increasing the line-box height  */
+
+sub, sup, a, var, dfn, code, b, i, h4, em, strong, abbr, .-caps,
+span.url, i.url, .-caps {
+  line-height:0;
+}
+
+
+
+/* Page Layout
+/* ============= */
+
+html {
+  position:absolute;
+}
+
+body {
+  border-left:1.75rem solid var(--acolor);
+  padding:3rem 5rem 8rem 3rem;
+}
+
+article {
+  width:24rem;
+}
+
+h1 {
+  margin-top:-1rem;
+}
+
+@media print {
+  header {
+    display:none;
+  }
+  body {
+    border-left:none;
+  }
+}
+
+
+#menu, #menu ul {
+  list-style:none;
+  padding:0;
+  margin:0;
+  text-align:center;
+}
+
+#menu li::before {
+  content:none;
+}
+
+#menu {
+  margin-top:1rem;
+}
+
+#toc a, #menu a {
+  font-family:var(--serif);
+  font-size:inherit;
+  color:unset;
+}
+
+
+header {
+  height:3rem;
+  width:36rem;
+  position:fixed;
+  top:0;
+  left:3rem;
+  z-index:100;
+  padding:0 9.75rem 0 1.75rem;
+  margin:0;
+}
+
+header.-hidden {
+  display:none;
+}
+
+header h2 {
+  padding:0 .25rem .5rem;
+  border-bottom:1px solid var(--acolor);
+  margin:1.5rem -.25rem .5rem;
+  line-height:1rem;
+}
+
+#tools {
+  position:fixed;
+  z-index:100;
+  top:0;
+  left:31rem;
+  width:8rem;
+  padding:3rem 0 0 0;
+  counter-reset: list-counter;
+  /* for easy absolute positioning, relative to the mouse */
+}
+
+#tooltip>* {
+  width:8rem;
+}
+
+h1::before {
+  /* For fragment references */
+  display:block;
+  content:'';
+  height:3rem;
+  margin-top:-3rem;
+}
+
+article h2::before {
+  /* For fragment references */
+  display:block;
+  content:'';
+  height:2rem;
+  margin-top:-2rem;
+}
+
+div#icon {
+  font-size:3.5rem;
+  line-height:3.5rem;
+  height:3.5rem;
+  margin-top:-1rem;
+  margin-bottom:.5rem;
+  position:relative;
+}
+
+
+/* Other Structural Devices
+/* ============= */
+
+ul {
+  padding:0 0 0 1em;
+  list-style:none;
+}
+
+ol {
+  padding:0;
+  list-style-position:inside;
+}
+
+ul.-prose, ol.-prose {
+  list-style-position:inside;
+  padding:0;
+}
+
+ul.-prose > li::before {
+  margin-left:0;
+}
+
+li > ul, li > ol {
+  padding:0 0 0 1em;
+}
+
+ul > li::before {
+  content:'–  ';
+  margin-left:-1em;
+}
+
+
+h4, h4+p {
+  display:inline;
+}
+
+article h4 + p::before {
+  content:'|';
+  padding:0 .18em;
+}
+
+article h4 + p::after {
+  content:'';
+  display:block;
+  margin:0 0 1rem;
+}
+
+article h4 + p.-inbetween::after {
+  margin:0 0 .5rem;
+}
+
+article h4 + p.-br::after {
+  margin:0;
+}
+
+
+table td, table th {
+  white-space:nowrap;
+}
+
+table {
+  border-collapse:collapse;
+}
+
+td:nth-child(2n+2) {
+  text-align:center;
+  padding:0 .6em;
+}
+
+
+.todo, .note {
+  font:var(--sans-italic);
+  margin-bottom:1rem;
+  padding:.5rem;
+  background-color:var(--highlight);
+  font-size:.61rem;
+}
+.note::before, .todo::before {
+  content:'TODO ';
+  color:var(--acolor);
+  font:var(--sans);
+  font-variant:all-small-caps;
+  font-size:.9rem;
+}
+.note::before {
+  content:'NB ';
+}
+
+/* Typography for Idioms
+/* ============= */
+
+/* Using <i> For idioms */
+/* Using <b> and <code> for constants */
+
+b:hover, i:hover, dfn:hover, dfn.-focus {
+  cursor:crosshair;
+}
+
+abbr, .url {
+  font-style:normal;
+  font-size:1.3em;
+}
+
+/** Underlines **/
+
+a {
+  text-decoration:none;
+}
+dfn, i, a:hover {
+/*  text-decoration:underline;*/
+  background-image:linear-gradient(to top,
+    #0001 1px,
+    currentColor 1px, 
+    currentColor 2px, 
+    #0000 2px);
+    background-size:100% calc(1em);
+    background-position:center;
+    background-repeat:no-repeat;
+
+  text-shadow:
+     2px 0px 0 var(--bgcolor),
+     1px 0 0 var(--bgcolor),
+     .5px 0 0 var(--bgcolor),
+    -.5px 0 0 var(--bgcolor),
+    -1px 0 0 var(--bgcolor),
+    -2px -0 0 var(--bgcolor);
+}
+
+dfn:hover, dfn.-focus, dfn.-focus > dfn {
+  text-shadow:none;
+  border-radius:3px;
+  padding:0 .15em 0 .15em;
+  margin:0 -.15em 0 -.15em;
+  background:var(--highlight);
+}
+
+i span.url {
+  background:none;
+  text-shadow:none;
+}
+
+a:hover, b:hover, i:hover {
+  color:var(--acolor);
+}
+
+i.common, 
+i.fn, i.op, i.url, *>span.url,
+.rule dfn, .rule i, 
+.grammar td:first-child i,
+.grammar td:first-child dfn {
+  font-style:normal;
+  background:none;
+  text-shadow:none;
+}
+
+i.noindex:hover, b.noindex:hover {
+  cursor:text;
+  color:unset;
+}
+
+i.noindex, a, abbr, .op, .fn, i.op, i.fn {
+  background:none;
+  text-shadow:none;
+}
+
+#toc a, #menu a {
+  text-decoration:none;
+}
+#toc a:hover, #menu a:hover {
+  color:var(--acolor);
+}
+
+
+
+
+/* Tooltip Grid
+/* ============= */
+
+#tooltip {
+  word-spacing:-0.04em;
+  text-align:center;
+  font:var(--sans);
+  font-size:.6rem;
+  position:absolute;
+  padding:0;
+  opacity:1;
+  transition:opacity 300ms;
+  transition-delay:300ms;
+}
+#tooltip.-hidden {
+  transition:opacity 100ms;
+  transition-delay: 0ms;
+  opacity:0;
+}
+
+#tooltip ul {
+  padding:0;
+}
+#tooltip li {
+  display:inline;
+  padding:0;
+}
+
+#tooltip tr {
+  display:block;
+  width:auto;
+}
+#tooltip td {
+  display:inline;
+  white-space:normal;
+}
+#tooltip .\+br {
+  display:block;
+  margin-bottom:1rem;
+}
+#tooltip li::before {
+  margin-left:0px;
+  padding:0;
+  content:'(' counter(list-counter, lower-roman) ')';
+  font:var(--serif);
+  font-size:1.05em;
+}
+#tooltip li li::before {
+  margin-left:0px;
+  padding:0;
+  font:var(--serif);
+  content:'(' counter(list-counter, lower-alpha) ')';
+}
+#tooltip br {
+  display:none;
+}
+#tooltip p {
+  min-height:1rem;
+}  
+#tooltip h4 {
+ display:block;
+ line-height:1rem;
+  min-height:1rem;
+ white-space:nowrap;
+ font-size:.7rem;
+ margin:0;
+}
+#tooltip h4:not(:first-child) {
+  margin-top:1rem;
+}
+#tooltip h4:first-child {
+  margin-top:-1rem;
+}
+#tooltip .-inbetween {
+  margin-top:0;
+  margin-bottom:0;
+}
+#tooltip h3 {
+  margin-top:0;
+}
+#tooltip>li {
+  list-style:none;
+}
+
+
+/* Specific elements
+/* ============= */
+
+#percent-encode-sets {
+  caption-side: bottom;
+}
+
+#percent-encode-sets caption {
+  margin-top:.5rem;
+  margin-bottom:.5rem;
+}
+
+#percent-encode-sets colgroup:not(:first-child) {
+  border-left:1px solid #0002;
+}
+
+#percent-encode-sets tr:not(last-child) {
+  border-bottom:1px solid #0002;
+}
+
+#percent-encode-sets tr:first-child th * {
+  font-size:.55rem;
+}
+#percent-encode-sets th:first-child {
+  text-align:left;
+}
+#percent-encode-sets td {
+  text-align:center;
+  cursor:crosshair;
+  padding:0;
+}
+#percent-encode-sets td code {
+  text-align:center;
+  display:block;
+  margin:0;
+  width:.63rem;
+  height:calc(1rem - 5px);
+  line-height:calc(1rem - 6px);
+  margin:3px 0px 1px 4px ;
+}
+#percent-encode-sets td.-screen {
+  opacity:.12;
+  cursor:default;
+  pointer-events:none;
+}
+
+
+#printer td, #printer th {
+  padding:0 .5em;
+  text-align:center;
+  white-space:nowrap;
+  vertical-align:bottom;
+  border:1px solid #0004;
+  border-bottom:none;
+  border-top:none;
+}
+#printer td {
+  border:1px solid #0004;
+  border-top:none;
+  border-bottom:none;
+}
+#printer td, #printer th {
+  padding:0 .3em;
+}
+table#printer table {
+  margin:-1px calc(-.3em - 1px);
+}
+
+#percent-encode-sets td.-screen code {
+  user-select: none;
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+
+
+/* Tweaks
+/* ============= */
+
+#percent-encode-sets {
+  margin-left:-0.5ch;
+}
+
+td, .rule {
+  white-space:nowrap;
+}
+
+#tools .rule {
+  white-space:normal;
+}
+
+#scheme-based-normalisation td {
+  padding:0;
+}
+
+#scheme-based-normalisation td:nth-child(4) {
+  padding:0 1em 0 1em;
+}
+
+/* Tweaks - Manual font size adjust
+/* ============= */
+
+a, a:hover {
+  font-size:0.914em;
+}
+
+b {
+  font-size:0.871em;
+}
+
+.op, .fn, i.op, i.fn {
+  font-size:0.871em;
+}
+
+code {
+  font-size:0.53rem;
+}
+
+/* Likewise, in tooltip
+/* ============= */
+
+#tooltip em,
+#tooltip var,
+#tooltip dfn,
+#tooltip dfn,
+#tooltip i {
+  font-size:1.1em;
+}
+
+#tooltip span.url,
+#tooltip i.url,
+#tooltip dfn.url,
+#tooltip dfn .url,
+#tooltip i .url {
+  font-size:0.8rem;
+}
+
+#tooltip a,
+#tooltip .fn,
+#tooltip .op,
+#tooltip b, #tooltip dfn>b {
+  font-size:.59rem;
+}
+
+#tooltip code {
+  font-size:0.88em;
+}
+
+/*...*/
+.todo * {
+  text-shadow:none;
+}
+.todo em,
+.todo var,
+.todo dfn,
+.todo i, #tooltip .url {
+  font-size:1.1em;
+}
+
+
+::selection {
+  background-color:var(--highlight);
+  text-shadow:none;
+}
+
