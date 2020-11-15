@@ -221,6 +221,9 @@ h1 {
   header {
     display:none;
   }
+  body {
+    border-left:none;
+  }
 }
 
 
@@ -276,6 +279,10 @@ header h2 {
   padding:3rem 0 0 0;
   counter-reset: list-counter;
   /* for easy absolute positioning, relative to the mouse */
+}
+
+#tooltip>* {
+  width:8rem;
 }
 
 h1::before {
@@ -479,7 +486,7 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 
 
 
-/* Tooltip Grod
+/* Tooltip Grid
 /* ============= */
 
 #tooltip {
@@ -493,7 +500,6 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
   transition:opacity 300ms;
   transition-delay:300ms;
 }
-
 #tooltip.-hidden {
   transition:opacity 100ms;
   transition-delay: 0ms;
@@ -506,6 +512,15 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 #tooltip li {
   display:inline;
   padding:0;
+}
+
+#tooltip tr {
+  display:block;
+  width:auto;
+}
+#tooltip td {
+  display:inline;
+  white-space:normal;
 }
 #tooltip .\+br {
   display:block;
@@ -642,6 +657,18 @@ table#printer table {
 
 td, .rule {
   white-space:nowrap;
+}
+
+#tools .rule {
+  white-space:normal;
+}
+
+#scheme-based-normalisation td {
+  padding:0;
+}
+
+#scheme-based-normalisation td:nth-child(4) {
+  padding:0 1em 0 1em;
 }
 
 /* Tweaks - Manual font size adjust

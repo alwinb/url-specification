@@ -45,11 +45,12 @@ function buildIndex (doc = document) {
   for (let dfn of dfns) {
     const context = getContext (dfn)
     if (!context) continue
-    let { block } = context
+    let { block, section } = context
+    const title = section ? section.querySelector('h1,h2').innerText : null
     let text = dfn.innerText.replace (/\s+/, ' ')
     // TODO support multiple dfns with same name
     index [text] = index [text]||[]
-    index [text].push ({ dfn, block })
+    index [text].push ({ dfn, block, section, title })
   }
   log (index)
   return index
@@ -81,8 +82,8 @@ const contexts = { TR:1, LI:1, DIV:1, P:1, SECTION:1, BODY:1 }
 const idioms = { I:1, B:1, DFN:1 }
 
 function getContext (elem) {
-  let idiom = null, implicitScope = null, scope
-  for (; !scope && elem && elem.tagName !== 'HTML'; elem = elem.parentNode) {
+  let idiom = null, implicitScope = null, scope, section
+  for (; (!scope || !section) && elem && elem.tagName !== 'HTML'; elem = elem.parentNode) {
     if (!idiom && elem.tagName in idioms) {
       if (elem.classList.contains ('noindex')) return null
       else idiom = elem
@@ -93,9 +94,12 @@ function getContext (elem) {
       else if (!implicitScope && elem.tagName in contexts)
         implicitScope = elem
     }
+    if (!section && elem.tagName === 'SECTION') {
+      section = elem
+    }
   }
-  // may return nulls, { elem:null } ea. 
-  return { elem:idiom, block: scope || implicitScope }
+  // may return { elem:null, ...ea }
+  return { elem:idiom, block: scope || implicitScope, section }
 }
 
 
@@ -106,6 +110,7 @@ function getContext (elem) {
 function PageObserver (callback) {
 
   const self = this
+  const article = document.getElementsByTagName ('ARTICLE')[0]
   const sections = document.getElementsByTagName ('SECTION')
   let currentSection = sections[0]
   let lastPosition = 0
@@ -118,7 +123,7 @@ function PageObserver (callback) {
 
   function onscroll () {
     let newSection, { scrollY } = window
-    newSection = getCurrentSection (sections)
+    newSection = (scrollY < 80) ? article : getCurrentSection (sections)
     if (newSection && currentSection !== newSection)
       callback ({ section:(currentSection = newSection), scrollY })
     else
@@ -134,13 +139,6 @@ function PageObserver (callback) {
     }
   }
 
-}
-
-
-// Index
-// -----
-
-function Aside () {
 }
 
 
@@ -168,7 +166,7 @@ function main () {
   function onSection ({ section, scrollY, range, direction, _header = true }) {
     if (scrollY < 80) header.style.display = 'none'
     else header.style.display = 'block'
-    let entry, node = section.querySelector('h2')
+    let entry, node = section.querySelector('h1,h2')
     if ((entry = refIndex[node.id])) {
       hoverAs.forEach (a => a.classList.remove ('-focus'))
       hoverAs = entry
@@ -195,12 +193,14 @@ function main () {
       for (let entry of entries) {
         if (!entry.block || entry.block === block) return
         const tip = entry.block.cloneNode(true)
-        if (!tip.querySelector('h4'))
-          toolsDiv.append ($('h4', text[0].toUpperCase () + text.slice(1)))
+        if (!tip.querySelector('h4')) {
+          const text = entry.section.querySelector('h2').innerText // text.slice(1)
+          toolsDiv.append ($('h4', text))
+        }
         toolsDiv.append (tip)
         toolsDiv.classList.remove ('-hidden')
       }
-      const rect = elem.parentNode.getBoundingClientRect ()
+      const rect = block.getBoundingClientRect ()
       const y = Math.max (rect.y, 475)
       toolsDiv.style.top = y + 'px'
     }

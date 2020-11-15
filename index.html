@@ -30,7 +30,6 @@
     <li><a href=#reference-resolution >Reference Resolution</a></li>
     <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
     <li><a href=#percent-coding >Percent Coding</a></li>
-    <li><a href=#validation >Validation</a></li>
     <li><a href=#printing>Printing</a></li>
   </ul>
   </div>
@@ -224,7 +223,7 @@
         <i>code point</i>.
       <li>
         A <dfn>code point</dfn>, is a natural number <span
-          class=-nowrap><var>n</var> ≤ 1114111</span>.
+          class=-nowrap><var>n</var> &lt; 17 × 2<sup>16</sup></span>.
       <li>
         The <dfn>empty string</dfn> is a <i class=common>sequence</i> of zero
         code points. It is denoted by ε. 
@@ -269,15 +268,15 @@
     <tr>
       <td><dfn>any</dfn> 
       <td> := 
-      <td> { <b>u+0</b>–<b>u+10FFFF</b> }
+      <td class=-nowrap> { <b>u+0</b>–<b>u+10FFFF</b> }
     <tr>
       <td><dfn>control-c0</dfn> 
       <td> := 
-      <td> { <b>u+0</b>–<b>u+1F</b> }
+      <td class=-nowrap> { <b>u+0</b>–<b>u+1F</b> }
     <tr>
       <td><dfn>c0-space</dfn> 
       <td> := 
-      <td> { <b>u+0</b>–<b>u+20</b> }
+      <td class=-nowrap> { <b>u+0</b>–<b>u+20</b> }
     <tr>
       <td><dfn>printable-<abbr class=-caps>ASCII</abbr></dfn>
       <td> := 
@@ -285,15 +284,15 @@
     <tr>
       <td> <dfn>octal-digit</dfn> 
       <td> := 
-      <td> { <code>0</code>–<code>7</code> }
+      <td class=-nowrap>{ <code>0</code>–<code>7</code> }
     <tr>
       <td><dfn>digit</dfn> 
       <td> := 
-      <td> { <code>0</code>–<code>9</code> }
+      <td class=-nowrap> { <code>0</code>–<code>9</code> }
     <tr>
       <td><dfn>hex-digit</dfn> 
       <td> := 
-      <td> { <code>0</code>–<code>9</code>, 
+      <td class=-nowrap>{ <code>0</code>–<code>9</code>, 
         <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }
     <tr>
       <td> <dfn>digit-nonzero</dfn> 
@@ -302,7 +301,7 @@
     <tr>
       <td><dfn>alpha</dfn> 
       <td> := 
-      <td> { <code>A</code>–<code>Z</code>, 
+      <td class=-nowrap> { <code>A</code>–<code>Z</code>,
         <code>a</code>–<code>z</code> }
     <tr>
       <td><dfn>del-c1</dfn> 
@@ -311,17 +310,22 @@
     <tr>
       <td><dfn>control-c1</dfn> 
       <td> := 
-      <td> { <b>u+80</b>–<b>u+9F</b> }
+      <td class=-nowrap> { <b>u+80</b>–<b>u+9F</b> }
     <tr>
       <td><dfn>latin-1</dfn> 
       <td> := 
-      <td> { <b>u+A0</b>–<b>u+FF</b> }
+      <td class=-nowrap> { <b>u+A0</b>–<b>u+FF</b> }
     <tr>
       <td><dfn>surrogate</dfn> 
       <td> := 
-      <td> { <b>u+D800</b>–<b>u+DFFF</b> }
+      <td class=-nowrap> { <b>u+D800</b>–<b>u+DFFF</b> }
+    <tr>
+      <td><dfn>non-char</dfn> 
+      <td> := 
+      <td> { <b>u+FDD0</b>–<b>u+FDEF</b> }
+        ∪ { <var>c</var> | <var>c</var> in <i>any</i> and
+           (<var>c</var> + 2) <b class=op>mod</b> 2<sup>16</sup>  ≤  1 }
   </table>
-
 
   <h4>Grammars</h4>
   <p>
@@ -351,26 +355,27 @@
 <section><h2>URL Model</h2>
 <!------------------------>
 <p>
-  An <i class=url>URL</i> is a special kind of ordered list that is
-  subject to a number of additional constraints. The ordering of the list is
-  analogous to the hierarchical syntax of an URI as described in
-  <a href="https://tools.ietf.org/html/rfc3986#section-1.2.3">Hierarchical
+  An <i><span class=url>URL</span></i> is a sequence of tokens that is
+  subject to a number of additional constraints. The ordering of the tokens 
+  in the sequence is analogous to the hierarchical syntax of an 
+  <abbr class=-caps>URI</abbr> as described
+  in <a href="https://tools.ietf.org/html/rfc3986#section-1.2.3">Hierarchical
   Identifiers</a> in <abbr class=-caps>RFC</abbr> 3986.
 <p>
   It is important to stress the distinction between an
-  <i class=url>URL</i> and an <i><span class=url>URL</span>-string</i>.
+   <i><span class=url>URL</span></i> and an
+   <i><span class=url>URL</span>-string</i>.
 <br>
   <span class=dfn-scope>
-    An <i class=url>URL</i> is a <em>structure</em>, indeed a special
-    kind of ordered list, whereas an
-    <dfn><span class=url>URL</span>-string</dfn> is a
-    special kind of <i>string</i> that <em>represents</em> an
+    An <i class=url>URL</i> is a <em>structure</em>, indeed a special kind of 
+    sequence of tokens, whereas an <dfn><span class=url>URL</span>-string</dfn>
+    is a special kind of <i>string</i> that <em>represents</em> an
     <i class=url>URL</i></span>. Conversions between <i class=url>URL</i>s
   and <i class=common><span class=url>URL</span>-string</i>s are described in
   the sections <a href="#parsing">Parsing</a>
   and <a href="#printing">Printing</a>.
 
-  <div class=dfn-scope>
+  <div class="dfn-scope +br">
   <h4>URL</h4>
     <p>
       An <dfn class=url>URL</dfn> is a <i>sequence</i> of
@@ -381,10 +386,6 @@
       <b>scheme</b> &lt; <b>authority</b> &lt; <b>drive</b>
       &lt; <b>path-root</b> &lt; <b>dir</b> &lt; <b>file</b>
       &lt; <b>query</b> &lt; <b>fragment</b>.
-    <p>
-      <i class=url>URL</i>s are subject to the following constraints:
-    </div>
-
     <ul>
       <li>
         An <i class=url>URL</i> contains at most one
@@ -397,48 +398,9 @@
         <b>file</b> token, then it also has a <b>path-root</b>
         <i class=common>token</i>.
     </ul>
-    <ul>
-      <li class=dfn-scope>
-        The <dfn><b>scheme</b></dfn> of an <i class=url>URL</i>,
-        if present, is a <i class=common>string</i>
-        <span class=rule><var>scheme</var> :: <i>alpha</i> (<i>alpha</i>
-          | <i>digit</i> | <code>+</code> | <code>-</code>
-          | <code>.</code>)*</span>
-      <li class=dfn-scope>
-        The <dfn><b>authority</b></dfn> of an <i class=url>URL</i>,
-        if present, is
-        an <i>Authority</i> — to be defined below.
-      <li class=dfn-scope>
-        The <dfn><b>path-root</b></dfn> of an <i class=url>URL</i>,
-        if present, is the string <code>/</code>. 
-      <li class=dfn-scope>
-        The <dfn><b>drive</b></dfn> of an <i class=url>URL</i>,
-        if present, is a
-        <i class=common>string</i> <span class=-nowrap><var>drive</var> ::
-          <i>alpha</i> (<code>:</code> | <code>|</code>)</span>
-      <li class=dfn-scope>
-        The <dfn><b>file</b></dfn> of an <i class=url>URL</i>,
-        if present, is a nonempty string.
-      <li>
-        For all other tokens present, the tokens&rsquo; values are
-        <i class=common>string</i>s.
-      </ul>
-      <ul style=display:none>
-        <li class=dfn-scope>
-          A <dfn><b>dir</b></dfn> token, is a token (<b>dir</b> <var>name</var>)
-          where <var>name</var> is a string.
-        <li class=dfn-scope>
-          The <dfn><b>query</b></dfn> of an <i class=url>URL</i>,
-          if present, is a string.
-        <li class=dfn-scope>
-          The <dfn><b>fragment</b></dfn> of an <i class=url>URL</i>,
-          if present, is a string.
-      </ul>
-    </ul>
+    </div>
 
-
-    <div class=dfn-scope>
-      <dfn style=display:none>authority</dfn>
+    <div class="dfn-scope +br"><dfn style=display:none>authority</dfn>
     <h4>Authority</h4>
     <p class=-br>
       An <dfn>Authority</dfn> is a sequence of tokens ordered by their type, 
@@ -446,10 +408,6 @@
 
     <p class="-center">
       <b>username</b> &lt; <b>password</b> &lt; <b>host</b> &lt; <b>port</b>.
-
-    <p class=-br>
-      Authorities are subject to the following constraints:
-    </div>
 
     <ul>
       <li>
@@ -463,43 +421,83 @@
         <i class=common>token</i> then it also has a <b>host</b>
         <i class=common>token</i>.
     </ul>
+    </div>
 
-    <p class=-br>
-      The <i class=common>token</i>s of an Authority are subject to the
-      following conditions:
-    <ul>
-      <li class=dfn-scope>
-        The <dfn><b>host</b></dfn> of an Authority is a <i>Host</i> — to be 
-        defined below.
-      <li class=dfn-scope>
-        The <dfn><b>port</b></dfn> of an Authority, if present, is either the
-        empty string ε, or a natural number <var>n</var> &lt; 2<sup>16</sup>.
-      <li class=dfn-scope>
-        For all other <i class=common>token</i>s present, the
-        <i class=common>token</i>s' <i class=common>value</i>s
-        are <i class=common>string</i>s.
-    </ul>
-
-
-  <div class=dfn-scope>
+  <div class="dfn-scope +br">
     <h4>Host</h4>
     <p class=-br>
       A <dfn>Host</dfn> is either
     <ul>
       <li>
-        An ipv6-address,
+        an ipv6-address,
       <li>
-        An opaque-host, which is a <i class=common>string</i>
-        <var>host</var> :: <i class=rule>opaque-host</i>
+        an opaque-host,
       <li>
-        An ipv4-address, or
+        an ipv4-address, or
       <li>
-        A domain-name.
+        a domain-name.
     </ul>
   </div>
 
+    <h4>Tokens</h4>
+    <p class=-br>
+      Whenever present, <i>token</i>s are subject to the following constraints:
+    <ul>
+      <li class=dfn-scope>
+        The <dfn><b>scheme</b></dfn> of an <i class=url>URL</i>
+        is a <i class=common>string</i>
+        <span class=rule><var>scheme</var> :: <i>alpha</i> (<i>alpha</i>
+          | <i>digit</i> | <code>+</code> | <code>-</code>
+          | <code>.</code>)*</span>.
+      <li class=dfn-scope>
+        The <dfn><b>authority</b></dfn> of an <i class=url>URL</i>
+        is
+        an <i>Authority</i>.
+      <li class=dfn-scope>
+        The <dfn><b>path-root</b></dfn> of an <i class=url>URL</i>
+        is the <i class=common>string</i> <code>/</code>. 
+      <li class=dfn-scope>
+        The <dfn><b>drive</b></dfn> of an <i class=url>URL</i>
+        is a
+        <i class=common>string</i> <span class=-nowrap><var>drive</var> ::
+          <i>alpha</i> (<code>:</code> | <code>|</code>)</span>.
+      <li class=dfn-scope>
+        The <dfn><b>file</b></dfn> of an <i class=url>URL</i>
+        is a nonempty <i class=common>string</i>.
+      <!-- <li>
+        For all other tokens present, the tokens&rsquo; values are
+        <i class=common>string</i>s. -->
+      <li class=dfn-scope>
+        The <dfn><b>host</b></dfn> of an <i>Authority</i> is a <i>Host</i>.
+      <li class=dfn-scope>
+        The <dfn><b>port</b></dfn> of an <i>Authority</i> is either ε 
+        or a natural number <var>n</var> &lt; 2<sup>16</sup>.
+      <li class=dfn-scope>
+        For all other <i class=common>token</i>s present, the
+        <i class=common>token</i>s' <i class=common>value</i>s
+        are <i class=common>string</i>s.
+    </ul>
+    <ul style=display:none>
+      <li class=dfn-scope>
+        A <dfn><b>dir</b></dfn> token is a token (<b>dir</b> <var>name</var>)
+        where <var>name</var> is a string.
+      <li class=dfn-scope>
+        The <dfn><b>query</b></dfn> of an <i class=url>URL</i>,
+        is a string.
+      <li class=dfn-scope>
+        The <dfn><b>fragment</b></dfn> of an <i class=url>URL</i>,
+        is a string.
+    </ul>
+
+
+
+
 
   <h3>Types and Shapes</h3>
+
+  <p>
+    There is a further categorisation of <i class=url>URL</i>s that is used in 
+    several of the operations that will be defined later. 
 
   <div class="dfn-scope +br">
   <h4>Web-URL</h4>
@@ -510,13 +508,9 @@
       <span class=url>URL</span> that is not <i>special</i>. -->
       A <dfn>web-scheme</dfn> is a <i class=common>string</i>
       <var>scheme</var> such that
-      <!-- <span class=-nowrap>lowercase (<var>scheme</var>)
-          :: <code>http</code> [<code>s</code>]
-           |  <code>ws</code> [<code>s</code>]
-           |   <code>ftp</code>. -->
-      <span class=-nowrap>lowercase (<var>scheme</var>) ::
-          <code>http</code> | <code>https</code> | <code>ws</code> |
-          <code>wss</code> | <code>ftp</code>.
+      (lowercase <var>scheme</var>) :: <span class=rule>
+        <code>http</code> | <code>https</code> | <code>ws</code> |
+        <code>wss</code> | <code>ftp</code></span>.
   </div>
 
   <div class="dfn-scope +br">
@@ -526,7 +520,7 @@
       <i class=url>URL</i> that has a <i>file-<b>scheme</b></i>.
       A <dfn>file-<b>scheme</b></dfn> is a <i class=common>string</i>
       <var>scheme</var> such that
-      <span class=-nowrap>lowercase (<var>scheme</var>) :: <code>file</code>. 
+      <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code>. 
   </div>
 
   <div class="dfn-scope +br">
@@ -551,12 +545,12 @@
   <h3>Additional Constraints</h3>
     <p class=-br>
       If an <i class=url>URL</i> <var>url</var> has a <b>scheme</b> then 
-      it is subject to additional constraints:
+      it is subject to three additional constraints:
     <ul>
       <li>
         If <var>url</var> is a
         <i>web-<span class=url>URL</span></i> that has an
-        <b>authority</b>, then it must not be ε.
+        <b>authority</b> token, then it must not be (<b>authority</b> ε).
       <li>
         If <var>url</var> is <strong>not</strong> a
         <i>file-<span class=url>URL</span></i> 
@@ -564,29 +558,35 @@
       <li>
         If <var>url</var> <strong>is</strong> a 
         <i>file-<span class=url>URL</span></i>, and it has an <b>authority</b>,
-        then the authority must not contain a <b>username</b>, <b>password</b>
-        or <b>port</b>.
+        then it must either be empty or it must consist of a <b>host</b> token
+        only.
     </ul>
 
-
-  <h3>Strict URLs</h3>
-  <p class=todo>This is work in progress
-  <p class=-br>The following validation warnings apply:</p>
+  <h4>Valid URL</h4>
+  <p>
+    There is an additional number of soft constraints that must be met for
+    an <i class=url>URL</i> in order to be called <dfn>valid</dfn>. 
+    However, implementations must tolerate <i><span class=url>URL</span></i>s
+    that are not <i>valid</i> as an error recovery strategy.
   <ul>
     <li>
-      A valid URL must not have credentials; credentials are deprecated. 
+      A valid <i class=url>URL</i> must not have a <b>username</b> or a
+       <b>password</b> token. 
     <li>
-      A valid URL must not have a <b>drive</b> <var>drive</var> such that
-      <var>drive</var> :: alpha <code>|</code>. 
+      A valid <i class=url>URL</i> must not have a <b>drive</b> <var>drive</var>
+      such that <var>drive</var> :: alpha <code>|</code> (review).
     <li>
-      A valid URL must not contain tokens that have values that contain invalid
-      percent-encode sequences. 
-    <li>
-      Non-URL code points in tokens are allowed, so that the model can be used
-      be used to store unencoded strings. 
-      I think that this then must only be checked with the host
+      A valid <i class=url>URL</i> must not contain <i class=common>token</i>s
+      that have <i class=common>value</i>s that contain
+      invalid percent-encode sequences. 
   </ul>
-
+  <p>
+    Note that arbitrary <i class=common>code point</i>s are allowed in
+    <i class=common>token</i> <i class=common>value</i>s
+    unless explicitly specified otherwise. The restrictions on the code points
+    in an <i><span class=url>URL</span>-string</i> and the definition of a
+    <i>valid <span class=url>URL</span>-string</i> is discussed in 
+    the <a href=#parsing>Parsing</a> section.
 
 </section>
 
@@ -609,7 +609,8 @@
 
   <p>
     Parsing is the process of converting an
-    <i><span class=url>URL</span>-string</i> to an <i class=url>URL</i>. 
+    <i><span class=url>URL</span>-string</i> to an
+    <i><span class=url>URL</span></i>. 
     <br>
     Parsing is stratified into the following phases:
 
@@ -634,11 +635,10 @@
 
   <h3>Parser modes</h3>
   <p>
-    Unfortunately, <i class=url>URL</i>-parsing depends slightly on the
+    Unfortunately, <i class=url>URL</i>-parsing depends on the
     <b>scheme</b> of the <i class=url>URL</i> being parsed. 
-    This has the unfortunate consequence that the parsing of scheme-less
-    <i class=url>URL</i>s is ambiguous. The ambiguity can be resolved by 
-    explicitly specifying a <i>parser-mode</i>.
+    As a consequence, scheme-less <i class=url>URL</i> parsing is ambiguous. 
+    This can be resolved by explicitly specifying a <i>parser-mode</i>.
     The <i class=common>parser-mode</i> only influences how scheme-less
     <i class=url>URL</i>s are parsed.
 
@@ -653,13 +653,12 @@
   </div>
 
   <p>
-    In practice, it is possible to begin parsing with a supplied
+    In practice, it is possible and advisable to begin parsing with a supplied
     <i class=common>parser-mode</i>, and to update the
     <i class=common>parser-mode</i> whilst parsing, as soon as a
     <i class=common>scheme</i> has been detected. 
-    <br>
-    For the purpose of the specification however, it is useful to implement
-    the mode detection as a separate step as follows. 
+    For this specification however, it is useful to define
+    <i class=common>parser-mode</i> detection as a separate step as follows.
 
   <div class="dfn-scope +br">
   <h4>Mode Detection</h4>
@@ -674,11 +673,18 @@
       The <dfn>updated-parser-mode</dfn> is then defined to be:
       <ul>
         <li>
-          <b>file-mode</b> — if  (lowercase <var>magic</var>) :: <span class=rule><code>file</code> <code>:</code> <i>any</i>*</span>
+          <b>file-mode</b> — if  (lowercase <var>magic</var>) ::
+            <span class=rule><code>file</code> <code>:</code> <i>any</i>*</span>
         <li>
-          <b>web-mode</b> — if  (lowercase <var>magic</var>) :: <span class=rule>(<code>http</code> | <code>https</code> | <code>ws</code> | <code>wss</code> | <code>ftp</code>) <code>:</code> <i>any</i>*</span>
+          <b>web-mode</b> — if  (lowercase <var>magic</var>) ::
+            <span class=rule>(<code>http</code> | <code>https</code> |
+              <code>ws</code> | <code>wss</code> | <code>ftp</code>)
+              <code>:</code> <i>any</i>*</span>
         <li>
-          <b>generic-mode</b> — if  <var>input</var> :: <span class=rule><i>alpha</i> (<i>alpha</i> | <i>digit</i> | <code>+</code> | <code>-</code> | <code>.</code>)*<code>:</code> <i>any</i>*</span>
+          <b>generic-mode</b> — if  <var>input</var> ::
+            <span class=rule><i>alpha</i> (<i>alpha</i> | <i>digit</i> |
+              <code>+</code> | <code>-</code> | <code>.</code>)*<code>:</code>
+              <i>any</i>*</span>
         <li>
           <var>supplied-mode</var> — otherwise. 
       </ul>
@@ -689,153 +695,166 @@
 
   <h3>URL Grammar</h3>
     <p>
-      This section specifies a parameterised grammar for
-      <i>file-<span class=url>URL</span></i>s,
-      <i>web-<span class=url>URL</span></i>s, and generic
-      <i class=url>URL</i>s at once.
-      The grammar is parameterised by a <i>parser-mode</i>. 
-      Thus, it contains a number of rules that are modified depending on the
-      <i class=common>parser-mode</i>. Specifically, 
-      <span class=-nowrap><span class=-caps>F</span>-subscripted</span>
-      rules must be used in <b>file-mode</b> and 
-      <span class=-caps>S</span>-subscripted rules must be used in both
-      <b>file-mode</b> and in <b>web-mode</b>. 
+      This subsection specifies the grammar for
+      <i><span class=url>URL</span>-string</i>s. Implementations must use this
+      grammar for parsing <i><span class=url>URL</span></i>s from <i>string</i>s.
+      The grammar is parameterised by a <i>parser-mode</i>. Specifically,
+      the <i>auth-path</i> rule and the <i>s</i> rule have different versions 
+      for different <i class=common>parser-mode</i>s.
 
     <table class=grammar>
-      <!-- <tr><td>url 
-        <td> ::= 
-      <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
-      <tr>
-        <td>url 
-        <td> ::= 
-        <td> [ scheme <code>:</code> ] (<i>auth-path</i> | <i>path</i>)
-          [ <code>?</code> query ] [ <code>#</code> fragment ]
-      <tr>
-        <td><dfn>auth-path</dfn> 
-        <td> ::= 
-        <td> s s authority [ path-root [ dir s ]* [ file ] ]
-      <tr>
+    <tr>
+      <td>url 
+      <td> ::= 
+      <td> [ scheme <code>:</code> ] (auth-path | path)
+        [ <code>?</code> query ] [ <code>#</code> fragment ]
+
+    <tr class=-inbetween>
+      <td colspan=5>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
+
+    <tr>
+      <td><dfn>auth-path</dfn>
+      <td> ::= 
+      <td> auth-drive [ path-root  path-rel ]
+       —  in <b>file-mode</b>
+    <tr>
+      <td><dfn>auth-path</dfn> 
+      <td> ::= 
+      <td> <i>s</i> <i>s</i> authority [ path-root  path-rel ]
+       —  otherwise
+    <tr>
+      <td><dfn>auth-drive</dfn>
+      <td> ::= 
+      <td> [ <i>s</i> [<i>s</i>] ] drive |
+        <i>s</i> <i>s</i> host [ <i>s</i> drive ]
+
+    <tr class=-inbetween>
+      <td colspan=5>Rules for the authority and the path:
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  | 
+        [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+    <tr>
+      <td>credentials 
+      <td> ::= 
+      <td>username [ <code>:</code> password ]
+    <tr>
+      <td><dfn>host</dfn> 
+      <td> ::= 
+      <td> <code>[</code> ip6-address <code>]</code> | <i>opaque-host</i>
+
+    <tr>
       <td><dfn>path</dfn>
-        <td> ::= 
-        <td> [ path-root ] [ dir s ]* [ file ]
+      <td> ::= 
+      <td> [ path-root ]  path-rel
+    <tr>
+      <td><dfn>path-rel</dfn>
+      <td> ::= 
+      <td> [ dir <i>s</i> ]* [ file ]
 
-      <tr class=-inbetween>
-        <td colspan=3>Modified <i>auth-path</i> rule in <b>file-mode</b>:
-      <tr>
-        <td>auth-path<sub>F</sub><dfn style=display:none>auth-path</dfn>
-        <td> ::= 
-        <td> auth-drive [ path-root [ dir s ]* [ file ] ]
+    <tr class=-inbetween>
+      <td colspan=5>This refers to the following rules:
 
-      <tr>
-        <td>auth-drive
-        <td> ::= 
-        <td> [ s [s] ] drive | s s host [ s drive ]
+    <tr>
+      <td>scheme 
+      <td> ::= 
+      <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i>
+        | <code>+</code> | <code>-</code> | <code>.</code>)*
 
-      <tr class=-inbetween>
-        <td colspan=3>This refers to the following rules:
+    <tr>
+      <td>username 
+      <td> ::= 
+      <td> <i>uchar</i>*
 
-      <tr>
-        <td>scheme 
-        <td> ::= 
-        <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i>
-          | <code>+</code> | <code>-</code> | <code>.</code>)*
+    <tr>
+      <td>password 
+      <td> ::= 
+      <td> <i>pchar</i>*
 
-      <tr>
-        <td>authority <td> — <td> is defined in the next subsection,
-      <tr>
-        <td>host <td> — <td> likewise
-      <tr>
-        <td>drive 
-        <td> ::= 
-        <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
-      <tr>
-        <td><dfn>path-root</dfn> 
-        <td> ::= 
-        <td> <i>s</i>
-      <tr>
-        <td>dir 
-        <td> ::= 
-        <td> <i>pchar</i>*
-      <tr>
-        <td>file 
-        <td> ::= 
-        <td> <i>pchar</i>+
-      <tr>
-        <td>query 
-        <td> ::= 
-        <td> <i>qchar</i>*
-      <tr>
-        <td>fragment 
-        <td> ::= 
-        <td> <i>any</i>*
+    <tr>
+      <td><dfn>opaque-host</dfn> 
+      <td> ::= 
+      <td> <i>hchar</i>+
 
-      <tr class=-inbetween>
-        <td colspan=3>
-          These rules are based on the following character-sets:
-      <tr>
-        <td><dfn>s</dfn> 
-        <td> ::= 
-        <td> { <code>/</code> }
-      <tr>
-        <td><dfn>pchar</dfn>
-        <td> := 
-        <td> <i>any</i> \ { <code>/</code>, <code>#</code>, <code>?</code> }
-      <tr>
-        <td><dfn>qchar</dfn> 
-        <td> := 
-        <td> <i>any</i> \ { <code>#</code> }
+    <tr>
+      <td><dfn>port</dfn> 
+      <td> ::= 
+      <td> ε | <i>digit</i>+
 
-      <tr class=-inbetween>
-        <td colspan=3>These <i class=common>character-set</i>s are
-          modified in <b>file-mode</b> and in <b>web-mode</b>:
-      <tr><td>s<sub>S</sub> <dfn style=display:none>s</dfn>
-        <td> ::= 
-        <td> { <code>/</code>, <code>\</code> }
-      <tr><td>pchar<sub>S</sub> <dfn style=display:none>pchar</dfn>
-        <td> :=
-        <td> <i>any</i> \ { <code>/</code>, <code>\</code>, <code>#</code>, <code>?</code> }
+    <tr>
+      <td>drive 
+      <td> ::= 
+      <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
+
+    <tr>
+      <td><dfn>path-root</dfn> 
+      <td> ::= 
+      <td> <i>s</i>
+
+    <tr>
+      <td>dir 
+      <td> ::= 
+      <td> <i>pchar</i>*
+
+    <tr>
+      <td>file 
+      <td> ::= 
+      <td> <i>pchar</i>+
+
+    <tr>
+      <td>query 
+      <td> ::= 
+      <td> <i>qchar</i>*
+
+    <tr>
+      <td>fragment 
+      <td> ::= 
+      <td> <i>any</i>*
+
+    <tr class=-inbetween>
+      <td colspan=5>These rules are based on the following character-sets:
+
+    <tr>
+      <td><dfn>s</dfn> 
+      <td> ::= 
+      <td> { <code>/</code> }
+         —  in <b>generic-mode</b>
+
+    <tr>
+      <td>s<dfn style=display:none>s</dfn>
+      <td> ::= 
+      <td> { <code>/</code>, <code>\</code> }
+         —  otherwise
+
+    <tr><td><dfn>uchar</dfn>
+      <td> :=
+      <td> <i>any</i> \  <i>s</i>  \
+        { <code>#</code>, <code>:</code>, <code>?</code> }
+
+    <tr><td><dfn>hchar</dfn>
+      <td> :=
+      <td> <i>any</i> \ { <b>u+0</b>, <b>u+9</b>, <b>u+A</b>, <b>u+D</b>,
+        <code><span style=display:inline-block;width:1ch> </span></code>,
+        <code>#</code>, <code>/</code>, <code>:</code>, <code>&lt;</code>,
+        <code>&gt;</code>, <code>?</code>, <code>@</code>, <code>[</code>,
+        <code>\</code>, <code>]</code>, <code>^</code> }
+
+    <tr>
+      <td><dfn>pchar</dfn>
+      <td> := 
+      <td> <i>any</i> \  <i>s</i>  \ { <code>#</code>, <code>?</code> }
+
+    <tr>
+      <td><dfn>qchar</dfn> 
+      <td> := 
+      <td class=-nowrap> <i>any</i> \ { <code>#</code> }
+
     </table>
 
-  <h3>Authority Grammar</h3>
-    <table class=grammar>
-      <tr><td><dfn>authority</dfn> 
-        <td> ::= 
-        <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
-      <tr><td>credentials 
-        <td> ::= 
-        <td> username [ <code>:</code> password ]
 
-      <tr class=-inbetween><td colspan=3>This refers to the following rules:
-
-      <tr><td>username 
-        <td> ::= 
-        <td> <i>uchar</i>*
-      <tr><td>password 
-        <td> ::= 
-        <td> <i>pchar</i>*
-      <tr><td><dfn>host</dfn> 
-        <td> ::= 
-        <td> <code>[</code> ip6-address <code>]</code> | <i>opaque-host</i>
-      <tr><td><dfn>opaque-host</dfn> 
-        <td> ::= 
-        <td> <i>hchar</i>+
-      <tr><td><dfn>port</dfn> 
-        <td> ::= 
-        <td> ε | <i>digit</i>+
-
-      <tr class=-inbetween>
-        <td colspan=3>These rules are based on the following character-sets:
-
-      <tr><td><dfn>uchar</dfn>
-        <td> :=
-        <td> <i>pchar</i> \ { <code>:</code> }
-      <!-- <tr><td>hchar <td> := <td> pchar \ { <code>@</code>, <code>:</code> } -->
-      <tr><td><dfn>hchar</dfn>
-        <td> :=
-        <td> <i>any</i> \ { <b>u+0</b>, <b>u+9</b>, <b>u+A</b>, <b>u+D</b>, <code><span style=display:inline-block;width:1ch> </span></code>, <code>#</code>, <code>/</code>, <code>:</code>, <code>&lt;</code>, <code>&gt;</code>, <code>?</code>, <code>@</code>, <code>[</code>, <code>\</code>, <code>]</code>, <code>^</code> }
-      <!-- <tr><td>portchar <td> := <td> pchar \ { <code>@</code> } -->
-    </table>
-  </div>
+  <p class=todo>
+    Double check the following, and include it here
 
   <h4>IPv6 Address</h4>
   <p>
@@ -843,21 +862,130 @@
     <code>:</code> or <code>::</code>, the items being hexadecimal except for
     the last itme, which may consist of four decimal numbers separated by
     <code>.</code> as follows:-->
-    is a <i class=common>string</i> representation of a natural number <var>n</var> &lt; 2<sup>128</sup>. 
+    is a <i class=common>string</i> representation of a natural number
+      <var>n</var> &lt; 2<sup>128</sup>. 
     It is accurately described by the production rule <var>IPv6address</var>
     in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
     section of <abbr class=-caps>RFC</abbr> 3986. 
 
 
-  <h3>URL Model</h3>
+  <h3>Strict URL Grammar</h3>
+
+  <p>
+    The grammar in the previous subsection defines
+    <i><span class=url>URL</span>-string</i>s in general. 
+    In this subsection a number of amendments are made to arrive at a grammar
+    for <dfn>valid <span class=url>URL</span>-string</dfn>s. 
+    Implementations however, must tolerate 
+    <i><span class=url>URL</span>-string</i>s that are <em>not</em> <i>valid</i>
+    and they must use the grammar for <i><span class=url>URL</span>-string</i>s
+    as specified in the previous subsection for parsing <i class=url>URL</i>s.
+
+  <p class=-inbetween>The following rules are modified:
+  <table class=grammar>
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  <i>host</i> [ <code>:</code> port ]
+    <tr>
+      <td><dfn>auth-drive</dfn>
+      <td> ::= 
+      <td> <i>s</i> drive | <i>s</i> <i>s</i> host [ <i>s</i> drive ]
+    <tr>
+      <td><dfn>opaque-host</dfn> 
+      <td> ::= 
+      <td> (<i>pct</i> | <i>hchar</i>)+
+    <tr>
+      <td>drive 
+      <td> ::= 
+      <td> <i>alpha</i> <code>:</code>
+    <tr>
+      <td>dir 
+      <td> ::= 
+      <td> (<i>pct</i> | <i>pchar</i>)*
+    <tr>
+      <td>file 
+      <td> ::= 
+      <td> (<i>pct</i> | <i>pchar</i>)+
+    <tr>
+      <td>query 
+      <td> ::= 
+      <td> (<i>pct</i> | <i>url-char</i>)*
+    <tr>
+      <td>fragment 
+      <td> ::= 
+      <td> (<i>pct</i> | <i>url-char</i>)*
+
+    <tr>
+      <td><dfn>pct</dfn>
+        <td> ::=
+        <td> <code>%</code>  <i>hex-digit</i>  <i>hex-digit</i>
+
+    <tr class=-inbetween>
+      <td colspan=3>
+        These rules are based on the modified character-sets:
+    <tr>
+      <td><dfn>s</dfn>
+      <td> := 
+      <td> { <code>/</code> } — in all modes
+    <tr>
+      <td><dfn>base-char</dfn>
+      <td> := 
+      <td colspan=4> <i>any</i> \ <i>control-c0</i> \ <i>del-c1</i> \ <i>surrogate</i> \ <i>non-char</i>
+    <tr>
+      <td><dfn>url-char</dfn> 
+      <td> := 
+      <td colspan=4> <i>base-char</i> \ <span class=-nowrap>{
+        <code><span style=display:inline-block;width:1ch> </span></code>,</span>
+        <code>"</code>,
+        <code>#</code>,
+        <code>%</code>,
+        <code>&lt;</code>,
+        <code>&gt;</code>,
+        <code>[</code>,
+        <code>\</code>,
+        <code>]</code>,
+        <code>^</code>,
+        <code>`</code>,
+        <code>{</code>,
+        <code>|</code>,
+        <code>}</code> }
+    <tr>
+      <td><dfn>hchar</dfn>
+      <td> :=
+      <td> <i>url-char</i> \ 
+        <span class=-nowrap>{ <code>/</code>, <code>:</code>, 
+          <code>?</code>, <code>@</code> }</span>
+    <tr>
+      <td><dfn>pchar</dfn>
+      <td> := 
+      <td> <i>url-char</i> \  <i>s</i>  \ <span class=-nowrap>{ <code>?</code> }</span>
+  </table>
+
+  <p>
+    Note that the sets of allowed characters are more restricted,
+    the presence of credentials in the authority is prohibited altogether,
+    and drives are expected to be preceded by a single <i>s</i> delimiter
+    and must be must not be of the form
+    <span class=rule><var>drive</var> :: <i>alpha</i> <code>|</code></span>. 
+
+  <!-- <p>
   <div class=todo>
-    The grammar and the model, are very closely related. 
-    (So close even that I'm pondering if I can merge them). 
+    Double check. It is unclear to me whether the presence of a 
+    drive letter is maybe considered invalid in all cases. 
+  </div> -->
+
+
+  <!-- <h3>URL Model</h3>
+  <div class=todo>
+    The grammar and the model, are very closely related.
+    (So close even that I'm pondering if I can merge them).
     If you record the use of each rule whose name corresponds to a token-type
-    as a token, then you end up with an URL as defined in the Model section. 
+    as a token, then you end up with an URL as defined in the Model section.
     With the port, being once exception, and the definition of a host needs
-    a bit of work too. 
-  </div>
+    a bit of work too.
+  </div> -->
+
 
   <h3>A note about repeated slashes</h3>
     <p>
@@ -911,13 +1039,17 @@
 <section><h2>Host processing</h2>
 <!------------------------------>
 
+  <div class=note>
+    This section still has to be written.
+  </div>
+
   <div class=todo>
     <ul>
-      <li>Percent decode
-      <li>Puny decode
-      <li>Apply IDNA/ Nameprep normalisation
-      <li>Detect IPv4 addresses
-      <li>Err on forbidden host codepoints
+      <li>Percent decode.
+      <li>Puny decode.
+      <li>Apply IDNA/ Nameprep normalisation.
+      <li>Detect and interpret IPv4 addresses.
+      <li>Err on 'forbidden host codepoints'.
     </ul>
   </div>
 
@@ -933,14 +1065,14 @@
       <td> ip4num [<code>.</code> ip4num [<code>.</code> ip4num [<code>.</code> ip4num ] ] ] [<code>.</code>]
     <tr><td>ip4num 
       <td> ::= 
-      <td> ip4dec | ip4octal | ip4hex
-    <tr><td>ip4dec 
+      <td> num<sub>10</sub> | num<sub>8</sub> | num<sub>16</sub>
+    <tr><td>num<sub>10</sub> 
       <td> ::= 
       <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
-    <tr><td>ip4octal 
+    <tr><td>num<sub>8</sub> 
       <td> ::= 
       <td> <code>0</code> <i>octal-digit</i>*
-    <tr><td>ip4hex 
+    <tr><td>num<sub>16</sub> 
       <td> ::= 
       <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
   </table>
@@ -948,6 +1080,24 @@
   <p>
     Note that <code>0x</code> is parsed as a hexadecimal number.
     (It will be interpreted as 0).
+
+
+  <h4>IPv4 Address - Strict</h4>
+  <p>
+    A <em>valid</em> IPv4 address-string consists of one up to four
+    dot-separated numbers, <em>without</em> a trailing dot.
+    The numbers must use decimal notation, as follows:
+  
+  <table class=grammar>
+    <tr><td>ip4-address-strict 
+      <td> ::=
+      <td> num<sub>10</sub>  [<code>.</code> num<sub>10</sub>  [<code>.</code> num<sub>10</sub>  [<code>.</code> num<sub>10</sub>  ] ] ]
+    <tr><td>num<sub>10</sub> 
+      <td> ::= 
+      <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
+  </table>
+
+
 </section>
 
 
@@ -1113,9 +1263,9 @@
   <p>
     There is an additional operation on <i class=url>URL</i>s called
     <dfn>force</dfn> that it is used as an error-recovery measure for
-    <i>web-<span class=url>URL</span></i>s and for
-    <i>file-<span class=url>URL</span></i>s.
-    Force has no effect on other <i class=url>URL</i>s.
+    <i>web-<span class=url>URL</span></i>s and
+    <i>file-<span class=url>URL</span></i>s that do not have an <b>authority</b>
+    token. Force has no effect on other <i class=url>URL</i>s.
 
   <div class="dfn-scope +br">
   <h4>Forced File URL</h4>
@@ -1160,38 +1310,37 @@
       </ul>
     </li>
   </div>
-  <!--<div class=todo>
-    Make this clean
-  </div>-->
 
   <h4>Force Properties</h4>
   <p>
-    The <i>force</i> operation has some unpleasant mathematical properties
-    with respect to the <i>goto</i> operations. 
-  <p class="-center -nowrap">
-    <i class=op>force</i>
-    ((<i class=op>force</i> <var>url<sub>1</sub></var>)  <i class=op>goto</i> 
-    (<i class=op>force</i> <var>url<sub>2</sub></var>))  ≠  
-    <i class=op>force</i> (<var>url<sub>1</sub></var> 
-       <i class=op>goto</i>  <var>url<sub>2</sub></var>)
-  <!-- <p class="-center -nowrap">
-    <i class=op>force</i>
-    (<var>url<sub>1</sub></var>  <i class=op>goto</i> 
-    (<i class=op>force</i> <var>url<sub>2</sub></var>))  ≠ 
-    <i class=op>force</i> (<var>url<sub>1</sub></var>
-       <i class=op>goto</i>  <var>url<sub>2</sub></var>) -->
-
-<!-- force (url1  goto  (force url2))  ≠  force (url1  goto  url2)  -->
-
-  <!-- <p>
-    An example is the case where
-    url1 is the URL that is represented by
-    http:// -->
-
-  <div class=todo>
-    Clean up the definition a bit. 
-    I may add a buch more inequalities here, too
-  </div>
+    The <i>force</i> operation lacks a number of nice properties
+    with respect to the <i>goto</i> operations: 
+  <table class=grammar>
+    <tr>
+      <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
+      <i class=op>goto</i>
+      (<i class=op>force</i> <var>url<sub>2</sub></var>))
+      <td> ≠ 
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+    <tr>
+      <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+      <td> ≠ 
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+    <tr>
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      (<i class=op>force</i> <var>url<sub>2</sub></var>))
+      <td> ≠ 
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+  </table>
 
 
   <h3>Resolution</h3>
@@ -1232,13 +1381,21 @@
   </div>
 
   <div class="dfn-scope +br">
-    <h4>Forced Resolution</h4>
     <dfn style=display:none>force-resolve</dfn>
+    <h4>Forced Resolution</h4>
     <p>
       The <dfn>forced resolution</dfn> of <var>url<sub>1</sub></var> against
       <var>url<sub>2</sub></var> is defined to be the <i>resolution</i> of 
       <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>, 
-      subsequently <i>force</i>d. 
+      subsequently <i>force</i>d.
+    <p>
+      Forced resolution must issue a validation error if the
+      <i class=common>resolution</i> of <var>url<sub>1</sub></var>
+      against <var>url<sub>2</sub></var> is a 
+      <i class=common>file-<span class=url>URL</span></i> 
+      or a <i class=common>web-<span class=url>URL</span></i> 
+      without an <b>authority</b>. Otherwise, if the <i>resolution</i>
+      <strong>fails</strong> then the <i>forced resolution</i> fails as well.
   </div>
 
 </section>
@@ -1256,26 +1413,29 @@
   particular normal form. The <abbr class=-caps>WHATWG</abbr> standard
   does, however implicitly. 
 
+
+
 <!-- <p>
   I think it is nice to define the equivalences via a congruence relation.
   The equations that follow in this section can be directed from left
   to right to obtain a set of terminating rewrite rules.
   An <i class=url>URL</i> is in normal form if no more rewrite rules can be
   applied.
-
-<div class=todo>
-  I like the idea of redefining the the concept of a normalisation function
-  first, aligning it with mathematical practice. Thus, define it as a function
-  that is congruent with the goto laws (this then,
-  is &lsquo;URL algebra&rsquo;).
-  I may have to do a little bit extra to point out the relationship between
-  equivalence classes and normalisation.
-  <ul>
-  <li>norm ((norm url1) goto (norm url2)) = norm (url1 goto url2)
-  <li>norm ((norm url1) ~goto (norm url2)) = norm (url1 ~goto url2)
-  </ul>
-  But I do want to keep things accessible, so not go in too deep here.
-</div> -->
+<h4>Normalisation Function</h4>
+<p>
+  A <i>normalisation function</i> for <i class=url>URL</i>s is a function
+  <var>norm</var> that respects the following equation. 
+<table class=grammar>
+  <tr>
+    <td><var>norm</var> ((<var>norm</var> <var>url<sub>1</sub></var>)  
+    <i class=op>goto</i>
+    (<var>norm</var> <var>url<sub>2</sub></var>))
+    <td> = 
+    <td><var>norm</var> (<var>url<sub>1</sub></var>  
+    <td><i class=op>goto</i>
+    <td><var>url<sub>2</sub></var>)
+</table>
+-->
 
 
 <h3>Path Segment Normalisation</h3>
@@ -1342,7 +1502,7 @@
 </table>
 
 
-<h3>Authority and Drive Letter Normalisation</h3>
+<h3>Authority Normalisation</h3>
 <p>
   Authority equivalence is defined by the following equations.
   Like path normalisation,
@@ -1352,26 +1512,26 @@
   <span class=url>URL</span> does not have a <b>password</b> after that, 
   to also remove any empty <b>username</b> token. 
 </p>
-<p class=todo>Actually there's a bug in here. This fails to remove an empty
-  <b>username</b> if the password is already removed. 
 
   <table>
-    <tr><td><b>username</b> ε・<b>password</b> ε <td> ≈ <td>ε
-    <tr><td><b>password</b> ε <td> ≈ <td>ε
+    <tr><td><b>username</b> ε・<b>password</b> ε
+      <td> ≈ <td>ε
+    <tr><td><b>username</b> ε・<b>host</b> <var>h</var>
+      <td> ≈ <td><b>host</b> <var>h</var>
+    <tr><td><b>password</b> ε
+      <td> ≈ <td> ε
     <tr><td><b>port</b> ε <td> ≈ <td>ε
   </table>
 
-<h3>Scheme-based Authority Normalisation</h3>
-  <table>
-    <tr>
-      <td colspan=3><b>scheme</b> <var>scheme</var> 
-      <td> ≈ 
-      <td colspan=3><b>scheme</b> (lowercase <var>scheme</var>)
-    <tr>
-      <td><b>scheme</b> <code>file</code> 
-      <td>・<td><b>authority</b> (<b>host</b> <code>localhost</code>)          
-      <td> ≈ <td> <b>scheme</b> <code>file</code> 
-      <td>・<td><b>authority</b> ε
+<h3>Scheme and Authority Normalisation</h3>
+<p>
+  If an <i class=url>URL</i> has a scheme, then a number of additional
+  equivalences apply to the authority. Normalisation according to these rules
+  involves the removal of <em>default</em> <b>port</b>s, and similarly, 
+  removing the <b>host</b> from <i>file-<span class=url>URL</span></i>s if its
+  <i class=common>value</i> is <code>localhost</code>. 
+
+  <table id=scheme-based-normalisation>
     <tr>
       <td><b>scheme</b> <code>http</code> 
       <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>80</code>)  
@@ -1397,8 +1557,22 @@
       <td>・<td><b>authority</b> (<var>xs</var>・<b>port</b> <code>443</code>) 
       <td> ≈ <td> <b>scheme</b> <code>https</code>
       <td>・<td><b>authority</b> <var>xs</var>
+    <tr>
+      <td><b>scheme</b> <code>file</code> 
+      <td>・<td><b>authority</b> (<b>host</b> <code>localhost</code>)          
+      <td> ≈ <td> <b>scheme</b> <code>file</code> 
+      <td>・<td><b>authority</b> ε
   </table>
 
+  <p>
+    These rules apply in combination with the following rule that states that
+    <b>scheme</b> equivalence is case-insensitive. 
+    <table>
+      <tr>
+        <td colspan=3><b>scheme</b> <var>scheme</var> 
+        <td> ≈ 
+        <td colspan=3><b>scheme</b> (lowercase <var>scheme</var>)
+    </table>
 </section>
 
 
@@ -1417,29 +1591,20 @@
   use characters within <i class=common>token</i>s, that are not otherwise
   allowed by the <i class=url>URL</i> grammar.
   The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em>
-  specify the  semantics of percent-encoded-bytes in the components of an
-  <i class=url>URL</i> other than in the host. 
-  This effectively means that the interpretation of percent-encoded-bytes 
-  in other <i class=common>token</i>s is left unspecified, and any
-  percent-encoded bytes that are present <em>are not interpreted</em>.
-  However, it does prescribe that certain characters must be <em>encoded</em>… 
+  specify the semantics of percent-encoded-bytes in the tokens of an
+  <i class=url>URL</i> other than the <b>host</b>, and any
+  percent-encoded bytes that are present in other tokens are <em>not</em> decoded.
 
-<div class=todo>
-  I'd like to see if there's a way to add
-  this back in without breaking compatibility. Just making a mention of the
-  semantics and prescribing a percent-encoding-normal-form could do. 
-  It might be a better fit for the Normalisation section.
-</div>
-  
+<h4>Percent Encoded String</h4>
 <p>
-  The following defines the grammar for percent encoded strings.
+  The following defines the grammar for <dfn>percent-encoded–strings</dfn>. 
+  It will be used in the subsection on percent-decoding.
 </p>
-
 <table class=grammar>
   <tr>
     <td>pct-encoded-string
     <td> ::=
-    <td>( <i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i> )*
+    <td>(<i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i>)*
   <tr>
     <td><dfn>pct-encoded-bytes</dfn>
     <td> ::=
@@ -1507,11 +1672,11 @@
     that is used as a configuration argument to a
     <i>percent-encode</i> operation on <i>string</i>s.
 
-<p class=todo>
-  I'm not entirely sure about restricting the encode sets to printable ASCII. 
-  In any case, the additional 'non-url codepoints' must be encoded. But It makes
-  sense to mandate that and not make it configurable via the encode set.
-  …
+<p class=note>
+  This restricts the encode sets to printable ASCII. 
+  Non-url codepoints must also be encoded, but it makes sense to mandate that
+  and not make it configurable via the encode set, but this is work in progress. 
+  <br>
   Furthermore, this needs to discuss the encoding override, which is only 
   allowed for the query; all other tokens must use UTF8.
 
@@ -1575,7 +1740,7 @@
 
 <script>
 
-  const encodedTypes = ['url', 'username', 'password', 'host', 'dir', 'file', 'query', 'fragment']
+  const encodedTypes = [/*'url', */'username', 'password', 'host', 'dir', 'file', 'query', 'fragment']
 
   class EncodeTableView {
 
@@ -1618,7 +1783,8 @@
 
 <p>
   Unfortunately, like parsing, the percent-encoding
-  of <span class=url>URL</span>s is scheme dependent. 
+  of <span class=url>URL</span>s as prescribed by the 
+  <abbr class=-caps>WHATWG</abbr> standard, is scheme dependent. 
   The consequence is that for scheme-less <span class=url>URL</span>s,
   a <i class=common>percent-encode-profile</i> must be manually specified. 
 
@@ -1650,214 +1816,15 @@
 
 
 <!------------------------->
-<section><h2>Validation</h2>
-<!------------------------->
-
-<p>
-  The <abbr class=-caps>WHATWG</abbr> makes a distinction between
-  <i class=noindex>validation-errors</i> and <i class=noindex>failures</i>.
-  As such, the <em>validity</em> of an <span class=url>URL</span>
-  is a three-state concept. There is accept, accepts-with-warnings, or reject. 
-  This distinction can be made within the parser, the model, and the 
-  operations. 
-
-<div class=todo>
-  This is work in progress. 
-  I think I will add a sub validation to the preliminaries,
-  and then fold this into the other sections. 
-  I've already started to do that with the model.
-</div>
-
-<h3>Parser</h3>
-  <p>
-    The parser <em>can</em> reject. There <em>are</em>
-    <i class=common>string</i>s that are not <span class=url>URL</span>-strings.
-    <br>This can happen within the <i>authority</i>, <i>port</i>, <i>host</i>
-    and <i>ip6-address</i> rules. 
-  <p>
-    The host parser can reject on  (ao) invalid IPv4 address. 
-    It can accept-with-warnings an IPv4 address that uses hexadecimal or octal
-    notation.
-
-
-<h3>Strict URL Grammar</h3>
-
-  <table class=grammar>
-    <!-- <tr><td>url 
-      <td> ::= 
-    <td> [ scheme <code>:</code> ] [ s s authority ] [ path-root ] (dir s)* [ file ] [ <code>?</code> query ] [ <code>#</code> fragment ] -->
-    <tr>
-      <td>url 
-      <td> ::= 
-      <td> [ scheme <code>:</code> ] (<i>auth-path</i> | <i>path</i>)
-        [ <code>?</code> query ] [ <code>#</code> fragment ]
-    <tr>
-      <td><dfn>auth-path</dfn> 
-      <td> ::= 
-      <td> <code>//</code> authority [ path-root  path-rel ]
-    <tr>
-      <td><dfn>path</dfn>
-      <td> ::= 
-      <td> [ path-root ]  path-rel
-    <tr>
-      <td><dfn>path-rel</dfn>
-      <td> ::= 
-      <td> [ dir <code>/</code> ]* [ file ]
-
-    <tr class=-inbetween>
-      <td colspan=3>Modified <i>auth-path</i> rule in <b>file-mode</b>:
-    <tr>
-      <td>auth-path<sub>F</sub><dfn style=display:none>auth-path</dfn>
-      <td> ::= 
-      <td> auth-drive [ path-root  path-rel ]
-
-    <tr>
-      <td>auth-drive
-      <td> ::= 
-      <td> [ <code>/</code> ] drive  |  <code>//</code> host [ <code>/</code> drive ]
-
-    <tr class=-inbetween>
-      <td colspan=3>This refers to the following rules:
-
-    <tr>
-      <td>scheme 
-      <td> ::= 
-      <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i>
-        | <code>+</code> | <code>-</code> | <code>.</code>)*
-
-    <tr>
-      <td><dfn>authority</dfn> 
-      <td> ::= 
-      <td> ε  |  <i>host</i> [ <code>:</code> port ]
-    <tr><td><dfn>host</dfn> 
-      <td> ::= 
-      <td> <code>[</code> ip6-address <code>]</code> | <i>opaque-host</i>
-    <tr>
-      <td><dfn>opaque-host</dfn> 
-      <td> ::= 
-      <td> <i>hchar-strict</i>+
-    <tr>
-      <td><dfn>port</dfn> 
-      <td> ::= 
-      <td> ε | <i>digit</i>+
-
-    <tr>
-      <td>drive 
-      <td> ::= 
-      <td> <i>alpha</i> <code>:</code>
-    <tr>
-      <td><dfn>path-root</dfn> 
-      <td> ::= 
-      <td> <code>/</code>
-    <tr>
-      <td>dir 
-      <td> ::= 
-      <td> <i>pchar-strict</i>*
-    <tr>
-      <td>file 
-      <td> ::= 
-      <td> <i>pchar-strict</i>+
-    <tr>
-      <td>query 
-      <td> ::= 
-      <td> <i>url-char</i>*
-    <tr>
-      <td>fragment 
-      <td> ::= 
-      <td> <i>url-char</i>*
-
-    <tr class=-inbetween>
-      <td colspan=3>
-        These rules are based on the following character-sets:
-    <tr>
-      <td><dfn>url-char</dfn> 
-      <td> := 
-      <td> <i>any</i> \ <i>c0-space</i> \ {
-        <code><span style=display:inline-block;width:1ch> </span></code>,
-        <code>"</code>,
-        <code>#</code>,
-        <code>%</code>,
-        <code>&lt;</code>,
-        <code>&gt;</code>,
-        <code>[</code>,
-        <code>\</code>,
-        <code>]</code>,
-        <code>^</code>,
-        <code>`</code>,
-        <code>{</code>,
-        <code>|</code>,
-        <code>}</code>
-       } \ del-c1 \ surrogate \ non-char
-    <tr>
-      <td><dfn>pchar-strict</dfn>
-      <td> := 
-      <td> <i>url-char</i> \ { <code>/</code>, <code>?</code> }
-    <tr>
-      <td><dfn>hchar-strict</dfn>
-      <td> :=
-      <td> <i>url-char</i> \ { <code>/</code>, <code>:</code>, 
-          <code>?</code>, <code>@</code> }
-  </table>
-
-<p>
-  The differences between the strict URL grammar and the URL grammar 
-  for parsing are:
-  <ul>
-    <li>
-      The separator <span>s</span> is replaced by <code>/</code>.
-    <li>
-      Drives must end with <code>:</code> and must be 
-      preceded by one <code>/</code> (review this).
-    <li>
-      Credentials are not allowed at all.
-    <li>
-      The character sets are restricted. 
-  </ul>
-<p class=-br>
-  Thus, the parser can accept with validation warnings,
-<ul>
-  <li>Invalid separator: backslash instead of slash
-  <li>Drive letter preceded by <code>//</code>
-  <li>Drive letter :: alpha <code>|</code> – instead of
-    alpha <code>:</code>
-  <li>Invalid URL code points in tokens
-  <li>Invalid escape sequences
-  <li>Any credentials at all
-</ul>
-
-
-<h3>Operations</h3>
-<p>
-  This specification defines operations on <span class=url>URL</span>s that can
-  fail.  These are the <i>force</i> operation, the <i>resolve</i> operation, and
-  by reference, the <i>force-resolve</i> operation. 
-
-<div class=todo>
-  Whenever force needs to be employed, a validation warning should be issued. 
-  That means, I will have to add a small step that detects if this is the case. 
-  <br>
-  Alright, it may be quite clean, to restrict the domain of these functions,
-  and make that explicit, and then resort to forcing and recovery wherever 
-  possible.
-</div>
-
-</section>
-
-
-<!------------------------->
 <section><h2>Printing</h2>
 <!------------------------->
+<p class=note>
+  This section is incomplete,
+</div>
+
 <p>
   Printing is the process of converting an <i class=url>URL</i> to an
   <i><span class=url>URL</span>-string</i>.
-
-
-<div class=todo>
-  <p>
-    This is under development. 
-  I like the idea of using a post-order traversal, or an algebraic fold,
-  that seems most clean.
-</div>
 
 <p class=todo>
   There are <i>unprintable</i> URLs. These are URLs that would cause a 
@@ -1873,7 +1840,7 @@
     percent encode <i>any</i> \ <i>printable-<abbr class=-caps>ASCII</abbr></i>
   <li>
     Otherwise percent encode <i>control-c0</i>, <i>del-c1</i>, 
-    <i>surrogate</i>s and <i>non-chars</i>. 
+    <i>surrogate</i>s and <i>non-char</i>s. 
   <li>
     In addition percent encode a subset of 
     <i>printable-<abbr class=-caps>ASCII</abbr></i>, depending on the 
@@ -1941,17 +1908,31 @@
   <li>force resolve url1 against base
   <li>normalise and percent encode the result. 
 </ul>  
+</div>
 
+<div class=todo>
 That results in an URL (model). 
 One can then wrap around that to describe the URL class of web browsers:
 
 <ul>
-  <li>the username and password accessors return ε if absent or the value of the
+  <li>The href getter returns the printed URL.
+  <li>The protocol getter returns the scheme + <code>:</code> or ε if absent.
+  <li>The username and password getters return ε if absent or the value of the
     corresponding token otherwise
-  <li>the href accessor returns the printed URL
-  <li>…
+  <li>The host getter returns ε if absent, the value
+    of the <b>host</b> if the port is absent, and the value
+    of the <b>host</b> + <code>:</code> + the value of the <b>port</b> otherwise.
+  <li>The hostname getter returns ε if the URL has no host, otherwise it returns the value
+    of the <b>host</b>.
+  <li>pathname (…)
+  <li>The search getter returns ε if the URL has no <b>query</b>, otherwise it
+    returns the value of the <b>query</b>. 
+  <li>The hash getter returns returns ε if the URL has no <b>query</b>, 
+    otherwise it returns the value of the <b>fragment</b>. 
 </ul>
 
+<p>
+  Note that there is a loss of information about the structure of the URL. 
 </div>
 
 </section>

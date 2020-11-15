@@ -344,7 +344,8 @@ lookup = c =>
   (0x7b <= c && c <= 0x7e) ? u7B_u7E [c - 0x7b] : 
   // Escape surrogate halves and non-characters
   (0xD800 <= c && c <= 0xDFFF) ? ~0 :
-  (0xFDD0 <= c && c <= 0xFDEF || (c <= 0x10FFFF && ((c >> 1) & 0x7FFF) === 0x7FFF)) ? ~0 : 0
+  (0xFDD0 <= c && c <= 0xFDEF || ((c >> 1) & 0x7FFF) === 0x7FFF) ? ~0 : 0
+  // NB 0x7FFF is 2**15-1, i.e. 0b111111111111111 (fifteen ones).
   
 getProfile = ({ minimal = false, special = false }) =>
   minimal && special ? _minspec
