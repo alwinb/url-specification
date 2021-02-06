@@ -308,7 +308,10 @@ div#icon {
   height:3.5rem;
   margin-top:-1rem;
   margin-bottom:.5rem;
+  background:url(../icon.png) top center no-repeat;
   position:relative;
+  text-indent:10em;
+  overflow:hidden;
 }
 
 
