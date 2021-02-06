@@ -34,6 +34,9 @@ const tags = {
 
 const specials = { http:1, https:2, ws:3, wss:4, ftp:5, file:6 }
 
+const isSpecial = ({ scheme }) =>
+  low (scheme) in specials
+
 const isBase = ({ scheme, host, root }) =>
   scheme != null && (host != null || root != null)
 
@@ -230,17 +233,17 @@ const normalise = url => {
 
   const dirs = []
   for (let x of r.dirs||[]) {
-    let isDots = dots (x)
+    const isDots = dots (x)
     if (isDots === 2) dirs.pop ()
     else if (!isDots) dirs.push (x)
   }
   if (r.file) {
     const isDots = dots (r.file)
     if (isDots === 2) dirs.pop ()
-    else if (isDots === 1) delete r.file
+    if (isDots) delete r.file
   }
-  if (dirs.length)
-    r.dirs = dirs
+  if (dirs.length) r.dirs = dirs
+  else delete r.dirs
 
   // ### Drive letter normalisation
 
@@ -249,10 +252,16 @@ const normalise = url => {
 
   // ### Scheme-based authority normalisation
 
-  if (url.port === 80 && (scheme === 'http' || scheme === 'ws'))
+  if (scheme === 'file' && r.host === 'localhost')
+    // TODO check spec. Should it say (auhority ε) or (auhority (host ε)) ?
+    r.host = ''
+
+  else if (url.port === 80 && (scheme === 'http' || scheme === 'ws'))
     delete r.port
+
   else if (url.port === 443 && (scheme === 'https' || scheme === 'wss'))
     delete r.port
+
   else if (url.port === 21 && scheme === 'ftp')
     delete r.port
 
@@ -284,18 +293,10 @@ const url = 1<<9,
   query_s = 1<<1,
   fragment = 1<<0
 
-// ### Percent Encode Profiles
-// There are four encode profiles
-
-const [username, password, file] = [user, user, dir]
-const
-  _generic = { url, username, password, host, dir, file, query, fragment },
-  _minimal = { url, username, password, host, dir:dir_m,  file:dir_m,  query, fragment },
-  _special = { url, username, password, host, dir:dir_s,  file:dir_s,  query:query_s, fragment },
-  _minspec = { url, username, password, host, dir:dir_ms, file:dir_ms, query:query_s, fragment }
-
-// Using a bitfield encoding to represent the
-// percent encode sets.
+// Lookup tables:
+// The rightmost bits encode the fragment-encode-set,
+// The second-rightmost bits encode the special-query encode set,
+// and so on and so forth. 
 
 const u20_u27 = [
 /* ( ) */ 0b1111100111,
@@ -346,17 +347,28 @@ lookup = c =>
   (0xD800 <= c && c <= 0xDFFF) ? ~0 :
   (0xFDD0 <= c && c <= 0xFDEF || ((c >> 1) & 0x7FFF) === 0x7FFF) ? ~0 : 0
   // NB 0x7FFF is 2**15-1, i.e. 0b111111111111111 (fifteen ones).
-  
+
+
+// ### Percent Encode Profiles
+// There are four encode profiles. 
+
+const [username, pass, password, file] = [user, user, user, dir]
+const
+  _generic = { url, user, pass, username, password, host, dir, file, query, fragment },
+  _minimal = { ..._generic, dir: dir_m,  file: dir_m },
+  _special = { ..._generic, dir: dir_s,  file: dir_s,  query: query_s },
+  _minspec = { ..._generic, dir: dir_ms, file: dir_ms, query: query_s }
+
 getProfile = ({ minimal = false, special = false }) =>
   minimal && special ? _minspec
     : special ? _special
     : minimal ? _minimal
     : _generic
+}
 
 isInSet = (cp, { name, minimal, special }) =>
   lookup (cp) & getProfile ({ minimal, special }) [name]
 
-}
 
 // ### UTF8 coding
 
@@ -385,26 +397,51 @@ const utf8 = {
 
 // ### Percent Encoding URLs
 
-// TODO escape dirs and detect profile, ...
+// TODO check with spec
+// and add a new 'full' profile
 
-const percentEncode = (url, { minimal, special } = { }) => {
+const profileFor = (url, fallback) => {
+  const scheme = url.scheme
+  const special = isSpecial (url)
+  const minimal = special ? false : !isBase (url)
+  return { minimal, special }
+}
+
+const percentEncode = (url, _profile = profileFor (url)) => {
+  const profile = getProfile (_profile)
   const r = assign ({}, url)
-  const profile = getProfile ({ minimal, special })
-  for (let k in tags) if (k in profile && url[k] != null) {
-    let coded = []
-    for (let char of url[k]) {
-      const cp = char.codePointAt (0)
-        if (lookup (cp) & profile [k]) for (let byte of utf8.decode (cp)) {
-          let h1 = byte >> 4, h2 = byte & 0b1111
-          h1 = (h1 < 10 ? 48 : 55) + h1 // single hex digit
-          h2 = (h2 < 10 ? 48 : 55) + h2 // single hex digit
-          coded += String.fromCharCode(0x25, h1, h2) // %xx code
-        }
-        else coded += char
+  for (let k in tags) {
+    if (k === 'dirs' && url.dirs) {
+      const _dirs = (r.dirs = [])
+      for (let x of url.dirs)
+        _dirs.push (percentEncodeString (x, profile.dir))
     }
-    r[k] = coded
+    else if (k === 'host' && _isIp6 (url.host))
+      continue
+    else if (k in profile && url[k] != null)
+      r[k] = percentEncodeString (url[k], profile[k])
   }
   return r
+}
+
+// TODO design the ip4/ip6 host representation for the spec
+
+const _isIp6 = str => 
+  str != null && str[0] === '[' && str[str.length-1] === ']'
+
+const percentEncodeString = (value, encodeSet) => {
+  let coded = ''
+  for (let char of value) {
+    const cp = char.codePointAt (0)
+    if (lookup (cp) & encodeSet) for (let byte of utf8.decode (cp)) {
+      let h1 = byte >> 4, h2 = byte & 0b1111
+      h1 = (h1 < 10 ? 48 : 55) + h1 // single hex digit
+      h2 = (h2 < 10 ? 48 : 55) + h2 // single hex digit
+      coded += String.fromCharCode (0x25, h1, h2) // %xx code
+    }
+    else coded += char
+  }
+  return coded
 }
 
 
@@ -523,14 +560,16 @@ function test (test) {
 }
 
 
-// Test 
-// ----
+// Exports 
+// -------
 
 const miniurl = {
-  ord, upto, goto, _goto, isBase, preResolve, resolve, 
-  parse, normalise, print,
-  parseResolveAndNormalise, test,
-  isInSet
+  isBase, isSpecial,
+  ord, upto, goto, _goto, preResolve, resolve, 
+  parse, normalise, normalize:normalise, print,
+  percentEncode, profileFor,
+  isInSet,
+  parseResolveAndNormalise, test
 }
 
 if (typeof module === 'undefined')
