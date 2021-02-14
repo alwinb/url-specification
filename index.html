@@ -444,6 +444,7 @@
       Whenever present, <i>token</i>s are subject to the following constraints:
     <ul>
       <li class=dfn-scope>
+        <dfn style=display:none><b>scheme</b>-string</dfn>
         The <dfn><b>scheme</b></dfn> of an <i class=url>URL</i>
         is a <i class=common>string</i>
         <span class=rule><var>scheme</var> :: <i>alpha</i> (<i>alpha</i>
@@ -650,6 +651,25 @@
       <dfn><b>web-mode</b></dfn>, 
       <dfn><b>file-mode</b></dfn>, and
       <dfn><b>generic-mode</b></dfn>.
+
+    <p>
+      The <dfn>detected-parser-mode</dfn> for an
+      <i class=common><span class=url>URL</span>-string</i>
+      <var>input</var>, given a fallback <i class=common>parser-mode</i>
+      <var>supplied-mode</var> is then defined to be:
+    <ul class=-inbetween>
+      <li>
+        <b>web-mode</b> — if <var>input</var> starts with a
+        <i>web-<b>scheme</b></i> followed by <code>:</code>
+      <li>
+        <b>file-mode</b> — if <var>input</var> starts with a
+        <i>file-<b>scheme</b></i> followed by <code>:</code>
+      <li>
+        <b>generic-mode</b> — if otherwise <var>input</var> starts with a
+        <i><b>scheme</b>-string</i> followed by <code>:</code>
+      <li>
+        <var>supplied-mode</var> — otherwise.
+    </ul>
   </div>
 
   <p>
@@ -657,41 +677,6 @@
     <i class=common>parser-mode</i>, and to update the
     <i class=common>parser-mode</i> whilst parsing, as soon as a
     <i class=common>scheme</i> has been detected. 
-    For this specification however, it is useful to define
-    <i class=common>parser-mode</i> detection as a separate step as follows.
-
-  <div class="dfn-scope +br">
-  <h4>Mode Detection</h4>
-    <p>
-      The <i>updated-parser-mode</i>
-      (<var>supplied-mode</var> <dfn class=fn>updated-for</dfn>
-       <var>input-string</var>) is defined as follows:
-    <p class=-inbetween>
-      Let <var>magic</var> be the first <var>n</var> characters of
-      <var>input-string</var>, with <var>n</var> being the least of 6 and the
-      length of <var>input-string</var>. 
-      The <dfn>updated-parser-mode</dfn> is then defined to be:
-      <ul>
-        <li>
-          <b>file-mode</b> — if  (lowercase <var>magic</var>) ::
-            <span class=rule><code>file</code> <code>:</code> <i>any</i>*</span>
-        <li>
-          <b>web-mode</b> — if  (lowercase <var>magic</var>) ::
-            <span class=rule>(<code>http</code> | <code>https</code> |
-              <code>ws</code> | <code>wss</code> | <code>ftp</code>)
-              <code>:</code> <i>any</i>*</span>
-        <li>
-          <b>generic-mode</b> — if  <var>input</var> ::
-            <span class=rule><i>alpha</i> (<i>alpha</i> | <i>digit</i> |
-              <code>+</code> | <code>-</code> | <code>.</code>)*<code>:</code>
-              <i>any</i>*</span>
-        <li>
-          <var>supplied-mode</var> — otherwise. 
-      </ul>
-    </div>
-
-    <!-- In <b>special</b> mode, the s subscripted rules must be used instead
-      of their unsubscripted counterparts, whenever available. -->
 
   <h3>URL Grammar</h3>
     <p>
