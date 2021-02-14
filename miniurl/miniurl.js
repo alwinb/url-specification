@@ -429,11 +429,17 @@ const percentEncode = (url, _profile = profileFor (url)) => {
 const _isIp6 = str => 
   str != null && str[0] === '[' && str[str.length-1] === ']'
 
-const percentEncodeString = (value, encodeSet) => {
+// TODO the WhatWG spec requires encoding all non-ASCII, but it makes sense to
+// make that configurable also in the URL Standard. 
+// It may even be possible to create profiles that produce RFC 3986 URLs and
+// RFC 3987 URIs.  
+
+const percentEncodeString = (value, encodeSet, { ascii = true } = { }) => {
   let coded = ''
   for (let char of value) {
     const cp = char.codePointAt (0)
-    if (lookup (cp) & encodeSet) for (let byte of utf8.decode (cp)) {
+    const escapeAscii = ascii && (cp < 0x20 || cp > 0x7E)
+    if (escapeAscii || lookup (cp) & encodeSet) for (let byte of utf8.decode (cp)) {
       let h1 = byte >> 4, h2 = byte & 0b1111
       h1 = (h1 < 10 ? 48 : 55) + h1 // single hex digit
       h2 = (h2 < 10 ? 48 : 55) + h2 // single hex digit
