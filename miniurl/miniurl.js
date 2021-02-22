@@ -309,7 +309,7 @@ const u20_u27 = [
 /* (') */ 0b0000000010 ]
 
 const u2f = [
-/* (/) */ 0b0111111110, ]
+/* (/) */ 0b0111111000, ]
 
 const u3A_u40 = [
 /* (:) */ 0b0110000000,
@@ -326,12 +326,12 @@ const u5B_u60 = [
 /* (]) */ 0b1110000000,
 /* (^) */ 0b1110000000,
 /* (_) */ 0,
-/* (`) */ 0b1101100111 ]
+/* (`) */ 0b1101100001 ]
 
 const u7B_u7E = [
-/* ({) */ 0b1101100110,
-/* (|) */ 0b1100000110,
-/* (}) */ 0b1101100110,
+/* ({) */ 0b1101100000,
+/* (|) */ 0b1100000000,
+/* (}) */ 0b1101100000,
 /* (~) */ 0 ]
 
 lookup = c => 
@@ -397,8 +397,7 @@ const utf8 = {
 
 // ### Percent Encoding URLs
 
-// TODO check with spec
-// and add a new 'full' profile
+// TODO Add a new 'strict' profile
 
 const profileFor = (url, fallback) => {
   const scheme = url.scheme
@@ -431,8 +430,8 @@ const _isIp6 = str =>
 
 // TODO the WhatWG spec requires encoding all non-ASCII, but it makes sense to
 // make that configurable also in the URL Standard. 
-// It may even be possible to create profiles that produce RFC 3986 URLs and
-// RFC 3987 URIs.  
+// It may even be possible to create profiles that produce RFC 3986 URIs and
+// RFC 3987 IRIs.  
 
 const percentEncodeString = (value, encodeSet, { ascii = true } = { }) => {
   let coded = ''
