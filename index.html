@@ -101,7 +101,7 @@
 
   <ul>
     <li>
-      This is version 0.4.2 of the specification. This is a development 
+      This is version 0.4.3 of the specification. This is a development 
       version. 
     <li>
       The versioning scheme is specified by
@@ -159,6 +159,15 @@
         The concatenation of two sequences <var>S</var> and <var>T</var> is
         denoted by <var>S</var>・<var>T</var>. 
     </ul>
+    <p>
+      Furthermore, the notation
+      <span class=-nowrap><var>e</var> <b>:</b> <var>T</var></span>
+      is used to denote the concatenation of a single-element <var>e</var> in 
+      front of a sequence <var>T</var>. 
+      This notation may be used to inductively specify operations on sequences.
+      For example, the length of a sequence is defined by 
+      <dfn class=noindex>length</dfn> ε = 0 and
+      <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) = 1 + <i>length</i> T.
   </div>    
 
   <p style=margin-top:-.5rem>
@@ -325,6 +334,10 @@
       <td> { <b>u+FDD0</b>–<b>u+FDEF</b> }
         ∪ { <var>c</var> | <var>c</var> in <i>any</i> and
            (<var>c</var> + 2) <b class=op>mod</b> 2<sup>16</sup>  ≤  1 }
+    <tr>
+      <td><dfn>base-char</dfn>
+      <td> := 
+      <td> <i>any</i> \ <i>control-c0</i> \ <i>del-c1</i> \ <i>surrogate</i> \ <i>non-char</i>
   </table>
 
   <h4>Grammars</h4>
@@ -914,10 +927,6 @@
       <td> := 
       <td> { <code>/</code> } — in all modes
     <tr>
-      <td><dfn>base-char</dfn>
-      <td> := 
-      <td colspan=4> <i>any</i> \ <i>control-c0</i> \ <i>del-c1</i> \ <i>surrogate</i> \ <i>non-char</i>
-    <tr>
       <td><dfn>url-char</dfn> 
       <td> := 
       <td colspan=4> <i>base-char</i> \ <span class=-nowrap>{
@@ -944,7 +953,7 @@
     <tr>
       <td><dfn>pchar</dfn>
       <td> := 
-      <td> <i>url-char</i> \  <i>s</i>  \ <span class=-nowrap>{ <code>?</code> }</span>
+      <td> <i>url-char</i> \  <span class=-nowrap>{ <code>/</code>, <code>?</code> }</span>
   </table>
 
   <p>
@@ -1047,17 +1056,21 @@
   <table class=grammar>
     <tr><td>ip4-address 
       <td> ::=
-      <td> ip4num [<code>.</code> ip4num [<code>.</code> ip4num [<code>.</code> ip4num ] ] ] [<code>.</code>]
-    <tr><td>ip4num 
-      <td> ::= 
-      <td> num<sub>10</sub> | num<sub>8</sub> | num<sub>16</sub>
-    <tr><td>num<sub>10</sub> 
+      <td> <i>num</i>
+          [<code>.</code> <i>num</i>
+          [<code>.</code> <i>num</i>
+          [<code>.</code> <i>num</i> ] ] ]
+          [<code>.</code>]
+    <tr><td><dfn>num</dfn> 
+      <td> ::=
+      <td> num-dec | num-oct | num-hex
+    <tr><td><dfn>num-dec</dfn> 
       <td> ::= 
       <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
-    <tr><td>num<sub>8</sub> 
+    <tr><td>num-oct 
       <td> ::= 
       <td> <code>0</code> <i>octal-digit</i>*
-    <tr><td>num<sub>16</sub> 
+    <tr><td>num-hex 
       <td> ::= 
       <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
   </table>
@@ -1069,19 +1082,23 @@
 
   <h4>IPv4 Address - Strict</h4>
   <p>
-    A <em>valid</em> IPv4 address-string consists of one up to four
+    A <em>valid</em> IPv4 address-string consists of four
     dot-separated numbers, <em>without</em> a trailing dot.
     The numbers must use decimal notation, as follows:
   
   <table class=grammar>
     <tr><td>ip4-address-strict 
       <td> ::=
-      <td> num<sub>10</sub>  [<code>.</code> num<sub>10</sub>  [<code>.</code> num<sub>10</sub>  [<code>.</code> num<sub>10</sub>  ] ] ]
-    <tr><td>num<sub>10</sub> 
-      <td> ::= 
-      <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
+      <td>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i>
   </table>
 
+<div class=todo>
+  In addition, each of the components must represent a number n ≤ 255
+</div>
 
 </section>
 
@@ -1374,7 +1391,7 @@
       <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>, 
       subsequently <i>force</i>d.
     <p>
-      Forced resolution must issue a validation error if the
+      Forced resolution must issue a validation warning if the
       <i class=common>resolution</i> of <var>url<sub>1</sub></var>
       against <var>url<sub>2</sub></var> is a 
       <i class=common>file-<span class=url>URL</span></i> 
