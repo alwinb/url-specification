@@ -334,6 +334,10 @@
       <td> { <b>u+FDD0</b>–<b>u+FDEF</b> }
         ∪ { <var>c</var> | <var>c</var> in <i>any</i> and
            (<var>c</var> + 2) <b class=op>mod</b> 2<sup>16</sup>  ≤  1 }
+    <tr>
+      <td><dfn>base-char</dfn>
+      <td> := 
+      <td> <i>any</i> \ <i>control-c0</i> \ <i>del-c1</i> \ <i>surrogate</i> \ <i>non-char</i>
   </table>
 
   <h4>Grammars</h4>
@@ -923,10 +927,6 @@
       <td> := 
       <td> { <code>/</code> } — in all modes
     <tr>
-      <td><dfn>base-char</dfn>
-      <td> := 
-      <td colspan=4> <i>any</i> \ <i>control-c0</i> \ <i>del-c1</i> \ <i>surrogate</i> \ <i>non-char</i>
-    <tr>
       <td><dfn>url-char</dfn> 
       <td> := 
       <td colspan=4> <i>base-char</i> \ <span class=-nowrap>{
@@ -953,7 +953,7 @@
     <tr>
       <td><dfn>pchar</dfn>
       <td> := 
-      <td> <i>url-char</i> \  <i>s</i>  \ <span class=-nowrap>{ <code>?</code> }</span>
+      <td> <i>url-char</i> \  <span class=-nowrap>{ <code>/</code>, <code>?</code> }</span>
   </table>
 
   <p>
