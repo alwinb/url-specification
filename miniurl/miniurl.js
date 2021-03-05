@@ -271,6 +271,56 @@ const normalise = url => {
 }
 
 
+// UTF8 Coding
+// -----------
+
+const [h2, h3, h4, h5] = [ 0b10<<6, 0b110<<5, 0b1110<<4, 0b11110<<3  ]
+const [t6, t5, t4, t3] = [ ~(-1<<6), ~(-1<<5),  ~(-1<<4),   ~(-1<<3) ]
+
+const utf8 = {
+  
+  encode (code) { // encode! not decode :S
+    if (code < 0x80) return [code]
+    else if (code < 0x800) {
+      const [c1, c2] = [code >> 6, code & t6]
+      return [h3|(t5 & c1), h2|(t6 & c2)]
+    }
+    else if (code < 0x10000) {
+      const [c1, c2, c3] = [code >> 12, code >> 6, code & t6]
+      return [h4|(t4 & c1), h2|(t6 & c2), h2|(t6 & c3)]
+    }
+    else {
+      const [c1, c2, c3, c4] = [code >> 18, code >> 12, code >> 6, code & t6]
+      return [h5|(t3 & c1), h2|(t6 & c2), h2|(t6 & c3), h2|(t6 & c4)]
+    }
+  },
+
+  decode (bytes) {
+    const codes = []
+    let n = 0, code = 0, err = false
+    for (let i=0,l=bytes.length; i<l; i++) {
+      const b = bytes[i]
+
+      ;[err, n, code]
+        = b >= 0xf8 ? [  1, 0, 0 ]
+        : b >= 0xf0 ? [  n, 3, b & 7  ]
+        : b >= 0xe0 ? [  n, 2, b & 15 ]
+        : b >= 0xc0 ? [  n, 1, b & 31 ]
+        : b >= 0x80 ? [ !n, n-1, code<<6 | b & 63 ]
+        : [ n, 0, b ]
+
+      if (err) throw new Error (`Invalid UTF8, at index ${i}`)
+      if (n === 0) codes [codes.length] = code
+      // TODO code must be <= 0x10FFFF
+      // and err on overlong encodings too
+    }
+    if (n) throw new Error (`Incomplete UTF8 byte sequence`)
+    return codes
+  }
+
+}
+
+
 // Percent Coding
 // --------------
 
@@ -370,31 +420,6 @@ isInSet = (cp, { name, minimal, special }) =>
   lookup (cp) & getProfile ({ minimal, special }) [name]
 
 
-// ### UTF8 coding
-
-const [h2, h3, h4, h5] = [ 0b10<<6, 0b110<<5, 0b1110<<4, 0b11110<<3  ]
-const [t6, t5, t4, t3] = [ ~(-1<<6), ~(-1<<5),  ~(-1<<4),   ~(-1<<3) ]
-
-const utf8 = {
-  
-  decode (code) {
-    if (code < 0x80) return [code]
-    else if (code < 0x800) {
-      const [c1, c2] = [code >> 6, code & t6]
-      return [h3|(t5 & c1), h2|(t6 & c2)]
-    }
-    else if (code < 0x10000) {
-      const [c1, c2, c3] = [code >> 12, code >> 6, code & t6]
-      return [h4|(t4 & c1), h2|(t6 & c2), h2|(t6 & c3)]
-    }
-    else {
-      const [c1, c2, c3, c4] = [code >> 18, code >> 12, code >> 6, code & t6]
-      return [h5|(t3 & c1), h2|(t6 & c2), h2|(t6 & c3), h2|(t6 & c4)]
-    }
-  }
-
-}
-
 // ### Percent Encoding URLs
 
 // TODO Add a new 'strict' profile
@@ -431,14 +456,18 @@ const _isIp6 = str =>
 // TODO the WhatWG spec requires encoding all non-ASCII, but it makes sense to
 // make that configurable also in the URL Standard. 
 // It may even be possible to create profiles that produce RFC 3986 URIs and
-// RFC 3987 IRIs.  
+// RFC 3987 IRIs. 
+
+
+// Percent Coding for Strings
+// --------------------------
 
 const percentEncodeString = (value, encodeSet, { ascii = true } = { }) => {
   let coded = ''
   for (let char of value) {
     const cp = char.codePointAt (0)
     const escapeAscii = ascii && (cp < 0x20 || cp > 0x7E)
-    if (escapeAscii || lookup (cp) & encodeSet) for (let byte of utf8.decode (cp)) {
+    if (escapeAscii || lookup (cp) & encodeSet) for (let byte of utf8.encode (cp)) {
       let h1 = byte >> 4, h2 = byte & 0b1111
       h1 = (h1 < 10 ? 48 : 55) + h1 // single hex digit
       h2 = (h2 < 10 ? 48 : 55) + h2 // single hex digit
