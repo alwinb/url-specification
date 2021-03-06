@@ -400,7 +400,7 @@
     <p>
       An <dfn class=url>URL</dfn> is a <i>sequence</i> of
       <i>token</i>s that occur in ascending order by <i>token-type</i>,
-      where <i>token-type</i> is taken from
+      where <i class=noindex>token-type</i> is taken from
       the ordered set: 
     <p class="-center">
       <b>scheme</b> &lt; <b>authority</b> &lt; <b>drive</b>
@@ -711,7 +711,7 @@
     <tr>
       <td>url 
       <td> ::= 
-      <td> [ scheme <code>:</code> ] (auth-path | path)
+      <td> [ scheme <code>:</code> ] ( auth-path | path )
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
@@ -720,7 +720,7 @@
     <tr>
       <td><dfn>auth-path</dfn>
       <td> ::= 
-      <td> auth-drive [ path-root  path-rel ]
+      <td>    auth-drive [ path-root  path-rel ]
        —  in <b>file-mode</b>
     <tr>
       <td><dfn>auth-path</dfn> 
@@ -735,15 +735,18 @@
 
     <tr class=-inbetween>
       <td colspan=5>Rules for the authority and the path:
+
     <tr>
       <td><dfn>authority</dfn> 
       <td> ::= 
       <td> ε  | 
         [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+
     <tr>
       <td>credentials 
       <td> ::= 
       <td>username [ <code>:</code> password ]
+
     <tr>
       <td><dfn>host</dfn> 
       <td> ::= 
@@ -753,10 +756,11 @@
       <td><dfn>path</dfn>
       <td> ::= 
       <td> [ path-root ]  path-rel
+
     <tr>
       <td><dfn>path-rel</dfn>
       <td> ::= 
-      <td> [ dir <i>s</i> ]* [ file ]
+      <td> ( dir <i>s</i> )* [ file ]
 
     <tr class=-inbetween>
       <td colspan=5>This refers to the following rules:
@@ -1613,7 +1617,7 @@
   <tr>
     <td>pct-encoded-string
     <td> ::=
-    <td>(<i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i>)*
+    <td>( <i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i> )*
   <tr>
     <td><dfn>pct-encoded-bytes</dfn>
     <td> ::=
