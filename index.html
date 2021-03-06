@@ -700,12 +700,11 @@
 
   <h3>URL Grammar</h3>
     <p>
-      This subsection specifies the grammar for
-      <i><span class=url>URL</span>-string</i>s. Implementations must use this
-      grammar for parsing <i><span class=url>URL</span></i>s from <i>string</i>s.
-      The grammar is parameterised by a <i>parser-mode</i>. Specifically,
-      the <i>auth-path</i> rule and the <i>s</i> rule have different versions 
-      for different <i class=common>parser-mode</i>s.
+      This subsection specifies the grammar for <i><span class=url>URL</span>-string</i>s.
+      Implementations must use this grammar for parsing <i><span class=url>URL</span></i>s
+      from <i>string</i>s. The grammar is parameterised by a <i>parser-mode</i>.
+      Specifically, the <i>auth-path</i> rule, the <i>authority</i> rule and the <i>s</i>
+      rule have different versions for different <i class=common>parser-mode</i>s.
 
     <table class=grammar>
     <tr>
@@ -722,25 +721,33 @@
       <td> ::= 
       <td>    auth-drive [ path-root  path-rel ]
        —  in <b>file-mode</b>
+
     <tr>
       <td><dfn>auth-path</dfn> 
       <td> ::= 
       <td> <i>s</i> <i>s</i> authority [ path-root  path-rel ]
        —  otherwise
+
     <tr>
       <td><dfn>auth-drive</dfn>
       <td> ::= 
       <td> [ <i>s</i> [<i>s</i>] ] drive |
-        <i>s</i> <i>s</i> host [ <i>s</i> drive ]
+        <i>s</i> <i>s</i> authority [ <i>s</i> drive ]
 
     <tr class=-inbetween>
-      <td colspan=5>Rules for the authority and the path:
+      <td colspan=5>The authority rule likewise depends on the <i>parser-mode</i>:
 
     <tr>
       <td><dfn>authority</dfn> 
       <td> ::= 
-      <td> ε  | 
-        [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+      <td> ε  |  <i>host</i>
+       —  in <b>file-mode</b>
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+       —  otherwise
 
     <tr>
       <td>credentials 
@@ -753,6 +760,9 @@
       <td> <i>ip4-address</i>
          |  <code>[</code> <i>ip6-address</i> <code>]</code>
          |  <i>opaque-host</i>
+
+    <tr class=-inbetween>
+      <td colspan=5>Rules for the path:
 
     <tr>
       <td><dfn>path</dfn>
@@ -1031,10 +1041,6 @@
       <td colspan=3>
         These rules are based on the modified character-sets:
     <tr>
-      <td><dfn>s</dfn>
-      <td> := 
-      <td> { <code>/</code> } — in all modes
-    <tr>
       <td><dfn>url-char</dfn> 
       <td> := 
       <td colspan=4> <i>base-char</i> \ <span class=-nowrap>{
@@ -1065,10 +1071,9 @@
   </table>
 
   <p>
-    Note that the sets of allowed characters are more restricted,
-    the presence of credentials in the authority is prohibited altogether,
-    and drives are expected to be preceded by a single <i>s</i> delimiter
-    and must be must not be of the form
+    Note that the sets of allowed characters are more restricted; the presence of
+    credentials in the authority is prohibited altogether and drives are expected to be
+    preceded by a single <code>/</code> delimiter and must be must not be of the form
     <span class=rule><var>drive</var> :: <i>alpha</i> <code>|</code></span>. 
 
   <h4>IPv4 Address - Strict</h4>
