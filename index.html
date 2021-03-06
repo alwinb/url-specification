@@ -750,7 +750,9 @@
     <tr>
       <td><dfn>host</dfn> 
       <td> ::= 
-      <td> <code>[</code> ip6-address <code>]</code> | <i>opaque-host</i>
+      <td> <i>ip4-address</i>
+         |  <code>[</code> <i>ip6-address</i> <code>]</code>
+         |  <i>opaque-host</i>
 
     <tr>
       <td><dfn>path</dfn>
@@ -862,9 +864,41 @@
     </table>
 
 
+  <h4>IPv4 Address</h4>
+  <p>
+    An IPv4 address-string consists of one up to four dot-separated numbers with
+    an optional trailing dot. The numbers may use decimal, octal or hexadecimal
+    notation, as follows:
+
+  <table class=grammar>
+    <tr><td><dfn>ip4-address </dfn>
+      <td> ::=
+      <td> num
+          [<code>.</code> num
+          [<code>.</code> num
+          [<code>.</code> num ] ] ]
+          [<code>.</code>]
+    <tr><td><dfn>num</dfn> 
+      <td> ::=
+      <td> num-dec | num-oct | num-hex
+    <tr><td><dfn>num-dec</dfn> 
+      <td> ::= 
+      <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
+    <tr><td>num-oct 
+      <td> ::= 
+      <td> <code>0</code> <i>octal-digit</i>*
+    <tr><td>num-hex 
+      <td> ::= 
+      <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
+  </table>
+
+  <p>
+    Note that <code>0x</code> is parsed as a hexadecimal number.
+    (It will be interpreted as 0).
+
+
   <p class=todo>
     Double check the following, and include it here
-
   <h4>IPv6 Address</h4>
   <p>
     An IPv6 address-string <!--consists of a sequence of items, separated by
@@ -876,6 +910,11 @@
     It is accurately described by the production rule <var>IPv6address</var>
     in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
     section of <abbr class=-caps>RFC</abbr> 3986. 
+
+  <div class=todo>
+    There are additional, semantic constraints on the ipv4-address, ipv6-address
+    and the port. 
+  </div>
 
 
   <h3>Strict URL Grammar</h3>
@@ -974,6 +1013,26 @@
     and must be must not be of the form
     <span class=rule><var>drive</var> :: <i>alpha</i> <code>|</code></span>. 
 
+  <h4>IPv4 Address - Strict</h4>
+  <p>
+    A <em>valid</em> IPv4 address-string consists of four
+    dot-separated numbers, <em>without</em> a trailing dot.
+    The numbers must use decimal notation, as follows:
+  
+  <table class=grammar>
+    <tr><td><dfn>ip4-address-strict</dfn> 
+      <td> ::=
+      <td>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i>
+  </table>
+<div class=todo>
+  In addition, each of the components must represent a number n ≤ 255
+</div>
+
+
   <!-- <p>
   <div class=todo>
     Double check. It is unclear to me whether the presence of a 
@@ -1057,59 +1116,6 @@
       <li>Err on 'forbidden host codepoints'.
     </ul>
   </div>
-
-  <h4>IPv4 Address</h4>
-  <p>
-    An IPv4 address-string consists of one up to four dot-separated numbers with
-    an optional trailing dot. The numbers may use decimal, octal or hexadecimal
-    notation, as follows:
-
-  <table class=grammar>
-    <tr><td>ip4-address 
-      <td> ::=
-      <td> <i>num</i>
-          [<code>.</code> <i>num</i>
-          [<code>.</code> <i>num</i>
-          [<code>.</code> <i>num</i> ] ] ]
-          [<code>.</code>]
-    <tr><td><dfn>num</dfn> 
-      <td> ::=
-      <td> num-dec | num-oct | num-hex
-    <tr><td><dfn>num-dec</dfn> 
-      <td> ::= 
-      <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
-    <tr><td>num-oct 
-      <td> ::= 
-      <td> <code>0</code> <i>octal-digit</i>*
-    <tr><td>num-hex 
-      <td> ::= 
-      <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
-  </table>
-
-  <p>
-    Note that <code>0x</code> is parsed as a hexadecimal number.
-    (It will be interpreted as 0).
-
-
-  <h4>IPv4 Address - Strict</h4>
-  <p>
-    A <em>valid</em> IPv4 address-string consists of four
-    dot-separated numbers, <em>without</em> a trailing dot.
-    The numbers must use decimal notation, as follows:
-  
-  <table class=grammar>
-    <tr><td>ip4-address-strict 
-      <td> ::=
-      <td>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i>
-  </table>
-
-<div class=todo>
-  In addition, each of the components must represent a number n ≤ 255
-</div>
 
 </section>
 
