@@ -19,14 +19,13 @@
 
 <div id=tools>
   <div id=menu>
-  <!-- 🌳🦒🌿🌲🐘🌱🍁 🍂🌾 🐺🐾🦝🍂 -->  
-  <div id=icon>🌲</div>
+  <a id=icon href=#url-specification>🌲</a>
   <ul>
     <li><a href=#url-specification>Introduction</a></li>
     <li><a href=#preliminaries>Preliminaries</a></li>
     <li><a href=#url-model><span class=url>URL</span> Model</a></li>
     <li><a href=#parsing>Parsing</a></li>
-    <li><a href=#host-processing >Host processing</a></li>
+    <li><a href=#host-parsing >Host Parsing</a></li>
     <li><a href=#reference-resolution >Reference Resolution</a></li>
     <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
     <li><a href=#percent-coding >Percent Coding</a></li>
@@ -101,7 +100,7 @@
 
   <ul>
     <li>
-      This is version 0.4.3 of the specification. This is a development 
+      This is version 0.5.0 of the specification. This is a development 
       version. 
     <li>
       The versioning scheme is specified by
@@ -145,30 +144,37 @@
     This section introduces basic concepts and notational conventions upon 
     which the rest of the specification is built. 
 
-
-  <div class="dfn-scope +br">
   <h4>Sequences</h4>
-    <p>
-      This specification uses an algebraic notation for <dfn>sequence</dfn>s
-      that makes no distinction between one-element sequences and their first
-      element. It uses the following notation:
-    <ul class=-inbetween>
+  <p>
+    This specification uses an algebraic notation for <i>sequence</i>s
+    that makes no distinction between one-element sequences and their first
+    element. It uses the following notation:
+
+  <div class="dfn-scope -inbetween">
+    <ul>
       <li>
+        <dfn style=display:none>sequence</dfn>
         The empty sequence is denoted by ε. 
       <li>
         The concatenation of two sequences <var>S</var> and <var>T</var> is
         denoted by <var>S</var>・<var>T</var>. 
     </ul>
-    <p>
+
+    <p style=margin-top:-.5rem>
       Furthermore, the notation
       <span class=-nowrap><var>e</var> <b>:</b> <var>T</var></span>
       is used to denote the concatenation of a single-element <var>e</var> in 
       front of a sequence <var>T</var>. 
-      This notation may be used to inductively specify operations on sequences.
-      For example, the length of a sequence is defined by 
-      <dfn class=noindex>length</dfn> ε = 0 and
-      <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) = 1 + <i>length</i> T.
   </div>    
+
+
+  <p>
+    The notation <span class=-nowrap><var>e</var> <b>:</b> <var>T</var></span>
+    may be used to inductively specify operations on sequences.
+    For example, the length of a sequence is defined by 
+    <dfn class=noindex>length</dfn> ε = 0 and
+    <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) =
+      <span class=-nowrap>1 + <i>length</i> <var>T</var></span>.
 
   <p style=margin-top:-.5rem>
     Parentheses are used for disambiguation and as visual aides. Paired 
@@ -393,7 +399,7 @@
     <p>
       An <dfn class=url>URL</dfn> is a <i>sequence</i> of
       <i>token</i>s that occur in ascending order by <i>token-type</i>,
-      where <i>token-type</i> is taken from
+      where <i class=noindex>token-type</i> is taken from
       the ordered set: 
     <p class="-center">
       <b>scheme</b> &lt; <b>authority</b> &lt; <b>drive</b>
@@ -693,63 +699,73 @@
 
   <h3>URL Grammar</h3>
     <p>
-      This subsection specifies the grammar for
-      <i><span class=url>URL</span>-string</i>s. Implementations must use this
-      grammar for parsing <i><span class=url>URL</span></i>s from <i>string</i>s.
-      The grammar is parameterised by a <i>parser-mode</i>. Specifically,
-      the <i>auth-path</i> rule and the <i>s</i> rule have different versions 
-      for different <i class=common>parser-mode</i>s.
+      This subsection specifies the grammar for <i><span class=url>URL</span>-string</i>s.
+      Implementations must use this grammar for parsing <i><span class=url>URL</span></i>s
+      from <i>string</i>s. The grammar is parameterised by a <i>parser-mode</i>.
+      Specifically, the <i>auth-path</i> rule, the <i>authority</i> rule and the <i>s</i>
+      rule have different versions for different <i class=common>parser-mode</i>s.
 
     <table class=grammar>
     <tr>
       <td>url 
       <td> ::= 
-      <td> [ scheme <code>:</code> ] (auth-path | path)
+      <td> [ scheme <code>:</code> ] ( auth-path | path )
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
-      <td colspan=5>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
+      <td colspan=5>The auth-path and authority rules in <b>web-mode</b> and in <b>generic-mode</b>:
+
+    <tr>
+      <td><dfn>auth-path</dfn> 
+      <td> ::= 
+      <td> <i>s</i> <i>s</i> authority [ path-root  path-rel ]
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+
+    <tr>
+      <td>credentials 
+      <td> ::= 
+      <td>username [ <code>:</code> password ]
+
+
+    <tr class=-inbetween>
+      <td colspan=5>The auth-path and authority rules in <b>file-mode</b></i>:
 
     <tr>
       <td><dfn>auth-path</dfn>
       <td> ::= 
       <td> auth-drive [ path-root  path-rel ]
-       —  in <b>file-mode</b>
-    <tr>
-      <td><dfn>auth-path</dfn> 
-      <td> ::= 
-      <td> <i>s</i> <i>s</i> authority [ path-root  path-rel ]
-       —  otherwise
+
     <tr>
       <td><dfn>auth-drive</dfn>
       <td> ::= 
-      <td> [ <i>s</i> [<i>s</i>] ] drive |
-        <i>s</i> <i>s</i> host [ <i>s</i> drive ]
+      <td> [ <i>s</i> <i>s</i> authority<sub>ε</sub>] [ <i>s</i> ] drive
+         |  <i>s</i> <i>s</i> authority [ <i>s</i> drive ]
 
-    <tr class=-inbetween>
-      <td colspan=5>Rules for the authority and the path:
     <tr>
       <td><dfn>authority</dfn> 
       <td> ::= 
-      <td> ε  | 
-        [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+      <td> ε  |  <i>host</i>
     <tr>
-      <td>credentials 
-      <td> ::= 
-      <td>username [ <code>:</code> password ]
-    <tr>
-      <td><dfn>host</dfn> 
-      <td> ::= 
-      <td> <code>[</code> ip6-address <code>]</code> | <i>opaque-host</i>
+      <td><dfn>authority<sub>ε</sub></dfn> 
+      <td> ::= <td> ε
+
+
+    <tr class=-inbetween>
+      <td colspan=5>Rules for the path:
 
     <tr>
       <td><dfn>path</dfn>
       <td> ::= 
       <td> [ path-root ]  path-rel
+
     <tr>
       <td><dfn>path-rel</dfn>
       <td> ::= 
-      <td> [ dir <i>s</i> ]* [ file ]
+      <td> ( dir <i>s</i> )* [ file ]
 
     <tr class=-inbetween>
       <td colspan=5>This refers to the following rules:
@@ -769,6 +785,11 @@
       <td>password 
       <td> ::= 
       <td> <i>pchar</i>*
+
+    <tr>
+      <td><dfn>host</dfn> 
+      <td> ::= 
+      <td> <code>[</code> <i>ip6-address</i> <code>]</code>  |  <i>opaque-host</i>
 
     <tr>
       <td><dfn>opaque-host</dfn> 
@@ -823,7 +844,8 @@
       <td>s<dfn style=display:none>s</dfn>
       <td> ::= 
       <td> { <code>/</code>, <code>\</code> }
-         —  otherwise
+         —  in <b>web-mode</b> and in <b>file-mode</b></i>
+
 
     <tr><td><dfn>uchar</dfn>
       <td> :=
@@ -853,7 +875,6 @@
 
   <p class=todo>
     Double check the following, and include it here
-
   <h4>IPv6 Address</h4>
   <p>
     An IPv6 address-string <!--consists of a sequence of items, separated by
@@ -865,6 +886,11 @@
     It is accurately described by the production rule <var>IPv6address</var>
     in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
     section of <abbr class=-caps>RFC</abbr> 3986. 
+
+  <div class=todo>
+    There are additional, semantic constraints on the ipv4-address, ipv6-address
+    and the port. 
+  </div>
 
 
   <h3>Strict URL Grammar</h3>
@@ -879,32 +905,88 @@
     and they must use the grammar for <i><span class=url>URL</span>-string</i>s
     as specified in the previous subsection for parsing <i class=url>URL</i>s.
 
-  <p class=-inbetween>The following rules are modified:
   <table class=grammar>
     <tr>
-      <td><dfn>authority</dfn> 
+      <td>url-strict
       <td> ::= 
-      <td> ε  |  <i>host</i> [ <code>:</code> port ]
+      <td> [ scheme <code>:</code> ] ( auth-path | path )
+        [ <code>?</code> query ] [ <code>#</code> fragment ]
+
+    <tr class=-inbetween>
+      <td colspan=5>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
+    <tr>
+      <td><dfn>auth-path</dfn>
+      <td> ::= 
+      <td>     auth-drive [ path-root  path-rel ]
+       —  in <b>file-mode</b>
+    <tr>
+      <td><dfn>auth-path</dfn> 
+      <td> ::= 
+      <td> <code>//</code> authority [ path-root  path-rel ]
+       —  in other modes
     <tr>
       <td><dfn>auth-drive</dfn>
       <td> ::= 
-      <td> <i>s</i> drive | <i>s</i> <i>s</i> host [ <i>s</i> drive ]
+      <td> <code>/</code> drive  |  <code>//</code> authority  [ <code>/</code> drive ]
+
+    <tr class=-inbetween>
+      <td colspan=5>Rules for the authority and the path:
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  <i>host</i>
+       —  in <b>file-mode</b>
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  <i>host</i>  [ <code>:</code> port ]
+       —  in other modes
+
+    <tr>
+      <td><dfn>host</dfn> 
+      <td> ::= 
+      <td> <code>[</code> <i>ip6-address</i> <code>]</code>  |  <i>opaque-host</i>
+
+    <tr>
+      <td><dfn>path</dfn>
+      <td> ::= 
+      <td> [ path-root ]  path-rel
+
+    <tr>
+      <td><dfn>path-rel</dfn>
+      <td> ::= 
+      <td> ( dir <code>/</code> )* [ file ]
+
+    <tr class=-inbetween>
+      <td colspan=5>This refers to the following rules:
+
     <tr>
       <td><dfn>opaque-host</dfn> 
       <td> ::= 
       <td> (<i>pct</i> | <i>hchar</i>)+
+
     <tr>
       <td>drive 
       <td> ::= 
       <td> <i>alpha</i> <code>:</code>
+
+    <tr>
+      <td>path-root 
+      <td> ::= 
+      <td> <code>/</code>
+
     <tr>
       <td>dir 
       <td> ::= 
       <td> (<i>pct</i> | <i>pchar</i>)*
+
     <tr>
       <td>file 
       <td> ::= 
       <td> (<i>pct</i> | <i>pchar</i>)+
+
     <tr>
       <td>query 
       <td> ::= 
@@ -922,10 +1004,6 @@
     <tr class=-inbetween>
       <td colspan=3>
         These rules are based on the modified character-sets:
-    <tr>
-      <td><dfn>s</dfn>
-      <td> := 
-      <td> { <code>/</code> } — in all modes
     <tr>
       <td><dfn>url-char</dfn> 
       <td> := 
@@ -957,10 +1035,9 @@
   </table>
 
   <p>
-    Note that the sets of allowed characters are more restricted,
-    the presence of credentials in the authority is prohibited altogether,
-    and drives are expected to be preceded by a single <i>s</i> delimiter
-    and must be must not be of the form
+    Note that the sets of allowed characters are more restricted; the presence of
+    credentials in the authority is prohibited altogether and drives are expected to be
+    preceded by a single <code>/</code> delimiter and must be must not be of the form
     <span class=rule><var>drive</var> :: <i>alpha</i> <code>|</code></span>. 
 
   <!-- <p>
@@ -1030,7 +1107,7 @@
 
 
 <!------------------------------>
-<section><h2>Host processing</h2>
+<section><h2>Host Parsing</h2>
 <!------------------------------>
 
   <div class=note>
@@ -1054,12 +1131,12 @@
     notation, as follows:
 
   <table class=grammar>
-    <tr><td>ip4-address 
+    <tr><td><dfn>ip4-address </dfn>
       <td> ::=
-      <td> <i>num</i>
-          [<code>.</code> <i>num</i>
-          [<code>.</code> <i>num</i>
-          [<code>.</code> <i>num</i> ] ] ]
+      <td> num
+          [<code>.</code> num
+          [<code>.</code> num
+          [<code>.</code> num ] ] ]
           [<code>.</code>]
     <tr><td><dfn>num</dfn> 
       <td> ::=
@@ -1079,7 +1156,6 @@
     Note that <code>0x</code> is parsed as a hexadecimal number.
     (It will be interpreted as 0).
 
-
   <h4>IPv4 Address - Strict</h4>
   <p>
     A <em>valid</em> IPv4 address-string consists of four
@@ -1087,7 +1163,7 @@
     The numbers must use decimal notation, as follows:
   
   <table class=grammar>
-    <tr><td>ip4-address-strict 
+    <tr><td><dfn>ip4-address-strict</dfn> 
       <td> ::=
       <td>
           <i>num-dec</i> <code>.</code>
@@ -1095,7 +1171,6 @@
           <i>num-dec</i> <code>.</code>
           <i>num-dec</i>
   </table>
-
 <div class=todo>
   In addition, each of the components must represent a number n ≤ 255
 </div>
@@ -1516,12 +1591,11 @@
 </p>
 
   <table>
-    <tr><td><b>username</b> ε・<b>password</b> ε
-      <td> ≈ <td>ε
+    <!-- <tr><td><b>username</b> ε・<b>password</b> ε
+      <td> ≈ <td>ε -->
+    <tr><td><b>password</b> ε <td> ≈ <td> ε
     <tr><td><b>username</b> ε・<b>host</b> <var>h</var>
       <td> ≈ <td><b>host</b> <var>h</var>
-    <tr><td><b>password</b> ε
-      <td> ≈ <td> ε
     <tr><td><b>port</b> ε <td> ≈ <td>ε
   </table>
 
@@ -1606,7 +1680,7 @@
   <tr>
     <td>pct-encoded-string
     <td> ::=
-    <td>(<i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i>)*
+    <td>( <i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i> )*
   <tr>
     <td><dfn>pct-encoded-bytes</dfn>
     <td> ::=
