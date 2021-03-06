@@ -26,7 +26,7 @@
     <li><a href=#preliminaries>Preliminaries</a></li>
     <li><a href=#url-model><span class=url>URL</span> Model</a></li>
     <li><a href=#parsing>Parsing</a></li>
-    <li><a href=#host-processing >Host processing</a></li>
+    <li><a href=#host-parsing >Host Parsing</a></li>
     <li><a href=#reference-resolution >Reference Resolution</a></li>
     <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
     <li><a href=#percent-coding >Percent Coding</a></li>
@@ -714,52 +714,46 @@
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
-      <td colspan=5>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
-
-    <tr>
-      <td><dfn>auth-path</dfn>
-      <td> ::= 
-      <td>    auth-drive [ path-root  path-rel ]
-       —  in <b>file-mode</b>
+      <td colspan=5>The auth-path and authority rules in <b>web-mode</b> and in <b>generic-mode</b>:
 
     <tr>
       <td><dfn>auth-path</dfn> 
       <td> ::= 
       <td> <i>s</i> <i>s</i> authority [ path-root  path-rel ]
-       —  otherwise
-
-    <tr>
-      <td><dfn>auth-drive</dfn>
-      <td> ::= 
-      <td> [ <i>s</i> [<i>s</i>] ] drive |
-        <i>s</i> <i>s</i> authority [ <i>s</i> drive ]
-
-    <tr class=-inbetween>
-      <td colspan=5>The authority rule likewise depends on the <i>parser-mode</i>:
-
-    <tr>
-      <td><dfn>authority</dfn> 
-      <td> ::= 
-      <td> ε  |  <i>host</i>
-       —  in <b>file-mode</b>
 
     <tr>
       <td><dfn>authority</dfn> 
       <td> ::= 
       <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
-       —  otherwise
 
     <tr>
       <td>credentials 
       <td> ::= 
       <td>username [ <code>:</code> password ]
 
+
+    <tr class=-inbetween>
+      <td colspan=5>The auth-path and authority rules in <b>file-mode</b></i>:
+
     <tr>
-      <td><dfn>host</dfn> 
+      <td><dfn>auth-path</dfn>
       <td> ::= 
-      <td> <i>ip4-address</i>
-         |  <code>[</code> <i>ip6-address</i> <code>]</code>
-         |  <i>opaque-host</i>
+      <td> auth-drive [ path-root  path-rel ]
+
+    <tr>
+      <td><dfn>auth-drive</dfn>
+      <td> ::= 
+      <td> [ <i>s</i> <i>s</i> authority<sub>ε</sub>] [ <i>s</i> ] drive
+         |  <i>s</i> <i>s</i> authority [ <i>s</i> drive ]
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  <i>host</i>
+    <tr>
+      <td><dfn>authority<sub>ε</sub></dfn> 
+      <td> ::= <td> ε
+
 
     <tr class=-inbetween>
       <td colspan=5>Rules for the path:
@@ -792,6 +786,11 @@
       <td>password 
       <td> ::= 
       <td> <i>pchar</i>*
+
+    <tr>
+      <td><dfn>host</dfn> 
+      <td> ::= 
+      <td> <code>[</code> <i>ip6-address</i> <code>]</code>  |  <i>opaque-host</i>
 
     <tr>
       <td><dfn>opaque-host</dfn> 
@@ -846,7 +845,8 @@
       <td>s<dfn style=display:none>s</dfn>
       <td> ::= 
       <td> { <code>/</code>, <code>\</code> }
-         —  otherwise
+         —  in <b>web-mode</b> and in <b>file-mode</b></i>
+
 
     <tr><td><dfn>uchar</dfn>
       <td> :=
@@ -872,39 +872,6 @@
       <td class=-nowrap> <i>any</i> \ { <code>#</code> }
 
     </table>
-
-
-  <h4>IPv4 Address</h4>
-  <p>
-    An IPv4 address-string consists of one up to four dot-separated numbers with
-    an optional trailing dot. The numbers may use decimal, octal or hexadecimal
-    notation, as follows:
-
-  <table class=grammar>
-    <tr><td><dfn>ip4-address </dfn>
-      <td> ::=
-      <td> num
-          [<code>.</code> num
-          [<code>.</code> num
-          [<code>.</code> num ] ] ]
-          [<code>.</code>]
-    <tr><td><dfn>num</dfn> 
-      <td> ::=
-      <td> num-dec | num-oct | num-hex
-    <tr><td><dfn>num-dec</dfn> 
-      <td> ::= 
-      <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
-    <tr><td>num-oct 
-      <td> ::= 
-      <td> <code>0</code> <i>octal-digit</i>*
-    <tr><td>num-hex 
-      <td> ::= 
-      <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
-  </table>
-
-  <p>
-    Note that <code>0x</code> is parsed as a hexadecimal number.
-    (It will be interpreted as 0).
 
 
   <p class=todo>
@@ -981,9 +948,7 @@
     <tr>
       <td><dfn>host</dfn> 
       <td> ::= 
-      <td> <i>ip4-address-strict</i>
-         |  <code>[</code> <i>ip6-address</i> <code>]</code>
-         |  <i>opaque-host</i>
+      <td> <code>[</code> <i>ip6-address</i> <code>]</code>  |  <i>opaque-host</i>
 
     <tr>
       <td><dfn>path</dfn>
@@ -1076,26 +1041,6 @@
     preceded by a single <code>/</code> delimiter and must be must not be of the form
     <span class=rule><var>drive</var> :: <i>alpha</i> <code>|</code></span>. 
 
-  <h4>IPv4 Address - Strict</h4>
-  <p>
-    A <em>valid</em> IPv4 address-string consists of four
-    dot-separated numbers, <em>without</em> a trailing dot.
-    The numbers must use decimal notation, as follows:
-  
-  <table class=grammar>
-    <tr><td><dfn>ip4-address-strict</dfn> 
-      <td> ::=
-      <td>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i>
-  </table>
-<div class=todo>
-  In addition, each of the components must represent a number n ≤ 255
-</div>
-
-
   <!-- <p>
   <div class=todo>
     Double check. It is unclear to me whether the presence of a 
@@ -1163,7 +1108,7 @@
 
 
 <!------------------------------>
-<section><h2>Host processing</h2>
+<section><h2>Host Parsing</h2>
 <!------------------------------>
 
   <div class=note>
@@ -1179,6 +1124,57 @@
       <li>Err on 'forbidden host codepoints'.
     </ul>
   </div>
+
+  <h4>IPv4 Address</h4>
+  <p>
+    An IPv4 address-string consists of one up to four dot-separated numbers with
+    an optional trailing dot. The numbers may use decimal, octal or hexadecimal
+    notation, as follows:
+
+  <table class=grammar>
+    <tr><td><dfn>ip4-address </dfn>
+      <td> ::=
+      <td> num
+          [<code>.</code> num
+          [<code>.</code> num
+          [<code>.</code> num ] ] ]
+          [<code>.</code>]
+    <tr><td><dfn>num</dfn> 
+      <td> ::=
+      <td> num-dec | num-oct | num-hex
+    <tr><td><dfn>num-dec</dfn> 
+      <td> ::= 
+      <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
+    <tr><td>num-oct 
+      <td> ::= 
+      <td> <code>0</code> <i>octal-digit</i>*
+    <tr><td>num-hex 
+      <td> ::= 
+      <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
+  </table>
+
+  <p>
+    Note that <code>0x</code> is parsed as a hexadecimal number.
+    (It will be interpreted as 0).
+
+  <h4>IPv4 Address - Strict</h4>
+  <p>
+    A <em>valid</em> IPv4 address-string consists of four
+    dot-separated numbers, <em>without</em> a trailing dot.
+    The numbers must use decimal notation, as follows:
+  
+  <table class=grammar>
+    <tr><td><dfn>ip4-address-strict</dfn> 
+      <td> ::=
+      <td>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i> <code>.</code>
+          <i>num-dec</i>
+  </table>
+<div class=todo>
+  In addition, each of the components must represent a number n ≤ 255
+</div>
 
 </section>
 

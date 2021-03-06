@@ -576,6 +576,19 @@ function parseAuth (input) {
 }
 
 
+// Host Processing
+// ---------------
+
+function parseHost (input) {
+  // TODO
+  // Percent decode
+  // Puny decode
+  // Apply IDNA/ Nameprep normalisation
+  // Detect IPv4 addresses
+  // Re-validate
+}
+
+
 // Parse-resolve-and-normalise
 // ---------------------------
 
