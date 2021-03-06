@@ -302,15 +302,16 @@ article h2::before {
   margin-top:-2rem;
 }
 
-div#icon {
+#icon {
+  display:block;
   font-size:3.5rem;
   line-height:3.5rem;
-  height:3.5rem;
+  height:4rem;
   margin-top:-1rem;
-  margin-bottom:.5rem;
+  margin-bottom:0;
   background:url(../icon.png) top center no-repeat;
   position:relative;
-  text-indent:10em;
+  text-indent:100vw;
   overflow:hidden;
 }
 
