@@ -929,32 +929,90 @@
     and they must use the grammar for <i><span class=url>URL</span>-string</i>s
     as specified in the previous subsection for parsing <i class=url>URL</i>s.
 
-  <p class=-inbetween>The following rules are modified:
   <table class=grammar>
     <tr>
-      <td><dfn>authority</dfn> 
+      <td>url-strict
       <td> ::= 
-      <td> ε  |  <i>host</i> [ <code>:</code> port ]
+      <td> [ scheme <code>:</code> ] ( auth-path | path )
+        [ <code>?</code> query ] [ <code>#</code> fragment ]
+
+    <tr class=-inbetween>
+      <td colspan=5>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
+    <tr>
+      <td><dfn>auth-path</dfn>
+      <td> ::= 
+      <td>     auth-drive [ path-root  path-rel ]
+       —  in <b>file-mode</b>
+    <tr>
+      <td><dfn>auth-path</dfn> 
+      <td> ::= 
+      <td> <code>//</code> authority [ path-root  path-rel ]
+       —  in other modes
     <tr>
       <td><dfn>auth-drive</dfn>
       <td> ::= 
-      <td> <i>s</i> drive | <i>s</i> <i>s</i> host [ <i>s</i> drive ]
+      <td> <code>/</code> drive  |  <code>//</code> authority  [ <code>/</code> drive ]
+
+    <tr class=-inbetween>
+      <td colspan=5>Rules for the authority and the path:
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  <i>host</i>
+       —  in <b>file-mode</b>
+
+    <tr>
+      <td><dfn>authority</dfn> 
+      <td> ::= 
+      <td> ε  |  <i>host</i>  [ <code>:</code> port ]
+       —  in other modes
+
+    <tr>
+      <td><dfn>host</dfn> 
+      <td> ::= 
+      <td> <i>ip4-address-strict</i>
+         |  <code>[</code> <i>ip6-address</i> <code>]</code>
+         |  <i>opaque-host</i>
+
+    <tr>
+      <td><dfn>path</dfn>
+      <td> ::= 
+      <td> [ path-root ]  path-rel
+
+    <tr>
+      <td><dfn>path-rel</dfn>
+      <td> ::= 
+      <td> ( dir <code>/</code> )* [ file ]
+
+    <tr class=-inbetween>
+      <td colspan=5>This refers to the following rules:
+
     <tr>
       <td><dfn>opaque-host</dfn> 
       <td> ::= 
       <td> (<i>pct</i> | <i>hchar</i>)+
+
     <tr>
       <td>drive 
       <td> ::= 
       <td> <i>alpha</i> <code>:</code>
+
+    <tr>
+      <td>path-root 
+      <td> ::= 
+      <td> <code>/</code>
+
     <tr>
       <td>dir 
       <td> ::= 
       <td> (<i>pct</i> | <i>pchar</i>)*
+
     <tr>
       <td>file 
       <td> ::= 
       <td> (<i>pct</i> | <i>pchar</i>)+
+
     <tr>
       <td>query 
       <td> ::= 
