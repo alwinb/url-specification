@@ -8,7 +8,7 @@
   <title>URL Specification</title>
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
-  <script src="miniurl/miniurl.js"></script>
+  <script src="lib/specurl.min.js"></script>
   <script src="scripts/main.js"></script>
 </head>
 <body>
@@ -1834,7 +1834,7 @@
         for (let i=0x20; i<=0x7e; i++) {
           // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
           if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
-            const _has = miniurl.isInSet (i, { name, minimal, special })
+            const _has = specurl.unstable.isInSet (i, { name, minimal, special })
             const td = $('td', $('code', String.fromCharCode (i)))
               if (!_has) td.classList.add ('-screen')
               td.title = 'u+'+i.toString(16).toUpperCase ()
