@@ -427,10 +427,10 @@ a {
 dfn, i, a:hover {
 /*  text-decoration:underline;*/
   background-image:linear-gradient(to top,
-    #0001 1px,
+    #0001 0px,
+    currentColor 0px, 
     currentColor 1px, 
-    currentColor 2px, 
-    #0000 2px);
+    #0000 1px);
     background-size:100% calc(1em);
     background-position:center;
     background-repeat:no-repeat;

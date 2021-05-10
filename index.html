@@ -8,7 +8,7 @@
   <title>URL Specification</title>
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
-  <script src="miniurl/miniurl.js"></script>
+  <script src="lib/specurl.min.js"></script>
   <script src="scripts/main.js"></script>
 </head>
 <body>
@@ -100,7 +100,7 @@
 
   <ul>
     <li>
-      This is version 0.5.0 of the specification. This is a development 
+      This is version 0.6.0 of the specification. This is a development 
       version. 
     <li>
       The versioning scheme is specified by
@@ -565,12 +565,8 @@
   <h3>Additional Constraints</h3>
     <p class=-br>
       If an <i class=url>URL</i> <var>url</var> has a <b>scheme</b> then 
-      it is subject to three additional constraints:
+      it is subject to two additional constraints:
     <ul>
-      <li>
-        If <var>url</var> is a
-        <i>web-<span class=url>URL</span></i> that has an
-        <b>authority</b> token, then it must not be (<b>authority</b> ε).
       <li>
         If <var>url</var> is <strong>not</strong> a
         <i>file-<span class=url>URL</span></i> 
@@ -1156,7 +1152,7 @@
     Note that <code>0x</code> is parsed as a hexadecimal number.
     (It will be interpreted as 0).
 
-  <h4>IPv4 Address - Strict</h4>
+  <h4>IPv4 Address – Strict</h4>
   <p>
     A <em>valid</em> IPv4 address-string consists of four
     dot-separated numbers, <em>without</em> a trailing dot.
@@ -1341,7 +1337,7 @@
     There is an additional operation on <i class=url>URL</i>s called
     <dfn>force</dfn> that it is used as an error-recovery measure for
     <i>web-<span class=url>URL</span></i>s and
-    <i>file-<span class=url>URL</span></i>s that do not have an <b>authority</b>
+    <i>file-<span class=url>URL</span></i>s with an empty or absent <b>authority</b>
     token. Force has no effect on other <i class=url>URL</i>s.
 
   <div class="dfn-scope +br">
@@ -1450,10 +1446,12 @@
     <dfn style=display:none>resolve</dfn>
     <h4>Resolution</h4>
     <p>
-      The <dfn>resolution</dfn> of <var>url<sub>1</sub></var> against
-      <var>url<sub>2</sub></var> is defined to be the <i>pre-resolution</i> of
-      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
-      — if it is a <i>resolved-<span class=url>URL</span></i>.
+      The <dfn>resolution</dfn>
+      (<dfn class=op>resolve</dfn> <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+      of an <span class=url>URL</span> <var>url<sub>1</sub></var> against an
+      <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be the
+      <i>pre-resolution</i> of <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
+      — if the result is a <i>resolved-<span class=url>URL</span></i>.
       Otherwise resolution <strong>fails</strong>. 
   </div>
 
@@ -1462,9 +1460,10 @@
     <h4>Forced Resolution</h4>
     <p>
       The <dfn>forced resolution</dfn> of <var>url<sub>1</sub></var> against
-      <var>url<sub>2</sub></var> is defined to be the <i>resolution</i> of 
-      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>, 
-      subsequently <i>force</i>d.
+      <var>url<sub>2</sub></var> is defined to be
+    <p class="inbetween -center">
+      <i class=op>force</i> (<i class=op>resolve</i>
+        (<var>url<sub>1</sub></var> (<i class=op>force</i> <var>url<sub>2</sub></var>)).
     <p>
       Forced resolution must issue a validation warning if the
       <i class=common>resolution</i> of <var>url<sub>1</sub></var>
@@ -1553,12 +1552,12 @@
     <td> ≈
     <td><b>drive</b>  <var>x</var> <code>:</code>
   <tr>
-    <td><b>path-root</b> <var>x</var>・<b>dir</b> <var>y</var> 
-    <td> ≈ <td><b>path-root</b> <var>x</var>
+    <td><b>path-root</b> <code>/</code>・<b>dir</b> <var>y</var> 
+    <td> ≈ <td><b>path-root</b> <code>/</code>
     <td> — <td> if <var>y</var> :: <i>dots</i>
   <tr>
-    <td><b>path-root</b> <var>x</var>・<b>file</b> <var>y</var>
-    <td> ≈ <td><b>path-root</b> <var>x</var>
+    <td><b>path-root</b> <code>/</code>・<b>file</b> <var>y</var>
+    <td> ≈ <td><b>path-root</b> <code>/</code>
     <td> — <td> if <var>y</var> :: <i>dots</i>
   <tr>
     <td><b>dir</b>  <var>x</var>
@@ -1834,7 +1833,7 @@
         for (let i=0x20; i<=0x7e; i++) {
           // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
           if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
-            const _has = miniurl.isInSet (i, { name, minimal, special })
+            const _has = specurl.unstable.isInSet (i, { name, minimal, special })
             const td = $('td', $('code', String.fromCharCode (i)))
               if (!_has) td.classList.add ('-screen')
               td.title = 'u+'+i.toString(16).toUpperCase ()
@@ -1894,20 +1893,38 @@
 <!------------------------->
 <section><h2>Printing</h2>
 <!------------------------->
-<p class=note>
-  This section is incomplete,
-</div>
 
 <p>
   Printing is the process of converting an <i class=url>URL</i> to an
-  <i><span class=url>URL</span>-string</i>.
+  <i><span class=url>URL</span>-string</i>. 
+  To print an <span class=url>URL</span>, it must first be
+  subjected to an additional normalisation operation, and it must be percent encoded
+  as follows. 
 
+<h4>Normalise for Printing</h4>
+<p>
+  If an <span class=url>URL</span> does <em>not</em> have a <b>drive</b> nor an <b>authority</b>
+  but it <em>does</em> have a <b>path-root</b> and one or more <b>dir</b> tokens,
+  and its first <b>dir</b> token is (<b>dir</b> ε)
+  then it must be <dfn>normalised for printing</dfn>
+  by inserting a token (<b>dir</b> <code>.</code>) immediately after its <b>path-root</b>. 
+
+<p>
+  This additional normalisation step is necessary because it is not possible to represent
+  the affected <span class=url>URL</span>s as an <span class=url>URL</span>-string. 
+
+<p>
+  Consider for example the <span class=url>URL</span>
+  (<b>path-root</b> <code>/</code>)・(<b>dir</b> ε)・(<b>file</b> <code>foo</code>). 
+  Printing this <span class=url>URL</span> without an additional normalisation step
+  would result in <code>//foo</code> which represents the <span class=url>URL</span> 
+  (<b>authority</b> (<b>host</b> <code>foo</code>)) instead. 
+  
 <p class=todo>
-  There are <i>unprintable</i> URLs. These are URLs that would cause a 
-  'reparse-bug' in WHATWG parlance. This happens when the first path
-  segment is ε and the URL does not have an authority. Something similar may
-  happen with the drive. These URLs need to be converted to printable URLs
-  before they can be printed. 
+  This is not sufficient.
+  (<b>dir</b> ε)・(<b>dir</b> ε)・(<b>file</b> <code>foo</code>) also causes issues,
+  however this is not an issue for the WHATWG standard because it only considers absolute
+  URLs. There are similar issues around URLs with drive letters, which is an open issue. 
   
 <ul>
   <li>
