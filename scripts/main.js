@@ -56,6 +56,19 @@ function buildIndex (doc = document) {
   return index
 }
 
+function buildToolTips (entries) {
+  const tips = $('div')
+  for (let entry of entries) {
+    if (!entry.block) continue
+    const tip = entry.block.cloneNode (true)
+    if (!entry.block.querySelector ('h2,h3,h4')) {
+      const h = entry.section.querySelector('h2')
+      tips.append ($('h4', h.innerText))
+    }
+    tips.append (tip)
+  }
+  return tips
+}
 
 // Idiom Observer
 // --------------
@@ -66,13 +79,15 @@ function IdiomObserver (callback) {
 
   const self = this
   let current = null
-  document.addEventListener ('mouseover', onover)
+  document.addEventListener ('click', handler)
+  document.addEventListener ('mouseover', handler)
 
-  function onover (evt) {
+  function handler (evt) {
     const info = getContext (evt.target)
-    if ((info && info.elem) !== current) {
-      current = info ? info.elem : info
-      callback (info)
+    info.idiom = (info.elem && info.elem.innerText.replace(/\s+/, ' ')) || null
+    if (evt.type === 'click' || info.idiom !== current) {
+      current = info.idiom
+      callback (evt, info)
     }
   }
 
@@ -149,22 +164,21 @@ window.addEventListener ('DOMContentLoaded', main)
 
 function main () {
 
-  const header = document.getElementsByTagName('HEADER')[0]
+  const header = document.getElementsByTagName ('header') [0]
   const toolsDiv = document.getElementById ('tooltip')
-  
-  let toc
+  let toc, hoverDfns = [], hoverAs = []
+  let currentIdiom = null, pinnedTips = null
+
   document.getElementById ('toc') .replaceWith (toc = buildTOC ())
   toc.id = 'toc'
 
   const index = buildIndex ()
   const refIndex = buildHrefIndex ()
 
-  let hoverDfns = [], hoverAs = []
-  new IdiomObserver (onIdiom)
   new PageObserver (onSection)
 
   function onSection ({ section, scrollY, range, direction, _header = true }) {
-    let entry, node = section.querySelector('h1,h2')
+    let entry, node = section.querySelector ('h1,h2')
     if ((entry = refIndex[node.id])) {
       hoverAs.forEach (a => a.classList.remove ('-focus'))
       hoverAs = entry
@@ -183,38 +197,49 @@ function main () {
     }
   }
 
-  function onIdiom ({ elem, block }) {
-    clearIdiom ()
-    if (elem == null) return
-    let entries, text = elem.innerText.replace(/\s+/, ' ')
-    if ((entries = index[text])) {
-      log (text, entries)
+
+  // Idiom tools
+
+  new IdiomObserver (onIdiom)
+
+  function onIdiom (evt, { elem, block, idiom }) {
+    log ('idiom', idiom, pinnedTips, evt.type)
+    if (evt.type === 'click') {
+      if (!idiom) {
+        pinnedTips = null
+        clearIdiom ()
+      }
+    }
+    else if (idiom === null) return clearIdiom ()
+
+    let entries = index [idiom]
+    if (entries) {
       entries.forEach (({dfn}) => dfn.classList.add ('-focus'))
       hoverDfns = entries
-      
-      toolsDiv.classList.add ('-hidden')
-      toolsDiv.innerHTML =''
-      for (let entry of entries) {
-        if (!entry.block || entry.block === block) return
-        const tip = entry.block.cloneNode(true)
-        if (!tip.querySelector('h4')) {
-          const text = entry.section.querySelector('h2').innerText // text.slice(1)
-          toolsDiv.append ($('h4', text))
-        }
-        toolsDiv.append (tip)
-        toolsDiv.classList.remove ('-hidden')
-      }
-      const rect = block.getBoundingClientRect ()
-      const y = Math.max (rect.y, 475)
-      toolsDiv.style.top = y + 'px'
+      const tips = buildToolTips (entries)
+      if (evt.type === 'click') pinnedTips = tips
+      showTips (tips)
     }
-    else clearIdiom ()
   }
   
+  function showTips (tips) {
+    toolsDiv.classList.add ('-hidden')
+    if (tips) {
+      toolsDiv.innerHTML = ''
+      toolsDiv.append (tips)
+      toolsDiv.style.top = 0
+      const rect = tips.getBoundingClientRect ()
+      const y = Math.max (rect.y, 475) - 25
+      toolsDiv.style.top = y + 'px'
+      toolsDiv.classList.remove ('-hidden')
+    }
+  }
+
   function clearIdiom () {
     hoverDfns.forEach (({ dfn }) => dfn.classList.remove ('-focus'))
-    toolsDiv.classList.add ('-hidden')
+    showTips (pinnedTips)
+    currentIdiom = null
   }
-  
+
 }
 
