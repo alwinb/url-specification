@@ -100,7 +100,7 @@
 
   <ul>
     <li>
-      This is version 0.6.0 of the specification. This is a development 
+      This is version 0.6.1 of the specification. This is a development 
       version. 
     <li>
       The versioning scheme is specified by
@@ -181,8 +181,8 @@
     parentheses are not part of a sequence-constructing operation. 
 
   <div class="dfn-scope +br">
-    <dfn style=display:none>type</dfn>
     <h4>Tokens</h4>
+    <dfn style=display:none>type</dfn>
     <p>
       The word <dfn>token</dfn> is used throughout this specification to mean a
       tagged value, denoted by (<var>type</var> <var>value</var>), where
@@ -261,9 +261,10 @@
       this includes the space <i class=common>character</i> <b>u+20</b>.
 
 
+  <div class=dfn-scope>
   <h4>Character Sets</h4>
   <p>
-    <span class=dfn-scope>A <dfn>character-set</dfn> is a set of
+    A <dfn>character-set</dfn> is a set of
       <i>character</i>s. 
     A <dfn>character-range</dfn> is the largest 
     <i class=common>character-set</i> that includes a given least
@@ -278,6 +279,7 @@
     notation is generalised to <var>n</var>-ary unions. 
     Common <i class=common>character-set</i>s that are 
     used throughout this specification are defined below: 
+  </div>
 
   <table class="grammar">
     <tr>
@@ -307,8 +309,8 @@
     <tr>
       <td><dfn>hex-digit</dfn> 
       <td> := 
-      <td class=-nowrap>{ <code>0</code>–<code>9</code>, 
-        <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }
+      <td><span class=-nowrap>{ <code>0</code>–<code>9</code>, 
+        <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }</span>
     <tr>
       <td> <dfn>digit-nonzero</dfn> 
       <td> := 
@@ -346,10 +348,11 @@
       <td> <i>any</i> \ <i>control-c0</i> \ <i>del-c1</i> \ <i>surrogate</i> \ <i>non-char</i>
   </table>
 
+
   <h4>Grammars</h4>
   <p>
     The notation <var>name</var> ::= <var>expression</var> is used to define
-    a production rule of a grammar, where the <i>expression</i> uses
+    a production rule of a grammar, where the <dfn>expression</dfn> uses
     square brackets ( [ _ ] ) <strong>for optional rules</strong>, a postfix
     star ( * ) for zero-or-more, a postfix plus ( + ) for one-or-more, an infix
     vertical line ( | ) for alternatives, monospaced type for literal
@@ -419,15 +422,17 @@
     </ul>
     </div>
 
-    <div class="dfn-scope +br"><dfn style=display:none>authority</dfn>
+    <div class="dfn-scope +br">
     <h4>Authority</h4>
     <p class=-br>
-      An <dfn>Authority</dfn> is a sequence of tokens ordered by their type, 
-      taken from the ordered set:
+      An <dfn>Authority</dfn><dfn style=display:none>authority</dfn>
+      is a sequence of tokens ordered by their type, taken from the ordered set:
 
     <p class="-center">
       <b>username</b> &lt; <b>password</b> &lt; <b>host</b> &lt; <b>port</b>.
+    </div>
 
+    <div>
     <ul>
       <li>
         Authorities have at most one <i class=common>token</i> per
@@ -461,6 +466,7 @@
     <h4>Tokens</h4>
     <p class=-br>
       Whenever present, <i>token</i>s are subject to the following constraints:
+
     <ul>
       <li class=dfn-scope>
         <dfn style=display:none><b>scheme</b>-string</dfn>
@@ -497,6 +503,7 @@
         <i class=common>token</i>s' <i class=common>value</i>s
         are <i class=common>string</i>s.
     </ul>
+
     <ul style=display:none>
       <li class=dfn-scope>
         A <dfn><b>dir</b></dfn> token is a token (<b>dir</b> <var>name</var>)
@@ -1426,25 +1433,25 @@
     This is in accordance with the <abbr class=-caps>WHATWG</abbr> standard.
 
   <div class="dfn-scope +br">
-    <dfn style=display:none>pre-resolve</dfn>
     <h4>Pre-Resolution</h4>
-      <p class=-br>
-        The <dfn>pre-resolution</dfn> of 
-        <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
-        is defined to be:
-      <ul>
-        <li>
-          <var>url<sub>2</sub></var> <i class=op>~goto</i>
-            <var>url<sub>1</sub></var>
-          — if <var>url<sub>2</sub></var> is a
-          <i>base-<span class=url>URL</span></i> or 
-          <var>url<sub>1</sub></var>'s first token is a <b>fragment</b> token.
-        <li>
-          <var>url<sub>1</sub></var> — otherwise. 
+    <dfn style=display:none>pre-resolve</dfn>
+    <p class=-br>
+      The <dfn>pre-resolution</dfn> of 
+      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
+      is defined to be:
+    <ul>
+      <li>
+        <var>url<sub>2</sub></var> <i class=op>~goto</i>
+          <var>url<sub>1</sub></var>
+        — if <var>url<sub>2</sub></var> is a
+        <i>base-<span class=url>URL</span></i> or 
+        <var>url<sub>1</sub></var>'s first token is a <b>fragment</b> token.
+      <li>
+        <var>url<sub>1</sub></var> — otherwise. 
     </ul>
 
-    <dfn style=display:none>resolve</dfn>
     <h4>Resolution</h4>
+    <dfn style=display:none>resolve</dfn>
     <p>
       The <dfn>resolution</dfn>
       (<dfn class=op>resolve</dfn> <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
@@ -1829,11 +1836,12 @@
       this.div.innerHTML = ''
       this.div.append (table)
       for (let name of encodedTypes) {
+        const _name = name === 'fragment' ? 'hash' : name
         const tr = $ ('tr', $('th', $('b', name, '  ')))
         for (let i=0x20; i<=0x7e; i++) {
           // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
           if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
-            const _has = specurl.unstable.isInSet (i, { name, minimal, special })
+            const _has = specurl.unstable.isInSet (i, { name:_name, minimal, special })
             const td = $('td', $('code', String.fromCharCode (i)))
               if (!_has) td.classList.add ('-screen')
               td.title = 'u+'+i.toString(16).toUpperCase ()
