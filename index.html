@@ -100,7 +100,7 @@
 
   <ul>
     <li>
-      This is version 0.6.2 of the specification. This is a development 
+      This is version 0.7.0 of the specification. This is a development 
       version. 
     <li>
       The versioning scheme is specified by
@@ -432,7 +432,6 @@
       <b>username</b> &lt; <b>password</b> &lt; <b>host</b> &lt; <b>port</b>.
     </div>
 
-    <div>
     <ul>
       <li>
         Authorities have at most one <i class=common>token</i> per
@@ -550,24 +549,6 @@
       <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code>. 
   </div>
 
-  <div class="dfn-scope +br">
-  <h4>Base-URL</h4>
-    <p>
-      A <dfn>base-<span class=url>URL</span></dfn> is an <i>
-      <i class=url>URL</i></i> that has a <b>scheme</b>
-      and that has in addition, an <b>authority</b> or a
-      <b>path-root</b>.
-    </div>
-
-  <div class="dfn-scope +br">
-  <h4>Resolved-URL</h4>
-    <p>
-      A <dfn>resolved-<span class=url>URL</span></dfn> is an <i>
-      <i class=url>URL</i></i> whose first token is either a <b>scheme</b>
-      <i class=common>token</i> or a <b>fragment</b> <i class=common>token</i>. 
-    </div>
-
-
 
   <h3>Additional Constraints</h3>
     <p class=-br>
@@ -595,9 +576,6 @@
     <li>
       A valid <i class=url>URL</i> must not have a <b>username</b> or a
        <b>password</b> token. 
-    <li>
-      A valid <i class=url>URL</i> must not have a <b>drive</b> <var>drive</var>
-      such that <var>drive</var> :: alpha <code>|</code> (review).
     <li>
       A valid <i class=url>URL</i> must not contain <i class=common>token</i>s
       that have <i class=common>value</i>s that contain
@@ -675,10 +653,9 @@
       <dfn><b>generic-mode</b></dfn>.
 
     <p>
-      The <dfn>detected-parser-mode</dfn> for an
-      <i class=common><span class=url>URL</span>-string</i>
-      <var>input</var>, given a fallback <i class=common>parser-mode</i>
-      <var>supplied-mode</var> is then defined to be:
+      The <dfn>parser-mode-for</dfn> an
+      <i class=common><span class=url>URL</span>-string</i> <var>input</var>, given a
+      fallback <i class=common>parser-mode</i> <var>supplied-mode</var> is then defined to be:
     <ul class=-inbetween>
       <li>
         <b>web-mode</b> — if <var>input</var> starts with a
@@ -839,13 +816,13 @@
 
     <tr>
       <td><dfn>s</dfn> 
-      <td> ::= 
+      <td> := 
       <td> { <code>/</code> }
          —  in <b>generic-mode</b>
 
     <tr>
       <td>s<dfn style=display:none>s</dfn>
-      <td> ::= 
+      <td> := 
       <td> { <code>/</code>, <code>\</code> }
          —  in <b>web-mode</b> and in <b>file-mode</b></i>
 
@@ -1083,7 +1060,7 @@
       It is tempting to try to express this behaviour on the level of the
       grammar. For example one might consider using the following rule:
 
-    <p class="-inbetween -center">auth-path  := 
+    <p class="-inbetween -center">auth-path  ::= 
       <i>s</i>* <i>authority</i>
         [ <i>path-root</i> [ dir <i>s</i> ]* [ file ] ]
 
@@ -1191,22 +1168,20 @@
     <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference
     Resolution</a> of <abbr class=-caps>RFC</abbr> 3986. 
     The operations that are defined in this section are used in a subsequent
-    chapter to accurately describe the behaviour of a
-    <em>parse-resolve-and-normalise</em> algorithm that is referred to as the
-    &ldquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
-      <span class=url>URL</span> parser</a>&rdquo;
-    in the <abbr class=-caps>WHATWG URL</abbr> standard.
+    section to define a <em>parse-resolve-and-normalise</em> operation that 
+    accurately describes the behaviour of the
+    &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
+    <span class=url>URL</span> parser</a>&rsquo; as defined in the 
+    <abbr class=-caps>WHATWG URL</abbr> standard.
   <p>
     Reference Resolution as defined in this section does not involve
-    <i><span class=url>URL</span>-string</i>s. It solely operates on
-    <i class=url>URL</i>s as defined in the section
-    <a href=#url-model><span class=url>URL</span> Model</a> above.
-    In contrast with the previously
-    mentioned sections in <abbr class=-caps>RFC</abbr> 3986 and in the
-    <abbr class=-caps>WHATWG</abbr> standard, it does not do additional 
+    <i><span class=url>URL</span>-string</i>s. It operates on <i class=url>URL</i>s as
+    defined in the <a href=#url-model><span class=url>URL</span> Model</a> section above.
+    In contrast with <abbr class=-caps>RFC</abbr> 3986 and with the
+    <abbr class=-caps>WHATWG</abbr> standard, it does <strong>not</strong> do additional
     normalisation, which is relegated to the section
-    <a href=#equivalences-and-normalisation>Equivalences and Normalisation</a>
-    instead.
+    <a href=#equivalences-and-normalisation>Equivalences and Normalisation</a> instead.
+
 
   <h3>Order and Prefix operations</h3>
 
@@ -1251,20 +1226,17 @@
     </ul>
   </div>
 
-  <h3>Goto Operations</h3>
+
+  <h3>The Goto Operation</h3>
+
   <p>
-    Based on the <i class=common>order</i> and the
-    <i class=common>order-limited prefix</i> one can define
-    &ldquo;<i class=common>goto</i>&rdquo; and
-    &ldquo;<i class=common>non-strict goto</i>&rdquo; operations that are
-    analogous to the &ldquo;merge&rdquo; operation and its non-strict
-    counterpart that are defined in section
-    <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform
-    References</a> of <abbr class=-caps>RFC</abbr> 3986.
-  <br>
-    I have chosen to rename &ldquo;merge&rdquo; to &ldquo;goto&rdquo; to avert
-    the risk of incorrect assumptions about commutativity. 
-    The operations are not commutative, but they are associative.
+    Based on the <i class=common>order</i> and the <i class=common>order-limited
+    prefix</i> one can define a &ldquo;<i class=common>goto</i>&rdquo; operation that is
+    analogous to the &ldquo;merge&rdquo; operation that is defined in section
+    <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform References</a>
+    of <abbr class=-caps>RFC</abbr> 3986.
+    I have chosen the name &ldquo;goto&rdquo; to avert incorrect assumptions about
+    commutativity. The operation is not commutative, but it is associative.
 
   <div class="dfn-scope">
   <h4>Goto</h4>
@@ -1277,24 +1249,12 @@
     <var>url<sub>1</sub></var> <b class=fn>upto</b>
     (<b class=fn>ord</b> <var>url<sub>2</sub></var>) as a
     prefix and <var>url<sub>2</sub></var> as a postfix.
-
-  <h4>Non-Strict Goto</h4>
-  <p class=-br>
-    The <dfn>non-strict goto</dfn> operation
-    <span class=-nowrap>(<var>url<sub>1</sub></var> <dfn class=op>~goto</dfn>
-     <var>url<sub>2</sub></var>)</span> is defined to be
-     <br>
-    (<var>url<sub>1</sub></var> <b class=op>goto</b> <var>url<sub>2</var>')
-     where <var>url<sub>2</var>' is <var>url<sub>2</var> with its <b>scheme</b>
-    <i class=common>token</i> removed if it case-insensitively compares equal
-    to the <b>scheme</b> <i class=common>token</i> of <em>url<sub>1</sub></em>,
-    or <em>url<sub>2</sub></em> otherwise.<br><br>
   </div>
 
   <h4>Goto Properties</h4>
   <p class=-br>
-    The Goto operations have a number of pleasing mathematical properties, 
-    as follows:
+    The <i>goto</i> operation has a number of pleasing mathematical
+    properties, as follows:
   <ul>
     <li>
       <i class=op>ord</i> (<var>url<sub>1</sub></var> <i class=op>goto</i>
@@ -1315,12 +1275,8 @@
       <var>url<sub>1</sub></var> — if <var>url<sub>1</sub></var> does not
       have a <b>fragment</b>.
     <li>
-      all of the above are true for <i class=op>~goto</i> as well.
-    <li>
       <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var>
-      <i class=op>goto</i> <var>url<sub>2</sub></var>) but not necessarily of
-      (<var>url<sub>1</sub></var> <i class=op>~goto</i>
-      <var>url<sub>2</sub></var>).
+      <i class=op>goto</i> <var>url<sub>2</sub></var>).
   </ul>
 
   <p>
@@ -1328,24 +1284,59 @@
     sequence concatenation. In some cases it creates a <b>path-root</b>
     token to satisfy the <i>path-root-constraint</i>
     of the <i class=url>URL</i> model. 
-    An example can be useful. If <var>url<sub>1</sub></var> is the
-    <i class=url>URL</i> that is represented by
-    <code>//host</code> and <var>url<sub>2</sub></var> is the
-    <i class=url>URL</i> represented
-    by <code>foo/bar</code> then (<var>url<sub>1</sub></var> <i class=op>goto</i>
-    <var>url<sub>2</sub></var>) is represented by
-    <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even though
-    neither <var>url<sub>1</sub></var> nor <var>url<sub>2</sub></var> has 
-    one.
+    For example, if <var>url<sub>1</sub></var> is the
+    <i class=url>URL</i> represented by <code>//host</code> and <var>url<sub>2</sub></var>
+    is the <i class=url>URL</i> represented by <code>foo/bar</code>
+    then (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>)
+    is represented by <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even
+    though neither <var>url<sub>1</sub></var> nor <var>url<sub>2</sub></var> has one.
+  </p>
 
 
-  <h3>Forcing</h3>
+  <h3>Base URLs</h3>
+  
   <p>
-    There is an additional operation on <i class=url>URL</i>s called
-    <dfn>force</dfn> that it is used as an error-recovery measure for
-    <i>web-<span class=url>URL</span></i>s and
-    <i>file-<span class=url>URL</span></i>s with an empty or absent <b>authority</b>
-    token. Force has no effect on other <i class=url>URL</i>s.
+    The <i>goto</i> operation can be used to define a reference resolution operation,
+    as is done in the next sub-section. For this we first need to specify the shape of a  
+    <i>base-<span class=url>URL</span></i>. 
+
+  <div class="dfn-scope +br">
+  <h4>Base-URL</h4>
+    <p>
+      An <i class=url>URL</i> is a <dfn>base-<span class=url>URL</span></dfn>
+      if it conforms to the following constraints:
+
+    <ul class=-inbetween>
+      <li style=margin-bottom:.5rem>
+        A <i>web-<span class=url>URL</span></i> is a
+        <i>base-<span class=url>URL</span></i> if it has 
+        a <b>path-root</b> and an <b>authority</b> <br>
+        whose value is <span class=-nowrap>not ε</span>.
+      <li style=margin-bottom:.5rem>
+        A <i>file-<span class=url>URL</span></i> is a
+        <i>base-<span class=url>URL</span></i> if it has
+        an <b>authority</b> and in addition, <br>
+        a <b>path-root</b> or a <b>drive</b>.
+      <li style=margin-bottom:.5rem>
+        Any other <span class=url>URL</span> is a
+        <i>base-<span class=url>URL</span></i> if it has
+        a <b>scheme</b> and in addition, <br>
+        an <b>authority</b> or a <b>path-root</b>.
+    </ul>
+    </div>
+
+  <!-- <h3>Forcing</h3> -->
+
+  <p>
+    A <dfn>force</dfn> operation can be used to coerce a
+    <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>
+    that is not yet a <i>base-<span class=url>URL</span></i>
+    into a <i>base-<span class=url>URL</span></i>. 
+    The operation has no effect on other <span class=url>URL</span>s. 
+  <br>
+    Note that it is possible for the <i>force</i> operation to <strong>fail</strong>
+    for <i>web-<span class=url>URL</span></i>s. 
+  </p>
 
   <div class="dfn-scope +br">
   <h4>Forced File URL</h4>
@@ -1386,15 +1377,16 @@
         <li>
           Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
           an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
-          <var>auth</var>. 
+          <var>auth</var>. If the value cannot be parsed as an <i>Authority</i>
+          then <strong>fail</strong>.
       </ul>
     </li>
   </div>
 
   <h4>Force Properties</h4>
   <p>
-    The <i>force</i> operation lacks a number of nice properties
-    with respect to the <i>goto</i> operations: 
+    The <i>force</i> operation lacks a number of nice properties with respect to the
+    <i>goto</i> operation. The following equalities do not hold in general: 
   <table class=grammar>
     <tr>
       <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
@@ -1424,61 +1416,92 @@
 
 
   <h3>Resolution</h3>
+
   <p>
-    Based on the <i>goto</i> and <i>force</i> operations defined above,
-    it is now possible to define a <i>resolution</i> operation that is
-    compatible with the <abbr class=-caps>WHATWG</abbr> standard. 
-    Note that resolution, defined as such, may return an <i class=url>URL</i> 
-    that is not a <i>base-<span class=url>URL</span></i>.
-    This is in accordance with the <abbr class=-caps>WHATWG</abbr> standard.
+    Based on the <i>goto</i> and the <i>force</i> operations as defined above, it is now
+    possible to define a resolution operation that is compatible with the
+    <abbr class=-caps>WHATWG</abbr> standard. For this we first have to define
+    <i>strict resolution</i> and <i>non-strict resolution</i>. 
+  <p>
+    The distinction between <em>strict</em>– and <em>non-strict</em> resolution has been
+    adopted from the algorithm that is described in the section
+    <a href=https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2>Transform
+    References</a> of <abbr class=-caps>RFC</abbr> 3986.
+    The <abbr class=-caps>WHATWG</abbr> standard adds a third type of resolution, which I 
+    have named <i>forced-resolution</i>.
 
   <div class="dfn-scope +br">
-    <h4>Pre-Resolution</h4>
-    <dfn style=display:none>pre-resolve</dfn>
+    <h4>Strict Resolution</h4>
+    <dfn style=display:none>resolution</dfn>
     <p class=-br>
-      The <dfn>pre-resolution</dfn> of 
-      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
-      is defined to be:
+      The <dfn>strict resolution</dfn> 
+      <span class=-nowrap>(<dfn class=op>resolve</dfn> <var>url<sub>1</sub></var>
+      <var>url<sub>2</sub></var>)</span> of
+      an <span class=url>URL</span> <var>url<sub>1</sub></var> against
+      an <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be:
+      <dfn style=display:none>resolve</dfn>
     <ul>
       <li>
-        <var>url<sub>2</sub></var> <i class=op>~goto</i>
-          <var>url<sub>1</sub></var>
-        — if <var>url<sub>2</sub></var> is a
-        <i>base-<span class=url>URL</span></i> or 
-        <var>url<sub>1</sub></var>'s first token is a <b>fragment</b> token.
+        <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
+        — if <var>url<sub>2</sub></var> is a <i>base-<span class=url>URL</span></i>
+          or <var>url<sub>1</sub></var> has a <b>scheme</b>, or
       <li>
-        <var>url<sub>1</sub></var> — otherwise. 
+        <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
+        — if
+          <var>url<sub>2</sub></var> has a <b>scheme</b> and
+          <var>url<sub>1</sub></var> consists of a <b>fragment</b> token only.
+      <li>
+        Otherwise resolution <strong>fails</strong>. 
     </ul>
 
-    <h4>Resolution</h4>
-    <dfn style=display:none>resolve</dfn>
-    <p>
-      The <dfn>resolution</dfn>
-      (<dfn class=op>resolve</dfn> <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
-      of an <span class=url>URL</span> <var>url<sub>1</sub></var> against an
-      <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be the
-      <i>pre-resolution</i> of <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var>
-      — if the result is a <i>resolved-<span class=url>URL</span></i>.
-      Otherwise resolution <strong>fails</strong>. 
+    <h4>Non-Strict Resolution</h4>
+    <p class=-br>
+      The <dfn>non-strict resolution</dfn>
+      <span class=-nowrap>(<dfn class=op>~resolve</dfn> <var>url<sub>1</sub></var>
+       <var>url<sub>2</sub></var>)</span> is defined to be the
+       <i class=common>strict resolution</i>
+      (<b class=op>resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</var>)
+      where <var>~url<sub>1</var> is defined to be:
+    <ul>
+      <li>
+        <var>url<sub>1</var> with its <b>scheme</b> removed if both
+          <var>url<sub>1</var> and <var>url<sub>2</var> have a <b>scheme</b>,
+          and the <i class=common>value</i> of their <b>scheme</b>
+          <i class=common>token</i>s case-insensitively compare equal, or
+      <li>
+        <em>url<sub>1</sub></em> itself otherwise.
+    </ul>
   </div>
+
+  <p>
+    Note that resolution defined as such, may return an <i class=url>URL</i> that is not
+    a <i>base-<span class=url>URL</span></i> according to this specification. 
+    This is remedied in the following resolution operation that characterises the
+    behaviour of the <abbr class=-caps>WHATWG</abbr> standard, modulo normalisation. 
 
   <div class="dfn-scope +br">
     <dfn style=display:none>force-resolve</dfn>
     <h4>Forced Resolution</h4>
+    <p class=-br>
+      The <dfn>forced-resolution</dfn> of
+      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var> is defined as:
+    <ul>
+      <li>
+        <i class=op>force</i> (<i class=op>~resolve</i>
+        <var>url<sub>1</sub></var> (<i class=op>force</i> <var>url<sub>2</sub></var>))
+        — if <var>url<sub>2</sub></var> is a <i>web-<span class=url>URL</span></i>
+        or a <i>file-<span class=url>URL</span></i>.
+      <li>
+        <i class=op>force</i> (<i class=op>resolve</i>
+        <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+        — otherwise.
+    </ul>
     <p>
-      The <dfn>forced resolution</dfn> of <var>url<sub>1</sub></var> against
-      <var>url<sub>2</sub></var> is defined to be
-    <p class="inbetween -center">
-      <i class=op>force</i> (<i class=op>resolve</i>
-        <var>url<sub>1</sub></var> (<i class=op>force</i> <var>url<sub>2</sub></var>)).
-    <p>
-      Forced resolution must issue a validation warning if the
-      <i class=common>resolution</i> of <var>url<sub>1</sub></var>
-      against <var>url<sub>2</sub></var> is a 
-      <i class=common>file-<span class=url>URL</span></i> 
-      or a <i class=common>web-<span class=url>URL</span></i> 
-      without an <b>authority</b>. Otherwise, if the <i>resolution</i>
-      <strong>fails</strong> then the <i>forced resolution</i> fails as well.
+      Any application of the <i>force</i> operation that modifies its input must issue a
+      validation warning. If in the process of
+      <i>forced-resolution</i>, the <i>strict resolution</i> or
+      the <i>force</i> operation <strong>fails</strong>, then the
+      <i>forced-resolution</i> <strong>fails</strong> as well.
   </div>
 
 </section>
@@ -1993,11 +2016,11 @@
 <section><h2>Concluding</h2>
 <!------------------------->
 
-<p>This final section specifies the behaviour of the 
-  <i>parse-resolve-and-normalise</i> operation that is referred to as the
+<p>This final section specifies the behaviour of a 
+  <i>parse-resolve-and-normalise</i> operation that characterises the behaviour of the
   &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
   <span class=url>URL</span> parser</a>&rsquo;
-  in the <abbr class=-caps>WHATWG URL</abbr> standard.
+  as described in the <abbr class=-caps>WHATWG URL</abbr> standard.
 
 <div class=todo>
   It's easy!<br>

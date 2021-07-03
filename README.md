@@ -1,7 +1,8 @@
 URL Specification 
 =================
 
-This is the project page for a new [URL Specification][url-spec]. 
+This is the project page for a new [URL Specification][url-spec].  
+There is a project page for a reference implementation [here][spec-url].
 
 # 🌲
 
@@ -13,6 +14,7 @@ A main goal of this project is to enable and support efforts towards a single **
 This specification does not attempt to be such a unified URL standard itself. Instead it rephrases and generalises the WHATWG standard. This is a necessary intermediate step because the WHATWG standard is written in a style that makes it difficult to identify the differences between the specifications directly. It will be relatively simple to unify the standards once this work has been completed. 
 
 [url-spec]: https://alwinb.github.io/url-specification/
+[spec-url]: https://github.com/alwinb/spec-url/
 [uri]: https://tools.ietf.org/html/rfc3986
 [iri]: https://tools.ietf.org/html/rfc3987
 [wwg]: https://url.spec.whatwg.org

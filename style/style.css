@@ -121,8 +121,10 @@ code, pre {
   font:var(--mono);
 }
 
-abbr, .url {
+abbr, .url, .-caps {
+  font-variant:small-caps;
   font-variant:all-small-caps;
+  font-style:normal;
 }
 
 th {
@@ -414,7 +416,7 @@ b:hover, i:hover, dfn:hover, dfn.-focus {
   cursor:crosshair;
 }
 
-abbr, .url {
+abbr, .url, .-caps {
   font-style:normal;
   font-size:1.3em;
 }
