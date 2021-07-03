@@ -5,7 +5,7 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport"
     content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>URL Specification</title>
+  <title>URL Grammar</title>
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
   <script src="lib/specurl.min.js"></script>
@@ -19,9 +19,9 @@
 
 <div id=tools>
   <div id=menu>
-  <a id=icon href=#url-specification>🌲</a>
+  <a id=icon href=#url-grammar>🌲</a>
   <ul>
-    <li><a href=#url-specification>Introduction</a></li>
+    <li><a href=#url-grammar>Introduction</a></li>
     <li><a href=#preliminaries>Preliminaries</a></li>
     <li><a href=#url-model><span class=url>URL</span> Model</a></li>
     <li><a href=#parsing>Parsing</a></li>
@@ -36,23 +36,25 @@
 </div>
 
 <article>
-<h1 id=url-specification>URL Specification</h1>
+<h1 id=url-grammar>URL Grammar</h1>
 
 
 <!----------------------------->
 <section class=-short>
-<h2 class=-toc-exclude style=display:none>URL Specification</h2>
+<h2 class=-toc-exclude style=display:none>URL Grammar</h2>
 <!----------------------------->
   <p>
-    This document provides a concise formal specification of
+    This document provides a concise formal definition of
     <span class=url>URL</span>s and the language of
-    <span class=url>URL</span>s. It is a <em>reverse specification</em> and a 
-    generalisation of the 
+    <span class=url>URL</span>s. It is offered as an
+    aid to those who require such a thing.
+    The intent is to track the evolution of the 
     <a href="https://url.spec.whatwg.org/"><abbr class=-caps>WHATWG URL</abbr>
-      standard</a>.
-    It aims to be fully compatible with the 
-    <abbr class=-caps>WHATWG</abbr> standard
-    but in addition, it specifies
+      Living Standard</a>and remain fully compatible with it.
+    Another goal is to provide a concise way
+    to describe the differences withw RFC 3987 (IRI) as
+    part of the longer-term process of updating that RFC.
+    It specifies
     elementary operations for reference resolution and it
     provides a formal grammar. 
       
@@ -97,7 +99,6 @@
 <!----------------------------->
   <p class=note>
     This is a development version of the specification. 
-
   <ul>
     <li>
       This is version 0.6.2 of the specification. This is a development 
@@ -111,7 +112,7 @@
       Creative Commons - <abbr class=-caps>CC BY-SA</abbr> 2.0</a> license. 
     <li>
       The development of this specification can be discussed on
-      <a href="https://github.com/alwinb/url-specification">GitHub</a>. 
+      <a href="https://github.com/alwinb/url-grammar">GitHub</a>. 
   </ul>
 </section>
 
