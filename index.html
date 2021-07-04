@@ -44,18 +44,15 @@
 <h2 class=-toc-exclude style=display:none>URL Specification</h2>
 <!----------------------------->
   <p>
-    This document provides a concise formal specification of
-    <span class=url>URL</span>s and the language of
-    <span class=url>URL</span>s. It is a <em>reverse specification</em> and a 
-    generalisation of the 
+    This document provides a concise formal definition of <span class=url>URL</span>s and
+    the language of <span class=url>URL</span>s. It offers a rephrasing of the 
     <a href="https://url.spec.whatwg.org/"><abbr class=-caps>WHATWG URL</abbr>
-      standard</a>.
-    It aims to be fully compatible with the 
-    <abbr class=-caps>WHATWG</abbr> standard
-    but in addition, it specifies
-    elementary operations for reference resolution and it
-    provides a formal grammar. 
-      
+      standard</a> in an effort to better reveal the internal structure of 
+    <span class=url>URL</span>s and the operations on them.
+    It provides a formal grammar and a set of elementary operations that are eventually
+    combined together in such a way that the end result is equivalent with the
+    <abbr class=-caps>WHATWG</abbr> standard. 
+
   <p class=-inbetween>
     The goals of this document are,
   <ul class=-prose>
@@ -67,22 +64,27 @@
       the web <abbr class=-caps>API</abbr>'s setters and the url-encoded
       form format.
     <li>
-      To define a general model for <span class=url>URL</span>s that can
+      To provide a general model for <span class=url>URL</span>s that can
       express relative references and to define reference resolution by means
       of a number of elementary operations, in such a way that the end result is 
       in agreement with the <abbr class=-caps>WHATWG</abbr> standard.
     <li>
-      To enable and support efforts towards a single
-      <strong><em>Unified <span class=url style=font-style:italic>URL</span>
-        Standard</em></strong>
-      that includes a normative specification of <span class=url>URL</span>
-      handling by web browsers and that resolves the incompatibilities between
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr
-         class=-caps>RFC</abbr> 3986</a>,
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr
-         class=-caps>RFC</abbr> 3987</a> and the
-      <a href="https://url.spec.whatwg.org/"><abbr
-         class=-caps>WHATWG</abbr> standard</a>.
+      To provide a concise way to describe the differences between the
+      <abbr class=-caps>WHATWG</abbr> standard and 
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
+      and
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
+      as part of a larger effort;
+    <li>
+      To enable and support work towards an update of
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
+      that resolves the incompatibilities with the <abbr class=-caps>WHATWG</abbr> standard.
+    <li>
+      To enable and support editorial changes to the 
+      <abbr class=-caps>WHATWG</abbr> standard in the hope to recover the
+      structural framework for relative references, normalisation and the hierarchy of 
+      equivalence relations on <span class=url>URL</span>s that was put forward in 
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>.
     <!-- <li>
       To provide the authors of the <abbr class=-caps>WHATWG</abbr> standard
       with a support document that is useful to them in their efforts to
@@ -112,6 +114,13 @@
     <li>
       The development of this specification can be discussed on
       <a href="https://github.com/alwinb/url-specification">GitHub</a>. 
+    <li>
+      There is a <a href="https://github.com/alwinb/spec-url">reference implementation</a>
+      to accompany this specification. 
+    <li>
+      The reference implementation currently passes 630 out of the 632
+      <span class=url>URL</span> constructor tests from the
+      <a href=https://web-platform-tests.org>web-platform-tests</a>.
   </ul>
 </section>
 
@@ -120,14 +129,13 @@
 <section class=-short><h2 class=-toc-exclude>Structure of this document</h2>
 <!----------------------------->
   <p>
-    As of this writing, this specification has a compact format that is focused
-    specifically on the definition and specification of <span
-     class=url>URL</span>s and operations on <span class=url>URL</span>s. 
-    It does not include a discussion of their history or their use in
-    various contexts. It does contain valuable non-normative references to
-    <a href="https://tools.ietf.org/html/rfc3986"
-    ><abbr class=-caps>RFC</abbr> 3986</a> that can be
-    followed for additional information about the concepts involved.
+    As of this writing, this document has a compact format that is focused specifically on
+    the definition and specification of <span class=url>URL</span>s and operations on
+    <span class=url>URL</span>s. 
+    It does not include a discussion of their history or their use in various contexts.
+    It does contain valuable non-normative references to
+    <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
+    that can be followed for additional information about the concepts involved.
 
   <p class=-inbetween>
     The sections are laid out as follows.
@@ -141,8 +149,8 @@
 <section><h2>Preliminaries</h2>
 <!----------------------------->
   <p>
-    This section introduces basic concepts and notational conventions upon 
-    which the rest of the specification is built. 
+    This section introduces basic concepts and notational conventions which are used
+    throughout the rest of this document. 
 
   <h4>Sequences</h4>
   <p>
@@ -182,8 +190,8 @@
 
   <div class="dfn-scope +br">
     <h4>Tokens</h4>
-    <dfn style=display:none>type</dfn>
     <p>
+      <dfn style=display:none>type</dfn>
       The word <dfn>token</dfn> is used throughout this specification to mean a
       tagged value, denoted by (<var>type</var> <var>value</var>), where
       <var>type</var> is taken from a predefined set of
@@ -264,21 +272,18 @@
   <div class=dfn-scope>
   <h4>Character Sets</h4>
   <p>
-    A <dfn>character-set</dfn> is a set of
-      <i>character</i>s. 
-    A <dfn>character-range</dfn> is the largest 
-    <i class=common>character-set</i> that includes a given least
-    <i class=common>character</i> <var>c</var> and a greatest
+    A <dfn>character-set</dfn> is a set of <i>character</i>s. 
+    A <dfn>character-range</dfn> is the largest <i class=common>character-set</i> that
+    includes a given least <i class=common>character</i> <var>c</var> and a greatest
     <i class=common>character</i> <var>d</var>.
     Such a <i>character-range</i> is denoted by
     <span class=-nowrap>{ <var>c</var>–<var>d</var> }.</span> 
     The union of e.g. <span class=-nowrap>{ <var>a</var>–<var>b</var> }</span>
     and <span class=-nowrap>{ <var>c</var>–<var>d</var> }</span>, is denoted by
-    <span class=-nowrap>{ <var>a</var>–<var>b</var>, 
-      <var>c</var>–<var>d</var> }</span>, and this
-    notation is generalised to <var>n</var>-ary unions. 
-    Common <i class=common>character-set</i>s that are 
-    used throughout this specification are defined below: 
+    <span class=-nowrap>{ <var>a</var>–<var>b</var>, <var>c</var>–<var>d</var> }</span>,
+    and this notation is generalised to <var>n</var>-ary unions. 
+    Common <i class=common>character-set</i>s that are used throughout this specification
+    are defined below: 
   </div>
 
   <table class="grammar">
