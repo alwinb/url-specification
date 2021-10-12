@@ -187,45 +187,44 @@
     parentheses are not part of a sequence-constructing operation. 
 
   <div class="dfn-scope +br">
-    <h4>Tokens</h4>
+    <h4>Components</h4>
     <p>
       <dfn style=display:none>type</dfn>
-      The word <dfn>token</dfn> is used throughout this specification to mean a
+      The word <dfn>component</dfn> is used throughout this specification to mean a
       tagged value, denoted by (<var>type</var> <var>value</var>), where
       <var>type</var> is taken from a predefined set of
-      <dfn>token-type</dfn>s.
-    The <i class=common>value</i> of a <i class=common>token</i> may be a
-    <i class=common>sequence</i> of
-    <i class=common>token</i>s itself, in which case the
-    <i class=common>token</i> may be referred
-    to as a <dfn>compound-token</dfn> for clarity.
-    <!--and the tokens present in its value may be referred to as
-    <dfn>sub-token</dfn>s.-->
+      <dfn>component-type</dfn>s.
+    The <i class=noindex>value</i> of a component may be a <i class=common>sequence</i>
+    of components itself, in which case the component may be referred to as a
+    <dfn>compound-component</dfn> for clarity.
+    <!--and the components present in its value may be referred to as
+    <dfn>sub-component</dfn>s.-->
     <!-- add to dfn index -->
     <!-- TODO I want to be able to add alt-name attributes to the dfn tags-->
     <div style=display:none><dfn>value</dfn></div>
   </div>
   <p>
-    Both <i>token-type</i> constants and their corresponding
-    <i class=common>token</i>-constructing operator are typeset in boldface.
-    For example, <b class=noindex>scheme</b> denotes a <i>token-type</i>, whilst
-    (<b class=noindex>scheme</b> <var>value</var>) denotes a <i>token</i>. 
+    Both <i>component-type</i>s and their corresponding
+    <i>component</i>-constructing operator are typeset in boldface.
+    For example, <b class=noindex>scheme</b> denotes a <i>component-type</i>,
+    whilst (<b class=noindex>scheme</b> <var>value</var>) denotes a
+    <b class=noindex>scheme</b>-<i>component</i>. 
     Again, parentheses are used to disambiguate and as visual aides. They are not part of
-    the <i class=common>token</i>-constructing operator. 
+    the <i class=common>component</i>-constructing operator. 
   <p>
-    When a collection of <i class=common>token</i>s contains exactly one
-    <i class=common>token</i> (<var>tag</var> <var>value</var>) for a given
-    <i class=common>tag</i>, then
-    the <i class=common>tag</i> may be used to refer to its
-    <i class=common>value</i> directly. For
-    example, given a <i class=common>sequence</i> of <i class=common>token</i>s
+    When a collection of <i class=common>component</i>s contains exactly one
+    <i class=common>component</i> for a given <i class=common>component-type</i>,
+    then the <i class=common>type</i> may be used as a reference to the
+    <i class=common>component</i>'s
+    <i class=common>value</i>. For example, given a <i class=common>sequence</i> of
+    <i class=common>component</i>s
     S := (<b class=noindex>dir</b> <var>x</var>・<b
        class=noindex>file</b> <var>y</var>・<b 
        class=noindex>query</b> 
     <var>z</var>), the phrase
     &ldquo;the <b class=noindex>query</b> of S&rdquo; identifies the
     <i class=common>value</i> <var>z</var> whereas the phrase &ldquo;the
-    <b class=noindex>query</b> <i class=common>token</i> of
+    <b class=noindex>query</b> <i class=common>component</i> of
     S&rdquo; identifies (<b class=noindex>query</b> <var>z</var>).
 
 
@@ -378,8 +377,8 @@
 <section><h2>URL Model</h2>
 <!------------------------>
 <p>
-  An <i><span class=url>URL</span></i> is a sequence of tokens that is
-  subject to a number of additional constraints. The ordering of the tokens 
+  An <i><span class=url>URL</span></i> is a sequence of components that is
+  subject to a number of additional constraints. The ordering of the components 
   in the sequence is analogous to the hierarchical syntax of an 
   <abbr class=-caps>URI</abbr> as described
   in <a href="https://tools.ietf.org/html/rfc3986#section-1.2.3">Hierarchical
@@ -390,8 +389,8 @@
    <i><span class=url>URL</span>-string</i>.
 <br>
   <span class=dfn-scope>
-    An <i class=url>URL</i> is a <em>structure</em>, indeed a special kind of 
-    sequence of tokens, whereas an <dfn><span class=url>URL</span>-string</dfn>
+    An <i class=url>URL</i> is a <em>structure</em>, indeed a special
+    sequence of components, whereas an <dfn><span class=url>URL</span>-string</dfn>
     is a special kind of <i>string</i> that <em>represents</em> an
     <i class=url>URL</i></span>. Conversions between <i class=url>URL</i>s
   and <i class=common><span class=url>URL</span>-string</i>s are described in
@@ -402,8 +401,8 @@
   <h4>URL</h4>
     <p>
       An <dfn class=url>URL</dfn> is a <i>sequence</i> of
-      <i>token</i>s that occur in ascending order by <i>token-type</i>,
-      where <i class=noindex>token-type</i> is taken from
+      <i>component</i>s that occur in ascending order by <i>component-type</i>,
+      where <i class=noindex>component-type</i> is taken from
       the ordered set: 
     <p class="-center">
       <b>scheme</b> &lt; <b>authority</b> &lt; <b>drive</b>
@@ -412,14 +411,14 @@
     <ul>
       <li>
         An <i class=url>URL</i> contains at most one
-        <i class=common>token</i> per <i class=common>type</i>, 
-        except for <b>dir</b> <i class=common>token</i>s, of which it may have
+        <i class=common>component</i> per <i class=common>type</i>, 
+        except for <b>dir</b> <i class=common>component</i>s, of which it may have
         any finite amount.
       <li class=dfn-scope><dfn style=display:none>path-root-constraint</dfn>
         If an <i class=url>URL</i> has an <b>authority</b> or a
-        <b>drive</b> <i class=common>token</i>, and it has a <b>dir</b> or a
-        <b>file</b> token, then it also has a <b>path-root</b>
-        <i class=common>token</i>.
+        <b>drive</b> <i class=common>component</i>, and it has a <b>dir</b> or a
+        <b>file</b> component, then it also has a <b>path-root</b>
+        <i class=common>component</i>.
     </ul>
     </div>
 
@@ -427,7 +426,7 @@
     <h4>Authority</h4>
     <p class=-br>
       An <dfn>Authority</dfn><dfn style=display:none>authority</dfn>
-      is a sequence of tokens ordered by their type, taken from the ordered set:
+      is a sequence of components ordered by their type, taken from the ordered set:
 
     <p class="-center">
       <b>username</b> &lt; <b>password</b> &lt; <b>host</b> &lt; <b>port</b>.
@@ -435,15 +434,15 @@
 
     <ul>
       <li>
-        Authorities have at most one <i class=common>token</i> per
+        Authorities have at most one <i class=common>component</i> per
         <i class=common>type</i>.
       <li>
-        If an Authority has a <b>password</b> <i class=common>token</i> then it
-        also has a <b>username</b> <i class=common>token</i>.
+        If an Authority has a <b>password</b> <i class=common>component</i> then it
+        also has a <b>username</b> <i class=common>component</i>.
       <li>
         If an Authority has a <b>username</b> or a <b>port</b>
-        <i class=common>token</i> then it also has a <b>host</b>
-        <i class=common>token</i>.
+        <i class=common>component</i> then it also has a <b>host</b>
+        <i class=common>component</i>.
     </ul>
 
   <div class="dfn-scope +br">
@@ -462,9 +461,10 @@
     </ul>
   </div>
 
-    <h4>Tokens</h4>
+    <h4>URL components</h4>
     <p class=-br>
-      Whenever present, <i>token</i>s are subject to the following constraints:
+      Whenever present, the <i class=common>component</i>s of an <span class=url>URL</span>
+      are subject to the following constraints:
 
     <ul>
       <li class=dfn-scope>
@@ -490,7 +490,7 @@
         The <dfn><b>file</b></dfn> of an <i class=url>URL</i>
         is a nonempty <i class=common>string</i>.
       <!-- <li>
-        For all other tokens present, the tokens&rsquo; values are
+        For all other components present, the components&rsquo; values are
         <i class=common>string</i>s. -->
       <li class=dfn-scope>
         The <dfn><b>host</b></dfn> of an <i>Authority</i> is a <i>Host</i>.
@@ -498,14 +498,14 @@
         The <dfn><b>port</b></dfn> of an <i>Authority</i> is either ε 
         or a natural number <var>n</var> &lt; 2<sup>16</sup>.
       <li class=dfn-scope>
-        For all other <i class=common>token</i>s present, the
-        <i class=common>token</i>s' <i class=common>value</i>s
+        For all other <i class=common>component</i>s present, the
+        <i class=common>component</i>s' <i class=common>value</i>s
         are <i class=common>string</i>s.
     </ul>
 
     <ul style=display:none>
       <li class=dfn-scope>
-        A <dfn><b>dir</b></dfn> token is a token (<b>dir</b> <var>name</var>)
+        A <dfn><b>dir</b></dfn> component is a component (<b>dir</b> <var>name</var>)
         where <var>name</var> is a string.
       <li class=dfn-scope>
         The <dfn><b>query</b></dfn> of an <i class=url>URL</i>,
@@ -558,11 +558,11 @@
       <li>
         If <var>url</var> is <strong>not</strong> a
         <i>file-<span class=url>URL</span></i> 
-        then it must not have a <b>drive</b> <i class=common>token</i>.
+        then it must not have a <b>drive</b> <i class=common>component</i>.
       <li>
         If <var>url</var> <strong>is</strong> a 
         <i>file-<span class=url>URL</span></i>, and it has an <b>authority</b>,
-        then it must either be empty or it must consist of a <b>host</b> token
+        then it must either be empty or it must consist of a <b>host</b> component
         only.
     </ul>
 
@@ -575,15 +575,15 @@
   <ul>
     <li>
       A valid <i class=url>URL</i> must not have a <b>username</b> or a
-       <b>password</b> token. 
+       <b>password</b> component. 
     <li>
-      A valid <i class=url>URL</i> must not contain <i class=common>token</i>s
+      A valid <i class=url>URL</i> must not contain <i class=common>component</i>s
       that have <i class=common>value</i>s that contain
       invalid percent-encode sequences. 
   </ul>
   <p>
     Note that arbitrary <i class=common>code point</i>s are allowed in
-    <i class=common>token</i> <i class=common>value</i>s
+    <i class=common>component</i> <i class=common>value</i>s
     unless explicitly specified otherwise. The restrictions on the code points
     in an <i><span class=url>URL</span>-string</i> and the definition of a
     <i>valid <span class=url>URL</span>-string</i> is discussed in 
@@ -1031,8 +1031,8 @@
   <div class=todo>
     The grammar and the model, are very closely related.
     (So close even that I'm pondering if I can merge them).
-    If you record the use of each rule whose name corresponds to a token-type
-    as a token, then you end up with an URL as defined in the Model section.
+    If you record the use of each rule whose name corresponds to a component-type
+    as a component, then you end up with an URL as defined in the Model section.
     With the port, being once exception, and the definition of a host needs
     a bit of work too.
   </div> -->
@@ -1188,7 +1188,7 @@
   <p>
     A property that is particularly useful is the <i>order</i> of an <i class=url>URL</i>.
     Colloquially, the <i class=common>order</i> is the
-    <i class=common>type</i> of the first <i class=common>token</i>
+    <i class=common>type</i> of the first <i class=common>component</i>
     of an <i class=url>URL</i>. The <i class=common>order</i>
     may be used as an argument to specify various prefixes of an
     <i class=url>URL</i>.
@@ -1203,7 +1203,7 @@
       <li>
         <b>fragment</b> if <var>url</var> is the empty <i class=url>URL</i>.
       <li>
-        The <i class=common>type</i> of its first <i class=common>token</i>
+        The <i class=common>type</i> of its first <i class=common>component</i>
         otherwise.
     </ul>
 
@@ -1215,11 +1215,11 @@
       the <em>shortest</em> prefix of <var>url</var> that contains:
       <ul>
         <li>
-          all <i class=common>token</i>s of <em>url</em> with a
+          all <i class=common>component</i>s of <em>url</em> with a
           <i class=common>type</i> strictly
           smaller than <var>order</var> and
         <li>
-          all <b>dir</b> <i class=common>token</i>s with a
+          all <b>dir</b> <i class=common>component</i>s with a
           <i class=common>type</i> weakly smaller
           than <var>order</var>.
     </ul>
@@ -1281,7 +1281,7 @@
   <p>
     Be aware that the <i>goto</i> operation does a bit more than 
     sequence concatenation. In some cases it creates a <b>path-root</b>
-    token to satisfy the <i>path-root-constraint</i>
+    component to satisfy the <i>path-root-constraint</i>
     of the <i class=url>URL</i> model. 
     For example, if <var>url<sub>1</sub></var> is the
     <i class=url>URL</i> represented by <code>//host</code> and <var>url<sub>2</sub></var>
@@ -1344,10 +1344,10 @@
       <ul>
         <li>
           If <var>url</var> does not have an <b>authority</b> then set its
-          <b>authority</b> token to (<b>authority</b> ε).
+          <b>authority</b> component to (<b>authority</b> ε).
         <li>
           If <var>url</var> does not have a <b>drive</b> then set its 
-          <b>path-root</b> token to (<b>path-root</b> <code>/</code>).
+          <b>path-root</b> component to (<b>path-root</b> <code>/</code>).
       </ul>
   </div>
 
@@ -1358,21 +1358,21 @@
       <var>url</var>:
       <ul>
         <li>
-          Set the <b>path-root</b> token of <var>url</var> to
+          Set the <b>path-root</b> component of <var>url</var> to
           (<b>path-root</b> <code>/</code>).
         <li>
-          If <var>url</var> has an <b>authority</b> token and the
-          <i>value</i> of the token is is not ε
+          If <var>url</var> has an <b>authority</b> component and the
+          <i>value</i> of the component is is not ε
           — then return.
         <li>
-          Otherwise let <var>token</var> be the first <b>dir</b> or
-          <b>file</b> <i class=common>token</i> whose value is not ε. 
-          If no such <i class=common>token</i> exists, <strong>fail</strong>.
+          Otherwise let <var>component</var> be the first <b>dir</b> or
+          <b>file</b> <i class=common>component</i> whose value is not ε. 
+          If no such <i class=common>component</i> exists, <strong>fail</strong>.
         <li> 
-          Remove all <b>dir</b> or <b>file</b> <i class=common>token</i>s that
-          precede <var>token</var> and remove <var>token</var> as well. 
+          Remove all <b>dir</b> or <b>file</b> <i class=common>component</i>s that
+          precede <var>component</var> and remove <var>component</var> as well. 
         <li>
-          Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
+          Let <var>auth</var> be the <i>value</i> of <var>component</var> parsed as
           an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
           <var>auth</var>. If the value cannot be parsed as an <i>Authority</i>
           then <strong>fail</strong>.
@@ -1445,7 +1445,7 @@
         <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
         — if
           <var>url<sub>2</sub></var> has a <b>scheme</b> and
-          <var>url<sub>1</sub></var> consists of a <b>fragment</b> token only.
+          <var>url<sub>1</sub></var> consists of a <b>fragment</b> component only.
       <li>
         Otherwise resolution <strong>fails</strong>. 
     </ul>
@@ -1463,7 +1463,7 @@
         <var>url<sub>1</sub></var> with its <b>scheme</b> removed if both
           <var>url<sub>1</sub></var> and <var>url<sub>2</sub></var> have a <b>scheme</b>,
           and the <i class=common>value</i> of their <b>scheme</b>
-          <i class=common>token</i>s case-insensitively compare equal, or
+          <i class=common>component</i>s case-insensitively compare equal, or
       <li>
         <em>url<sub>1</sub></em> itself otherwise.
     </ul>
@@ -1610,9 +1610,9 @@
   Like path normalisation,
   the equations must be exhaustively applied from left-to-right
   to normalise an <i class=url>URL</i>. This has the same effect as removing
-  any empty <b>port</b> or <b>password</b> token, and if the
+  any empty <b>port</b> or <b>password</b> component, and if the
   <span class=url>URL</span> does not have a <b>password</b> after that, 
-  to also remove any empty <b>username</b> token. 
+  to also remove any empty <b>username</b> component. 
 </p>
 
   <table>
@@ -1689,12 +1689,12 @@
   <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded
     bytes</a> of the <abbr class=-caps>WHATWG</abbr> standard. 
   On an abstract level, <em>percent encoding</em> provides a means to use 
-  use characters within <i class=common>token</i>s, that are not otherwise
+  use characters within <i class=common>component</i>s, that are not otherwise
   allowed by the <i class=url>URL</i> grammar.
   The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em>
-  specify the semantics of percent-encoded-bytes in the tokens of an
+  specify the semantics of percent-encoded-bytes in the components of an
   <i class=url>URL</i> other than the <b>host</b>, and any
-  percent-encoded bytes that are present in other tokens are <em>not</em> decoded.
+  percent-encoded bytes that are present in other components are <em>not</em> decoded.
 
 <h4>Percent Encoded String</h4>
 <p>
@@ -1779,7 +1779,7 @@
   and not make it configurable via the encode set, but this is work in progress. 
   <br>
   Furthermore, this needs to discuss the encoding override, which is only 
-  allowed for the query; all other tokens must use UTF8.
+  allowed for the query; all other components must use UTF8.
 
 <p class=todo>
   To <i>percent-encode</i> a given <i class=common>string</i> <var>string</var>,
@@ -1791,7 +1791,7 @@
 
 <p>
   Percent encoding can be extended from <i class=common>string</i>s to
-  <i class=url>URL</i>s by percent encoding the tokens' 
+  <i class=url>URL</i>s by percent encoding the components' 
   <i class=common>value</i>s of an <i class=url>URL</i>. This means that instead
   of a single <i class=common>percent-encode-set</i>,
   a <i>percent-encode-profile</i> is required as an argument to the
@@ -1800,7 +1800,7 @@
 <h4>Percent Encode Profile</h4>
   <p>
     A <dfn>percent-encode-profile</dfn> is a mapping that maps 
-    each <i>token-type</i> in the set 
+    each <i>component-type</i> in the set 
     { <b>username</b>, <b>password</b>, <b>host</b>, <b>dir</b>,
       <b>file</b>, <b>query</b>, <b>fragment</b> } 
     to a <i>percent-encode-set</i>. 
@@ -1931,10 +1931,10 @@
 <h4>Normalise for Printing</h4>
 <p>
   If an <span class=url>URL</span> does <em>not</em> have a <b>drive</b> nor an <b>authority</b>
-  but it <em>does</em> have a <b>path-root</b> and one or more <b>dir</b> tokens,
-  and its first <b>dir</b> token is (<b>dir</b> ε)
+  but it <em>does</em> have a <b>path-root</b> and one or more <b>dir</b> components,
+  and its first <b>dir</b> component is (<b>dir</b> ε)
   then it must be <dfn>normalised for printing</dfn>
-  by inserting a token (<b>dir</b> <code>.</code>) immediately after its <b>path-root</b>. 
+  by inserting a component (<b>dir</b> <code>.</code>) immediately after its <b>path-root</b>. 
 
 <p>
   This additional normalisation step is necessary because it is not possible to represent
@@ -1964,7 +1964,7 @@
   <li>
     In addition percent encode a subset of 
     <i>printable-<abbr class=-caps>ASCII</abbr></i>, depending on the 
-    <i class=common>token</i>, as indicated by the percent coding table. 
+    <i class=common>component</i>, as indicated by the percent coding table. 
 </ul>
 
 
@@ -1972,8 +1972,8 @@
 <ul>
   <li>
     Let output be the empty string, then, for each of the
-    <i class=common>token</i>s (<var>tag</var>, <var>value</var>) of
-    <var>url2</var> in tree order, convert the <i class=common>token</i> to a
+    <i class=common>component</i>s (<var>tag</var>, <var>value</var>) of
+    <var>url2</var> in tree order, convert the <i class=common>component</i> to a
     <i class=common>string</i>, depending on its <i>type</i> according to the
     following table, and append it to the output.
 </ul>
@@ -2038,7 +2038,7 @@ One can then wrap around that to describe the URL class of web browsers:
   <li>The href getter returns the printed URL.
   <li>The protocol getter returns the scheme + <code>:</code> or ε if absent.
   <li>The username and password getters return ε if absent or the value of the
-    corresponding token otherwise
+    corresponding component otherwise
   <li>The host getter returns ε if absent, the value
     of the <b>host</b> if the port is absent, and the value
     of the <b>host</b> + <code>:</code> + the value of the <b>port</b> otherwise.
