@@ -10,7 +10,7 @@ function buildTOC (doc = document) {
   const heads = doc.querySelectorAll ('H2')
   const ul = $('ul')
   for (let h of heads) {
-    if (h.classList.contains('-toc-exclude')) continue
+    if (h.classList.contains('toc-exclude')) continue
     let anchor = $('a', h.innerText)
     let id = h.innerText.replace (/\s+/g, '-') .toLowerCase ()
     h.id = id

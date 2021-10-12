@@ -449,7 +449,7 @@ td:nth-child(2n+2) {
   font-size:.61rem;
 }
 .note::before, .todo::before {
-  content:'TODO ';
+  content:'TODO ';
   color:var(--acolor);
   font:var(--sans);
   font-variant:small-caps;

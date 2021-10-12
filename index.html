@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport"
-    content="initial-scale=1, shrink-to-fit=no, user-scalable=no">
+  <meta name="viewport" content="initial-scale=1, shrink-to-fit=no, user-scalable=no">
   <title>URL Specification</title>
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
@@ -14,7 +13,7 @@
 <body>
 
 <header><hgroup>
-<!--  -->
+  <h2 class=toc-exclude><!----></h2>
 </hgroup></header>
 
 <div id=tools>
@@ -42,7 +41,7 @@
 
 <!----------------------------->
 <section class=-short>
-<h2 class=-toc-exclude style=display:none>URL Specification</h2>
+<h2 class=toc-exclude style=display:none>URL Specification</h2>
 <!----------------------------->
   <p>
     This document provides a concise formal definition of <span class=url>URL</span>s and
@@ -72,13 +71,13 @@
     <li>
       To provide a concise way to describe the differences between the
       <abbr class=-caps>WHATWG</abbr> standard and 
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
       and
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
       as part of a larger effort;
     <li>
       To enable and support work towards an update of
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
       that resolves the incompatibilities with the <abbr class=-caps>WHATWG</abbr> standard.
     <li>
       To enable and support editorial changes to the 
@@ -96,7 +95,7 @@
 
 <!----------------------------->
 <section class=-short>
-<h2 class=-toc-exclude>Status of this document</h2>
+<h2 class=toc-exclude>Status of this document</h2>
 <!----------------------------->
   <p class=note>
     This is a development version of the specification. 
@@ -127,7 +126,7 @@
 
 
 <!----------------------------->
-<section class=-short><h2 class=-toc-exclude>Structure of this document</h2>
+<section class=-short><h2 class=toc-exclude>Structure of this document</h2>
 <!----------------------------->
   <p>
     As of this writing, this document has a compact format that is focused specifically on
@@ -171,19 +170,17 @@
 
     <p style=margin-top:-.5rem>
       Furthermore, the notation
-      <span class=-nowrap><var>e</var> <b>:</b> <var>T</var></span>
-      is used to denote the concatenation of a single-element <var>e</var> in 
-      front of a sequence <var>T</var>. 
+      <var>e</var> <b>:</b> <var>T</var> is used to denote the concatenation of a
+      single-element <var>e</var> in front of a sequence <var>T</var>. 
   </div>    
 
 
   <p>
-    The notation <span class=-nowrap><var>e</var> <b>:</b> <var>T</var></span>
-    may be used to inductively specify operations on sequences.
-    For example, the length of a sequence is defined by 
-    <dfn class=noindex>length</dfn> ε = 0 and
-    <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) =
-      <span class=-nowrap>1 + <i>length</i> <var>T</var></span>.
+    The notation <var>e</var> <b>:</b> <var>T</var> may be used to inductively specify
+    operations on sequences. For example, the length of a sequence is defined by 
+    <dfn class=noindex>length</dfn> ε = 0 and
+    <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) = 
+    1 + <i>length</i> <var>T</var>.
 
   <p style=margin-top:-.5rem>
     Parentheses are used for disambiguation and as visual aides. Paired 
@@ -212,10 +209,9 @@
     Both <i>token-type</i> constants and their corresponding
     <i class=common>token</i>-constructing operator are typeset in boldface.
     For example, <b class=noindex>scheme</b> denotes a <i>token-type</i>, whilst
-    <span class=-nowrap>(<b class=noindex>scheme</b> <var>value</var>)</span>
-    denotes a <i>token</i>. Again, parentheses are used to disambiguate and as
-    visual aides. They are not part of the
-    <i class=common>token</i>-constructing operator. 
+    (<b class=noindex>scheme</b> <var>value</var>) denotes a <i>token</i>. 
+    Again, parentheses are used to disambiguate and as visual aides. They are not part of
+    the <i class=common>token</i>-constructing operator. 
   <p>
     When a collection of <i class=common>token</i>s contains exactly one
     <i class=common>token</i> (<var>tag</var> <var>value</var>) for a given
@@ -230,8 +226,7 @@
     &ldquo;the <b class=noindex>query</b> of S&rdquo; identifies the
     <i class=common>value</i> <var>z</var> whereas the phrase &ldquo;the
     <b class=noindex>query</b> <i class=common>token</i> of
-    S&rdquo; identifies 
-    <span class=-nowrap>(<b class=noindex>query</b> <var>z</var>)</span>.
+    S&rdquo; identifies (<b class=noindex>query</b> <var>z</var>).
 
 
   <h4>Strings and Code-Points</h4>
@@ -246,8 +241,8 @@
         <a href="https://www.unicode.org/versions/latest/">Unicode</a>
         <i>code point</i>.
       <li>
-        A <dfn>code point</dfn>, is a natural number <span
-          class=-nowrap><var>n</var> &lt; 17 × 2<sup>16</sup></span>.
+        A <dfn>code point</dfn>, is a natural number
+        <var>n</var> &lt; 17 × 2<sup>16</sup>.
       <li>
         The <dfn>empty string</dfn> is a <i class=common>sequence</i> of zero
         code points. It is denoted by ε. 
@@ -357,13 +352,13 @@
 
   <h4>Grammars</h4>
   <p>
-    The notation <var>name</var> ::= <var>expression</var> is used to define
+    The notation <var>name</var> ::= <var>expression</var> is used to define
     a production rule of a grammar, where the <dfn>expression</dfn> uses
-    square brackets ( [ _ ] ) <strong>for optional rules</strong>, a postfix
-    star ( * ) for zero-or-more, a postfix plus ( + ) for one-or-more, an infix
-    vertical line ( | ) for alternatives, monospaced type for literal
+    square brackets ( [ … ] ) <strong>for optional rules</strong>, a postfix
+    star ( * ) for zero-or-more, a postfix plus ( + ) for one-or-more, an infix
+    vertical line ( | ) for alternatives, monospaced type for literal
     <i class=common>string</i>s
-    and an epsilon ( ε ) for the empty string. Parentheses are used for 
+    and an epsilon ( ε ) for the empty string. Parentheses are used for 
     grouping and disambiguation. 
 
 
@@ -450,7 +445,6 @@
         <i class=common>token</i> then it also has a <b>host</b>
         <i class=common>token</i>.
     </ul>
-    </div>
 
   <div class="dfn-scope +br">
     <h4>Host</h4>
@@ -552,7 +546,7 @@
       <i class=url>URL</i> that has a <i>file-<b>scheme</b></i>.
       A <dfn>file-<b>scheme</b></dfn> is a <i class=common>string</i>
       <var>scheme</var> such that
-      <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code>. 
+      <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code></span>. 
   </div>
 
 
@@ -699,7 +693,7 @@
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
-      <td colspan=5>The auth-path and authority rules in <b>web-mode</b> and in <b>generic-mode</b>:
+      <td colspan=3>The auth-path and authority rules in <b>web-mode</b> and in <b>generic-mode</b>:
 
     <tr>
       <td><dfn>auth-path</dfn> 
@@ -718,7 +712,7 @@
 
 
     <tr class=-inbetween>
-      <td colspan=5>The auth-path and authority rules in <b>file-mode</b></i>:
+      <td colspan=3>The auth-path and authority rules in <b>file-mode</b>:
 
     <tr>
       <td><dfn>auth-path</dfn>
@@ -741,7 +735,7 @@
 
 
     <tr class=-inbetween>
-      <td colspan=5>Rules for the path:
+      <td colspan=3>Rules for the path:
 
     <tr>
       <td><dfn>path</dfn>
@@ -754,7 +748,7 @@
       <td> ( dir <i>s</i> )* [ file ]
 
     <tr class=-inbetween>
-      <td colspan=5>This refers to the following rules:
+      <td colspan=3>This refers to the following rules:
 
     <tr>
       <td>scheme 
@@ -818,7 +812,7 @@
       <td> <i>any</i>*
 
     <tr class=-inbetween>
-      <td colspan=5>These rules are based on the following character-sets:
+      <td colspan=3>These rules are based on the following character-sets:
 
     <tr>
       <td><dfn>s</dfn> 
@@ -830,7 +824,7 @@
       <td>s<dfn style=display:none>s</dfn>
       <td> := 
       <td> { <code>/</code>, <code>\</code> }
-         —  in <b>web-mode</b> and in <b>file-mode</b></i>
+         —  in <b>web-mode</b> and in <b>file-mode</b>
 
 
     <tr><td><dfn>uchar</dfn>
@@ -899,7 +893,7 @@
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
-      <td colspan=5>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
+      <td colspan=3>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
     <tr>
       <td><dfn>auth-path</dfn>
       <td> ::= 
@@ -916,7 +910,7 @@
       <td> <code>/</code> drive  |  <code>//</code> authority  [ <code>/</code> drive ]
 
     <tr class=-inbetween>
-      <td colspan=5>Rules for the authority and the path:
+      <td colspan=3>Rules for the authority and the path:
 
     <tr>
       <td><dfn>authority</dfn> 
@@ -946,7 +940,7 @@
       <td> ( dir <code>/</code> )* [ file ]
 
     <tr class=-inbetween>
-      <td colspan=5>This refers to the following rules:
+      <td colspan=3>This refers to the following rules:
 
     <tr>
       <td><dfn>opaque-host</dfn> 
@@ -1192,8 +1186,7 @@
   <h3>Order and Prefix operations</h3>
 
   <p>
-    A property that is particularly useful is the <i>order</i> of an
-    <span class=-nowrap><i class=url>URL</i>.</span>
+    A property that is particularly useful is the <i>order</i> of an <i class=url>URL</i>.
     Colloquially, the <i class=common>order</i> is the
     <i class=common>type</i> of the first <i class=common>token</i>
     of an <i class=url>URL</i>. The <i class=common>order</i>
@@ -1317,7 +1310,7 @@
         A <i>web-<span class=url>URL</span></i> is a
         <i>base-<span class=url>URL</span></i> if it has 
         a <b>path-root</b> and an <b>authority</b> <br>
-        whose value is <span class=-nowrap>not ε</span>.
+        whose value is not ε.
       <li style=margin-bottom:.5rem>
         A <i>file-<span class=url>URL</span></i> is a
         <i>base-<span class=url>URL</span></i> if it has
@@ -1351,12 +1344,10 @@
       <ul>
         <li>
           If <var>url</var> does not have an <b>authority</b> then set its
-          <b>authority</b> token to 
-          <span class=-nowrap>(<b>authority</b> ε)</span>.
+          <b>authority</b> token to (<b>authority</b> ε).
         <li>
           If <var>url</var> does not have a <b>drive</b> then set its 
-          <b>path-root</b> token to 
-          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
+          <b>path-root</b> token to (<b>path-root</b> <code>/</code>).
       </ul>
   </div>
 
@@ -1368,7 +1359,7 @@
       <ul>
         <li>
           Set the <b>path-root</b> token of <var>url</var> to
-          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
+          (<b>path-root</b> <code>/</code>).
         <li>
           If <var>url</var> has an <b>authority</b> token and the
           <i>value</i> of the token is is not ε
@@ -1386,7 +1377,6 @@
           <var>auth</var>. If the value cannot be parsed as an <i>Authority</i>
           then <strong>fail</strong>.
       </ul>
-    </li>
   </div>
 
   <h4>Force Properties</h4>
@@ -1466,12 +1456,12 @@
       <span class=-nowrap>(<dfn class=op>~resolve</dfn> <var>url<sub>1</sub></var>
        <var>url<sub>2</sub></var>)</span> is defined to be the
        <i class=common>strict resolution</i>
-      (<b class=op>resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</var>)
-      where <var>~url<sub>1</var> is defined to be:
+      (<b class=op>resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+      where <var>~url<sub>1</sub></var> is defined to be:
     <ul>
       <li>
-        <var>url<sub>1</var> with its <b>scheme</b> removed if both
-          <var>url<sub>1</var> and <var>url<sub>2</var> have a <b>scheme</b>,
+        <var>url<sub>1</sub></var> with its <b>scheme</b> removed if both
+          <var>url<sub>1</sub></var> and <var>url<sub>2</sub></var> have a <b>scheme</b>,
           and the <i class=common>value</i> of their <b>scheme</b>
           <i class=common>token</i>s case-insensitively compare equal, or
       <li>
