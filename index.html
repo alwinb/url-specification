@@ -871,17 +871,25 @@
 
   <p class=todo>
     Double check the following, and include it here
-  <h4>IPv6 Address</h4>
+
+  <h4><abbr class=-caps>IP</abbr>v6 Address — strict</h4>
   <p>
-    An IPv6 address-string <!--consists of a sequence of items, separated by
-    <code>:</code> or <code>::</code>, the items being hexadecimal except for
-    the last itme, which may consist of four decimal numbers separated by
-    <code>.</code> as follows:-->
-    is a <i class=common>string</i> representation of a natural number
-      <var>n</var> &lt; 2<sup>128</sup>. 
+    An <abbr class=-caps>IP</abbr>v6 address-string is a representation
+    of a natural number <var>n</var> &lt; 2<sup>128</sup> that is used as an identifier. 
     It is accurately described by the production rule <var>IPv6address</var>
-    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
-    section of <abbr class=-caps>RFC</abbr> 3986. 
+    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host
+    section</a> of <abbr class=-caps>RFC</abbr> 3986. 
+
+  <p>
+    The <a href=https://url.spec.whatwg.org/#concept-ipv6-parser
+    ><abbr class=-caps>IP</abbr>v6 address parser</a> in the
+    <abbr class=-caps>WHATWG</abbr> standard however implies a more tolerant definition
+    of <abbr class=-caps>IP</abbr>v6 address-strings. 
+
+  <h4>IPv6 Address — loose</h4>
+  <div class=todo>
+  </div>
+
 
   <div class=todo>
     There are additional, semantic constraints on the ipv4-address, ipv6-address
