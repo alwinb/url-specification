@@ -12,27 +12,32 @@
 </head>
 <body>
 
-<header><hgroup>
-  <h2 class=toc-exclude><!----></h2>
-</hgroup></header>
+
+<header>
+  <hgroup>
+    <h2 class=toc-exclude><!----></h2>
+  </hgroup>
+</header>
+
 
 <div id=tools>
   <div id=menu>
-  <a id=icon href=#url-specification>🌲</a>
-  <ul>
-    <li><a href=#url-specification>Introduction</a></li>
-    <li><a href=#preliminaries>Preliminaries</a></li>
-    <li><a href=#url-model><span class=url>URL</span> Model</a></li>
-    <li><a href=#parsing>Parsing</a></li>
-    <li><a href=#host-parsing >Host Parsing</a></li>
-    <li><a href=#reference-resolution >Reference Resolution</a></li>
-    <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
-    <li><a href=#percent-coding >Percent Coding</a></li>
-    <li><a href=#printing>Printing</a></li>
-  </ul>
+    <a id=icon href=#url-specification>🌲</a>
+    <ul>
+      <li><a href=#url-specification>Introduction</a></li>
+      <li><a href=#preliminaries>Preliminaries</a></li>
+      <li><a href=#url-model><span class=url>URL</span> Model</a></li>
+      <li><a href=#parsing>Parsing</a></li>
+      <li><a href=#host-parsing >Host Parsing</a></li>
+      <li><a href=#reference-resolution >Reference Resolution</a></li>
+      <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
+      <li><a href=#percent-coding >Percent Coding</a></li>
+      <li><a href=#printing>Printing</a></li>
+    </ul>
   </div>
   <div id=tooltip></div>
 </div>
+
 
 <main>
 <article>
@@ -55,6 +60,7 @@
 
   <p class=-inbetween>
     The goals of this document are,
+
   <ul class=-prose>
     <li>
       To provide a modular, concise formal specification of
@@ -84,7 +90,7 @@
       <abbr class=-caps>WHATWG</abbr> standard in the hope to recover the
       structural framework for relative references, normalisation and the hierarchy of 
       equivalence relations on <span class=url>URL</span>s that was put forward in 
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>.
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>.
     <!-- <li>
       To provide the authors of the <abbr class=-caps>WHATWG</abbr> standard
       with a support document that is useful to them in their efforts to
@@ -378,7 +384,7 @@
   in the sequence is analogous to the hierarchical syntax of an 
   <abbr class=-caps>URI</abbr> as described
   in <a href="https://tools.ietf.org/html/rfc3986#section-1.2.3">Hierarchical
-  Identifiers</a> in <abbr class=-caps>RFC</abbr> 3986.
+  Identifiers</a> in <abbr class=-caps>RFC</abbr> 3986.
 <p>
   It is important to stress the distinction between an
    <i><span class=url>URL</span></i> and an
@@ -1176,7 +1182,7 @@
     This section defines a reference resolution operation that is analogous to
     the algorithm that is described in the chapter
     <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference Resolution</a> of
-    <abbr class=-caps>RFC</abbr> 3986. The operations that are defined in this section are
+    <abbr class=-caps>RFC</abbr> 3986. The operations that are defined in this section are
     used in a subsequent section to define a <em>parse-resolve-and-normalise</em>
     operation that accurately describes the behaviour of the
     &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
@@ -1186,7 +1192,7 @@
     Reference Resolution as defined in this section does not involve
     <i><span class=url>URL</span>-string</i>s. It operates on <i class=url>URL</i>s as
     defined in the <a href=#url-model><span class=url>URL</span> Model</a> section above.
-    In contrast with <abbr class=-caps>RFC</abbr> 3986 and with the
+    In contrast with <abbr class=-caps>RFC</abbr> 3986 and with the
     <abbr class=-caps>WHATWG</abbr> standard, it does <strong>not</strong> do additional
     normalisation, which is relegated to the section
     <a href=#equivalences-and-normalisation>Equivalences and Normalisation</a> instead.
@@ -1242,7 +1248,7 @@
     prefix</i> one can define a &ldquo;<i class=common>goto</i>&rdquo; operation that is
     analogous to the &ldquo;merge&rdquo; operation that is defined in section
     <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform References</a>
-    of <abbr class=-caps>RFC</abbr> 3986.
+    of <abbr class=-caps>RFC</abbr> 3986.
     I have chosen the name &ldquo;goto&rdquo; to avert incorrect assumptions about
     commutativity. The operation is not commutative, but it is associative.
 
@@ -1430,7 +1436,7 @@
   <p>
     The section
     <a href="https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2"
-    >Transform References</a> in <abbr class=-caps>RFC</abbr> 3986 specifies <em>two</em>
+    >Transform References</a> in <abbr class=-caps>RFC</abbr> 3986 specifies <em>two</em>
     variants of reference resolution. A generic, <em>strict</em> variant and an
     alternative <em>non-strict</em> variant. 
     This specification adds a third variant that is used to specify the behaviour of
@@ -1448,9 +1454,14 @@
     <code>scheme://host/foo/bar</code>. However, <i>generic resolution</i> results in
     <code>scheme:foo/bar</code> — notice that the result does nnot have an authority. -->
 
-  <div class="dfn-scope +br">
-    <dfn style=display:none>resolution</dfn>
-    <dfn style=display:none>resolve</dfn>
+  <div class="dfn-scope +br" id="resolution">
+    
+    <div style=display:none>
+      <dfn>resolution</dfn>
+      <dfn>resolve</dfn>
+      <dfn>generic resolution</dfn>
+      <dfn>legacy resolution</dfn>
+    </div>
 
     <h4>Generic Resolution</h4>
     <p>
@@ -1471,6 +1482,7 @@
        <i class=common>generic resolution</i>
       (<b class=op>generic-resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</sub></var>)
       where <var>~url<sub>1</sub></var> is:
+
     <ul>
       <li>
         <var>url<sub>1</sub></var> with its <b>scheme</b> removed if both
@@ -1480,7 +1492,7 @@
       <li>
         <em>url<sub>1</sub></em> itself otherwise.
     </ul>
-  </div>
+  </div> <!-- Resolution -->
 
   <p>
     Note that resolution defined as such, may return an <i class=url>URL</i> that is not
@@ -1547,7 +1559,7 @@
 <p>
   This section is analogous to the section
   <a href="https://tools.ietf.org/html/rfc3986#section-6.2">Normalization and 
-  Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
+  Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
   <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
   particular normal form. The <abbr class=-caps>WHATWG</abbr> standard
   does, however implicitly. 
@@ -1722,7 +1734,7 @@
 <p>
   This section is analogous to the section 
   <a href="https://tools.ietf.org/html/rfc3986#section-2">Characters</a> 
-  in <abbr class=-caps>RFC</abbr> 3986 and the section 
+  in <abbr class=-caps>RFC</abbr> 3986 and the section 
   <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded
     bytes</a> of the <abbr class=-caps>WHATWG</abbr> standard. 
   On an abstract level, <em>percent encoding</em> provides a means to use 
