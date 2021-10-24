@@ -131,11 +131,7 @@
   <p>
     As of this writing, this document has a compact format that is focused specifically on
     the definition and specification of <span class=url>URL</span>s and operations on
-    <span class=url>URL</span>s. 
-    It does not include a discussion of their history or their use in various contexts.
-    It does contain valuable non-normative references to
-    <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
-    that can be followed for additional information about the concepts involved.
+    <span class=url>URL</span>s.
 
   <p class=-inbetween>
     The sections are laid out as follows.
@@ -623,8 +619,20 @@
   </ol>
 
   <h3>Preprocessing</h3>
+  <p>
+    The appendix
+    <a href=https://datatracker.ietf.org/doc/html/rfc3986#appendix-C>Delimiting a
+    <abbr class=-caps>URI</abbr> in Context</a> of <abbr class=-caps>RFC</abbr> 3986 
+    states that surrounding white-space should be removed from an
+    <abbr class=-caps>URI</abbr> when it is extracted from its surrounding context. 
+    The <abbr class=-caps>WHATWG</abbr> standard makes this more explicit and specifies a
+    preprocessing step that removes removes specific control– and white-space–characters
+    from the input string before parsing.
+
+  <div class="dfn-scope +br">
+  <h4>Preprocessing</h4>
   <p class=-br>
-    Before parsing, preprocess the input string <var>input</var> as follows:
+    Before parsing, the input string <var>input</var> must be preprocessed:
   <ul>
     <li>
       Remove all leading and trailing <i>c0-space</i>
@@ -633,6 +641,8 @@
       Remove all <b>u+9</b> (tab), <b>u+A</b> (line-feed) and <b>u+D</b>
       (carriage-return) <i class=common>character</i>s from <var>input</var>.
   </ul>
+  </div>
+
 
   <h3>Parser modes</h3>
   <p>
