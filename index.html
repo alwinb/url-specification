@@ -1175,11 +1175,10 @@
   <p>
     This section defines a reference resolution operation that is analogous to
     the algorithm that is described in the chapter
-    <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference
-    Resolution</a> of <abbr class=-caps>RFC</abbr> 3986. 
-    The operations that are defined in this section are used in a subsequent
-    section to define a <em>parse-resolve-and-normalise</em> operation that 
-    accurately describes the behaviour of the
+    <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference Resolution</a> of
+    <abbr class=-caps>RFC</abbr> 3986. The operations that are defined in this section are
+    used in a subsequent section to define a <em>parse-resolve-and-normalise</em>
+    operation that accurately describes the behaviour of the
     &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
     <span class=url>URL</span> parser</a>&rsquo; as defined in the 
     <abbr class=-caps>WHATWG URL</abbr> standard.
@@ -1425,49 +1424,53 @@
 
   <p>
     Based on the <i>goto</i> and the <i>force</i> operations as defined above, it is now
-    possible to define a resolution operation that is compatible with the
-    <abbr class=-caps>WHATWG</abbr> standard. For this we first have to define
-    <i>strict resolution</i> and <i>non-strict resolution</i>. 
+    possible to define a reference resolution operation that can be used to characterise
+    the behaviour that is specified in the <abbr class=-caps>WHATWG</abbr> standard. 
+    
   <p>
-    The distinction between <em>strict</em>– and <em>non-strict</em> resolution has been
-    adopted from the algorithm that is described in the section
-    <a href=https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2>Transform
-    References</a> of <abbr class=-caps>RFC</abbr> 3986.
-    The <abbr class=-caps>WHATWG</abbr> standard adds a third type of resolution, which I 
-    have named <i>forced-resolution</i>.
+    The section
+    <a href="https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2"
+    >Transform References</a> in <abbr class=-caps>RFC</abbr> 3986 specifies <em>two</em>
+    variants of reference resolution. A generic, <em>strict</em> variant and an
+    alternative <em>non-strict</em> variant. 
+    This specification adds a third variant that is used to specify the behaviour of
+    web-browsers.
+
+    To reserve the words <em>strict</em> and <em>non-strict</em> as modifiers, I have
+    chosen to name the strict variant <i>generic resolution</i> and the
+    <em>non-strict</em> variant <i>legacy resolution</i>. 
+
+  <!--<p>
+    As an example, consider resolving the <abbr class=-url>URL</abbr> represented by 
+    <code>scheme:foo/bar</code> against the <abbr class=-url>URL</abbr> represented by 
+    <code>scheme://host/</code>. If <i>legacy resolution</i> is used, then the
+    <b>scheme</b> of the reference is ignored and the resolution results in 
+    <code>scheme://host/foo/bar</code>. However, <i>generic resolution</i> results in
+    <code>scheme:foo/bar</code> — notice that the result does nnot have an authority. -->
 
   <div class="dfn-scope +br">
-    <h4>Strict Resolution</h4>
     <dfn style=display:none>resolution</dfn>
-    <p class=-br>
-      The <dfn>strict resolution</dfn> 
-      <span class=-nowrap>(<dfn class=op>resolve</dfn> <var>url<sub>1</sub></var>
+    <dfn style=display:none>resolve</dfn>
+
+    <h4>Generic Resolution</h4>
+    <p>
+      The <dfn>generic resolution</dfn>
+      <span class=-nowrap>(<dfn class=op>generic-resolve</dfn> <var>url<sub>1</sub></var>
       <var>url<sub>2</sub></var>)</span> of
       an <span class=url>URL</span> <var>url<sub>1</sub></var> against
-      an <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be:
-      <dfn style=display:none>resolve</dfn>
-    <ul>
-      <li>
-        <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
-        — if <var>url<sub>2</sub></var> is a <i>base-<span class=url>URL</span></i>
-          or <var>url<sub>1</sub></var> has a <b>scheme</b>, or
-      <li>
-        <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
-        — if
-          <var>url<sub>2</sub></var> has a <b>scheme</b> and
-          <var>url<sub>1</sub></var> consists of a <b>fragment</b> component only.
-      <li>
-        Otherwise resolution <strong>fails</strong>. 
-    </ul>
+      an <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be
+      <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
+      — if <var>url<sub>2</sub></var> has a <b>scheme</b> or <var>url<sub>1</sub></var>
+      has a <b>scheme</b>. Otherwise resolution <strong>fails</strong>.
 
-    <h4>Non-Strict Resolution</h4>
+    <h4>Legacy Resolution</h4>
     <p class=-br>
-      The <dfn>non-strict resolution</dfn>
-      <span class=-nowrap>(<dfn class=op>~resolve</dfn> <var>url<sub>1</sub></var>
+      The <dfn>legacy resolution</dfn>
+      <span class=-nowrap>(<dfn class=op>legacy-resolve</dfn> <var>url<sub>1</sub></var>
        <var>url<sub>2</sub></var>)</span> is defined to be the
-       <i class=common>strict resolution</i>
-      (<b class=op>resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</sub></var>)
-      where <var>~url<sub>1</sub></var> is defined to be:
+       <i class=common>generic resolution</i>
+      (<b class=op>generic-resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+      where <var>~url<sub>1</sub></var> is:
     <ul>
       <li>
         <var>url<sub>1</sub></var> with its <b>scheme</b> removed if both
@@ -1485,30 +1488,54 @@
     This is remedied in the following resolution operation that characterises the
     behaviour of the <abbr class=-caps>WHATWG</abbr> standard, modulo normalisation. 
 
-  <div class="dfn-scope +br">
-    <dfn style=display:none>force-resolve</dfn>
-    <h4>Forced Resolution</h4>
+  <div class="dfn-scope +br" id="whatwg-resolution">
+
+    <div style=display:none>
+      <dfn>WHATWG-resolve</dfn>
+      <dfn>WHATWG-resolution</dfn>
+    </div>
+
+    <h4><abbr class=-caps>WHATWG</abbr> Resolution</h4>
+
     <p class=-br>
-      The <dfn>forced-resolution</dfn> of
+      The <dfn><abbr class=-caps>WHATWG</abbr>-resolution</dfn> of
       <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var> is defined as:
+
     <ul>
       <li>
-        <i class=op>force</i> (<i class=op>~resolve</i>
-        <var>url<sub>1</sub></var> (<i class=op>force</i> <var>url<sub>2</sub></var>))
-        — if <var>url<sub>2</sub></var> is a <i>web-<span class=url>URL</span></i>
-        or a <i>file-<span class=url>URL</span></i>.
+        <i class=op>force</i> (<i class=op>legacy-resolve</i>
+          <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+        <ul>
+          <li>
+            if <var>url<sub>1</sub></var> is a <i>web-<span class=url>URL</span></i> or a
+            <i>file-<span class=url>URL</span></i>, or
+          <li>
+            if <var>url<sub>1</sub></var> does not have a <b>scheme</b> and
+            <var>url<sub>2</sub></var> is a <i>web-<span class=url>URL</span></i> or a
+            <i>file-<span class=url>URL</span></i>;
+        </ul>
+
       <li>
-        <i class=op>force</i> (<i class=op>resolve</i>
-        <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
-        — otherwise.
+        <i class=op>generic-resolve</i>
+          <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>
+        <ul>
+          <li>
+            if otherwise the first component of <var>url<sub>1</sub></var> is 
+            a <b>scheme</b> or a <b>fragment</b>, or
+          <li>
+            if <var>url<sub>2</sub></var> has an <b>authority</b> or a <b>path-root</b>;
+        </ul>
+      <li>
+        otherwise, the operation <strong>fails</strong>.
     </ul>
+
     <p>
       Any application of the <i>force</i> operation that modifies its input must issue a
-      validation warning. If in the process of
-      <i>forced-resolution</i>, the <i>strict resolution</i> or
-      the <i>force</i> operation <strong>fails</strong>, then the
-      <i>forced-resolution</i> <strong>fails</strong> as well.
-  </div>
+      validation warning. If in the process of <i><abbr class=-caps>WHATWG</abbr>-resolution</i>
+      either the <i>force</i> operation, or the internally used <i>generic resolution</i>
+      operation <strong>fails</strong>, then the
+      <i><abbr class=-caps>WHATWG</abbr>-resolution</i> <strong>fails</strong> as well.
+  </div> <!-- WHATWG Resolution -->
 
 </section>
 
