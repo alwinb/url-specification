@@ -600,8 +600,8 @@
 <!----------------------------------->
 
   <p>
-    This section defines a reference resolution operation that is analogous to
-    the algorithm that is described in the chapter
+    This section defines reference resolution operations that are analogous to the
+    algorithms that are described in the chapter
     <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference Resolution</a> of
     <abbr class=-caps>RFC</abbr> 3986. The operations that are defined in this section are
     used in a subsequent section to define a <em>parse-resolve-and-normalise</em>
@@ -610,7 +610,7 @@
     <span class=url>URL</span> parser</a>&rsquo; as defined in the 
     <abbr class=-caps>WHATWG URL</abbr> standard.
   <p>
-    Reference Resolution as defined in this section does not involve
+    Reference resolution as defined in this section does not involve
     <i><span class=url>URL</span>-string</i>s. It operates on <i class=url>URL</i>s as
     defined in the <a href=#url-model><span class=url>URL</span> Model</a> section above.
     In contrast with <abbr class=-caps>RFC</abbr> 3986 and with the
@@ -667,7 +667,7 @@
   <p>
     Based on the <i class=common>order</i> and the <i class=common>order-limited
     prefix</i> one can define a &ldquo;<i class=common>goto</i>&rdquo; operation that is
-    analogous to the &ldquo;merge&rdquo; operation that is defined in section
+    analogous to the &ldquo;merge&rdquo; operation that is defined in the subsection
     <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform References</a>
     of <abbr class=-caps>RFC</abbr> 3986.
     I have chosen the name &ldquo;goto&rdquo; to avert incorrect assumptions about
@@ -765,8 +765,8 @@
   <p>
     A <dfn>force</dfn> operation can be used to coerce a
     <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>
-    that is not yet a <i>base-<span class=url>URL</span></i>
-    into a <i>base-<span class=url>URL</span></i>. 
+    that is not a <i class=-nowrap>base-<span class=url>URL</span></i>
+    to a <i>base-<span class=url>URL</span></i>. 
     The operation has no effect on other <span class=url>URL</span>s. 
   <br>
     Note that it is possible for the <i>force</i> operation to <strong>fail</strong>
@@ -850,22 +850,18 @@
   <h3>Resolution</h3>
 
   <p>
-    Based on the <i>goto</i> and the <i>force</i> operations as defined above, it is now
-    possible to define a reference resolution operation that can be used to characterise
-    the behaviour that is specified in the <abbr class=-caps>WHATWG</abbr> standard. 
-    
-  <p>
-    The section
+    The subsection
     <a href="https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2"
-    >Transform References</a> in <abbr class=-caps>RFC</abbr> 3986 specifies <em>two</em>
+    >Transform References</a> of <abbr class=-caps>RFC</abbr> 3986 specifies <em>two</em>
     variants of reference resolution. A generic, <em>strict</em> variant and an
     alternative <em>non-strict</em> variant. 
     This specification adds a third variant that is used to specify the behaviour of
     web-browsers.
 
-    To reserve the words <em>strict</em> and <em>non-strict</em> as modifiers, I have
-    chosen to name the strict variant <i>generic resolution</i> and the
-    <em>non-strict</em> variant <i>legacy resolution</i>. 
+    I have chosen to name the strict variant <i>generic resolution</i> and the
+    <em>non-strict</em> variant <i>legacy resolution</i>, so that the words
+    the words <em>strict</em> and <em>non-strict</em> can be used as modifiers
+    later on. 
 
   <!--<p>
     As an example, consider resolving the <abbr class=-url>URL</abbr> represented by 
@@ -916,11 +912,11 @@
   </div> <!-- Resolution -->
 
   <p>
-    Note that resolution defined as such, may return an <i class=url>URL</i> that is not
-    a <i>base-<span class=url>URL</span></i> according to this specification. 
-    This is remedied in the following resolution operation that characterises the
-    behaviour of the <abbr class=-caps>WHATWG</abbr> standard, modulo normalisation. 
-
+    Based on the <i>generic resolution</i>, and the 
+    <i>legacy resolution</i> and the <i>force</i> operations as defined above, it is now
+    possible to define a reference resolution operation that can be used to characterise
+    the behaviour that is specified in the <abbr class=-caps>WHATWG</abbr> standard. 
+    
   <div class="dfn-scope +br" id="whatwg-resolution">
 
     <div style=display:none>
