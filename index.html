@@ -1738,13 +1738,15 @@
 
 <p>
   This section is analogous to the section 
-  <a href="https://tools.ietf.org/html/rfc3986#section-2">Characters</a> 
-  in <abbr class=-caps>RFC</abbr> 3986 and the section 
-  <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded
-    bytes</a> of the <abbr class=-caps>WHATWG</abbr> standard. 
-  On an abstract level, <em>percent encoding</em> provides a means to use 
-  use characters within <i class=common>component</i>s, that are not otherwise
-  allowed by the <i class=url>URL</i> grammar.
+  <a href="https://tools.ietf.org/html/rfc3986#section-2">Characters</a> of
+  <abbr class=-caps>RFC</abbr> 3986 and the section 
+  <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded bytes</a>
+  of the <abbr class=-caps>WHATWG</abbr> standard. 
+  On an abstract level, <em>percent encoding</em> is a means to include characters in
+  <i class=common>component</i> <i class=common>value</i>s that can not be used within
+  <i><span class=url>URL</span>-string</i>s directly. 
+
+<p>
   The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em>
   specify the semantics of percent-encoded-bytes in the components of an
   <i class=url>URL</i> other than the <b>host</b>, and any
