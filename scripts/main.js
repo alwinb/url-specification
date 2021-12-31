@@ -10,7 +10,7 @@ function buildTOC (doc = document) {
   const heads = doc.querySelectorAll ('H2')
   const ul = $('ul')
   for (let h of heads) {
-    if (h.classList.contains('-toc-exclude')) continue
+    if (h.classList.contains('toc-exclude')) continue
     let anchor = $('a', h.innerText)
     let id = h.innerText.replace (/\s+/g, '-') .toLowerCase ()
     h.id = id
@@ -19,6 +19,12 @@ function buildTOC (doc = document) {
   }
   return ul
 }
+
+
+// HrefIndex // FragmentReferenceIndex 
+// -----------------------------------
+// Builds an index object (null prototype)
+// from fragment-ids to nonempty arrays of anchors. 
 
 function buildHrefIndex (doc = document) {
   let base = new URL (document.location)
@@ -35,9 +41,12 @@ function buildHrefIndex (doc = document) {
       index[id].push (anchor)
     }
   }
-  log (index)
   return index
 }
+
+
+// Definition Index
+// ----------------
 
 function buildIndex (doc = document) {
   const dfns = doc.getElementsByTagName ('DFN')
@@ -52,7 +61,7 @@ function buildIndex (doc = document) {
     index [text] = index [text]||[]
     index [text].push ({ dfn, block, section, title })
   }
-  log (index)
+  // log (index)
   return index
 }
 
@@ -70,20 +79,22 @@ function buildToolTips (entries) {
   return tips
 }
 
+
 // Idiom Observer
 // --------------
 // Detects mouses over idioms and other tags that
 // benefit from a tool tip
 
-function IdiomObserver (callback) {
+function IdiomObserver (elem, callback) {
 
   const self = this
   let current = null
   document.addEventListener ('click', handler)
-  document.addEventListener ('mouseover', handler)
+  elem.addEventListener ('mouseover', handler)
 
   function handler (evt) {
     const info = getContext (evt.target)
+    if (info == null) return
     info.idiom = (info.elem && info.elem.innerText.replace(/\s+/, ' ')) || null
     if (evt.type === 'click' || info.idiom !== current) {
       current = info.idiom
@@ -122,27 +133,25 @@ function getContext (elem) {
 // -------------
 // Detects currently visible section
 
-function PageObserver (callback) {
+function PageObserver (elem, callback) {
 
   const self = this
   const article = document.getElementsByTagName ('ARTICLE')[0]
   const sections = document.getElementsByTagName ('SECTION')
-  let currentSection = sections[0]
-  let lastPosition = 0
-  let scrollTimeout
+  let currentSection = sections [0]
+  let scrollTimeout = 0
   onscroll ()
 
   const wrapped = evt => !scrollTimeout ? setTimeout (_ => onscroll (evt), 30) : null
-  window.addEventListener('hashchange', onscroll)
-  window.addEventListener ('scroll', wrapped)
+  window.addEventListener ('hashchange', wrapped)
+  elem.addEventListener ('scroll', wrapped)
 
   function onscroll () {
-    let newSection, { scrollY } = window
-    newSection = (scrollY < 80) ? article : getCurrentSection (sections)
+    // NB hard coded 80px threshold for header
+    const scrollY = elem.scrollTop
+    const newSection = scrollY < 80 ? article : getCurrentSection (sections)
     if (newSection && currentSection !== newSection)
       callback ({ section:(currentSection = newSection), scrollY })
-    else
-      callback ({ section:currentSection, scrollY })
     scrollTimeout = 0
   }
   
@@ -164,6 +173,7 @@ window.addEventListener ('DOMContentLoaded', main)
 
 function main () {
 
+  const content = document.getElementsByTagName ('main') [0]
   const header = document.getElementsByTagName ('header') [0]
   const toolsDiv = document.getElementById ('tooltip')
   let toc, hoverDfns = [], hoverAs = []
@@ -175,11 +185,12 @@ function main () {
   const index = buildIndex ()
   const refIndex = buildHrefIndex ()
 
-  new PageObserver (onSection)
+  new PageObserver (content, onSection)
 
-  function onSection ({ section, scrollY, range, direction, _header = true }) {
+  function onSection ({ section, scrollY, _header = true }) {
+    log ('onSection')
     let entry, node = section.querySelector ('h1,h2')
-    if ((entry = refIndex[node.id])) {
+    if ((entry = refIndex [node.id])) {
       hoverAs.forEach (a => a.classList.remove ('-focus'))
       hoverAs = entry
       hoverAs.forEach (a => a.classList.add ('-focus'))
@@ -189,8 +200,9 @@ function main () {
       header.style.display = 'block'
       node = node.cloneNode (true)
       node.style.display = null
-      header.innerHTML = ''
-      header.append (node)
+      // Assumes <header><hgroup><h2>...
+      header.firstElementChild.innerHTML = ''
+      header.firstElementChild.append (node)
     }
     else {
       header.style.display = 'none'
@@ -200,7 +212,7 @@ function main () {
 
   // Idiom tools
 
-  new IdiomObserver (onIdiom)
+  new IdiomObserver (content, onIdiom)
 
   function onIdiom (evt, { elem, block, idiom }) {
     log ('idiom', idiom, pinnedTips, evt.type)

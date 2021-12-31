@@ -11,15 +11,9 @@
 }
 
 @media screen {
-  html {
+  html, header, #tools {
     background-color:var(--bgcolor);
-    /background:linear-gradient(var(--bgcolor), var(--bgcolor));
-    /border-image: linear-gradient(var(--acolor), var(--acolor)) 1 1 / 20rem 0rem 0rem 10rem / 24rem 12rem 22rem 7.5rem;
   }
-}
-
-header, #menu {
-  background:var(--bgcolor);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -32,7 +26,7 @@ a, a:hover, b:hover, i:hover  {
 
 code {
   background:var(--screen);
-  border-radius:3px;
+  border-radius:calc(3rem/25);
   padding:.05em .23em .11em .23em;
 }
 
@@ -40,9 +34,14 @@ code {
   color:var(--acolor);
 }
 
+::selection {
+  background-color:var(--highlight);
+  text-shadow:none;
+}
+
 
 /* Fonts
-/* ============= */
+/* ===== */
 
 /* 
 font:
@@ -55,6 +54,12 @@ where
 */
 
 :root {
+  ---serif: 'Times New Roman', 'Times', 'Times New Roman', Serif;
+  ---sans: Helvetica, Sans-Serif;
+  ---mono: 'Hack', 'Monaco', 'Menlo', MonoSpace;
+}
+
+:root {
   --sans: calc(2rem/3)/1rem var(---sans);
   --sans-bold: bold calc(2rem/3)/1rem var(---sans);
   --sans-italic: italic calc(2rem/3)/1rem var(---sans);
@@ -63,12 +68,6 @@ where
   --serif-italic: italic calc(2rem/3)/1rem var(---serif);
   --serif-bold-italic: bold italic calc(2rem/3)/1rem var(---serif);
   --mono: calc(2rem/3)/1rem var(---mono);
-}
-
-:root {
-  ---serif: 'Times New Roman', 'Times', 'Times New Roman', Serif;
-  ---sans: Helvetica, Sans-Serif;
-  ---mono: 'Hack', 'Monaco', 'Menlo', MonoSpace;
 }
 
 body {
@@ -103,6 +102,10 @@ b {
 
 dfn, i, var, em {
   font:var(--serif-italic);
+}
+
+dfn {
+  white-space:nowrap;
 }
 
 .op, .fn, i.op, i.fn {
@@ -144,7 +147,6 @@ th {
 }
 
 
-
 /* Typographic Scale
 /* ============= */
 
@@ -174,8 +176,8 @@ section {
   margin-bottom:5rem;
 }
 h3 {
-  margin-top:1.5rem;
-  margin-bottom:.5rem;
+  margin-top:2.25rem;
+  margin-bottom:.75rem;
   font-size:.89rem;
 }
 
@@ -198,35 +200,124 @@ span.url, i.url, .-caps {
 }
 
 
-
 /* Page Layout
-/* ============= */
+/* =========== */
 
-html {
+:root {
+  --spine:0;
+  --left:1rem;
+  --right:1rem;
+  --width:25rem;
+}
+
+html, body, main, header, #tools {
   position:absolute;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
 }
 
-body {
-  border-left:1.75rem solid var(--acolor);
-  padding:3rem 5rem 8rem 3rem;
+main {
+  overflow-y:auto;
 }
 
-article {
-  width:24rem;
+header {
+  height:3rem;
+  width:100vw;
+  z-index:100;
+  padding:0;
+}
+
+header.-hidden {
+  display:none;
+}
+
+main, header { /** The spine **/
+  border-left:var(--spine) solid var(--acolor);
+}
+
+article, header hgroup {
+  box-sizing:content-box;
+  width:var(--width);
+  margin:3rem var(--right) 8rem var(--left);
+}
+
+header hgroup {
+  margin:0 var(--right) 0 var(--left);
+  height:3rem;
+  line-height:1rem;
+}
+
+header hgroup h2 {
+  line-height:1rem;
+  padding:1.46rem .25rem .5rem;
+  border-bottom:0.04rem solid var(--acolor);
+  margin:0 -0.25rem 0;
+  white-space:nowrap;
+}
+
+#tools {
+  left:31rem;
+  height:100vh;
+  width:8rem;
+  z-index:100;
+  padding:3rem 0 0 0;
+  counter-reset: list-counter;
+  display:none;
 }
 
 h1 {
   margin-top:-1rem;
 }
 
-@media print {
-  header {
-    display:none;
-  }
-  body {
-    border-left:none;
+/* Responsive Relayout
+/* =================== */
+
+@media (max-width:675px) {
+  html {
+    font-size:calc(100vw/27);
   }
 }
+
+@media (min-width:675px) {
+  :root {
+    --left:auto;
+    --right:auto;
+  }
+}
+
+@media (min-width: 775px) {
+  :root {
+    --spine:1.75rem;
+    --left:2rem;
+    --right:5rem;
+  }
+}
+@media (min-width: 923px) {
+  #tools {
+    left:29rem;
+    display:block;
+  }
+}
+
+@media (min-width: 980px) {
+  :root {
+    --spine:1.75rem;
+    --left:3rem;
+    --right:5rem;
+  }
+  #tools { left:31rem }
+}
+
+/* Hide the spine */
+@media print {
+  :root { --spine:0 }
+}
+
+
+
 
 
 #menu, #menu ul {
@@ -248,40 +339,6 @@ h1 {
   font-family:var(--serif);
   font-size:inherit;
   color:unset;
-}
-
-
-header {
-  height:3rem;
-  width:36rem;
-  position:fixed;
-  top:0;
-  left:3rem;
-  z-index:100;
-  padding:0 9.75rem 0 1.75rem;
-  margin:0;
-}
-
-header.-hidden {
-  display:none;
-}
-
-header h2 {
-  padding:0 .25rem .5rem;
-  border-bottom:1px solid var(--acolor);
-  margin:1.5rem -.25rem .5rem;
-  line-height:1rem;
-}
-
-#tools {
-  position:fixed;
-  z-index:100;
-  top:0;
-  left:31rem;
-  width:8rem;
-  padding:3rem 0 0 0;
-  counter-reset: list-counter;
-  /* for easy absolute positioning, relative to the mouse */
 }
 
 #tooltip>* {
@@ -319,7 +376,7 @@ article h2::before {
 
 
 /* Other Structural Devices
-/* ============= */
+/* ======================== */
 
 ul {
   padding:0 0 0 1em;
@@ -396,9 +453,10 @@ td:nth-child(2n+2) {
   font-size:.61rem;
 }
 .note::before, .todo::before {
-  content:'TODO ';
+  content:'TODO ';
   color:var(--acolor);
   font:var(--sans);
+  font-variant:small-caps;
   font-variant:all-small-caps;
   font-size:.9rem;
 }
@@ -406,8 +464,9 @@ td:nth-child(2n+2) {
   content:'NB ';
 }
 
+
 /* Typography for Idioms
-/* ============= */
+/* ===================== */
 
 /* Using <i> For idioms */
 /* Using <b> and <code> for constants */
@@ -429,26 +488,26 @@ a {
 dfn, i, a:hover {
 /*  text-decoration:underline;*/
   background-image:linear-gradient(to top,
-    #0001 0px,
-    currentColor 0px, 
-    currentColor 1px, 
-    #0000 1px);
+    #0001 0,
+    currentColor 0, 
+    currentColor calc(1rem/25), 
+    #0000 calc(1rem/25));
     background-size:100% calc(1em);
     background-position:center;
     background-repeat:no-repeat;
 
   text-shadow:
-     2px 0px 0 var(--bgcolor),
-     1px 0 0 var(--bgcolor),
-     .5px 0 0 var(--bgcolor),
-    -.5px 0 0 var(--bgcolor),
-    -1px 0 0 var(--bgcolor),
-    -2px -0 0 var(--bgcolor);
+    calc(2rem/25)  0 0 var(--bgcolor),
+    calc(1rem/25)  0 0 var(--bgcolor),
+    calc(1rem/50)  0 0 var(--bgcolor),
+    calc(1rem/-50) 0 0 var(--bgcolor),
+    calc(1rem/-25) 0 0 var(--bgcolor),
+    calc(2rem/-25) 0 0 var(--bgcolor);
 }
 
 dfn:hover, dfn.-focus, dfn.-focus > dfn {
   text-shadow:none;
-  border-radius:3px;
+  border-radius:calc(3rem/25);
   padding:0 .15em 0 .15em;
   margin:0 -.15em 0 -.15em;
   background:var(--highlight);
@@ -534,14 +593,14 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
   margin-bottom:1rem;
 }
 #tooltip li::before {
-  margin-left:0px;
+  margin-left:0;
   padding:0;
   content:'(' counter(list-counter, lower-roman) ')';
   font:var(--serif);
   font-size:1.05em;
 }
 #tooltip li li::before {
-  margin-left:0px;
+  margin-left:0;
   padding:0;
   font:var(--serif);
   content:'(' counter(list-counter, lower-alpha) ')';
@@ -579,7 +638,7 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 
 
 /* Specific elements
-/* ============= */
+/* ================= */
 
 #percent-encode-sets {
   caption-side: bottom;
@@ -591,11 +650,11 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 }
 
 #percent-encode-sets colgroup:not(:first-child) {
-  border-left:1px solid #0002;
+  border-left:calc(1rem/25) solid #0002;
 }
 
 #percent-encode-sets tr:not(last-child) {
-  border-bottom:1px solid #0002;
+  border-bottom:calc(1rem/25) solid #0002;
 }
 
 #percent-encode-sets tr:first-child th * {
@@ -615,8 +674,8 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
   margin:0;
   width:.63rem;
   height:calc(1rem - 5px);
-  line-height:calc(1rem - 6px);
-  margin:3px 0px 1px 4px ;
+  line-height:calc(1rem - 6rem/25);
+  margin:calc(3rem/25) 0 calc(1rem/25) calc(4rem/25);
 }
 #percent-encode-sets td.-screen {
   opacity:.12;
@@ -630,12 +689,12 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
   text-align:center;
   white-space:nowrap;
   vertical-align:bottom;
-  border:1px solid #0004;
+  border:calc(1rem/25) solid #0004;
   border-bottom:none;
   border-top:none;
 }
 #printer td {
-  border:1px solid #0004;
+  border:calc(1rem/25) solid #0004;
   border-top:none;
   border-bottom:none;
 }
@@ -643,7 +702,7 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
   padding:0 .3em;
 }
 table#printer table {
-  margin:-1px calc(-.3em - 1px);
+  margin:-calc(1rem/25) calc(-.3em - 1rem/25);
 }
 
 #percent-encode-sets td.-screen code {
@@ -656,7 +715,7 @@ table#printer table {
 
 
 /* Tweaks
-/* ============= */
+/* ====== */
 
 #percent-encode-sets {
   margin-left:-0.5ch;
@@ -679,7 +738,7 @@ td, .rule {
 }
 
 /* Tweaks - Manual font size adjust
-/* ============= */
+/* ================================ */
 
 a, a:hover {
   font-size:0.914em;
@@ -698,7 +757,7 @@ code {
 }
 
 /* Likewise, in tooltip
-/* ============= */
+/* ==================== */
 
 #tooltip em,
 #tooltip var,
@@ -737,10 +796,3 @@ code {
 .todo i, #tooltip .url {
   font-size:1.1em;
 }
-
-
-::selection {
-  background-color:var(--highlight);
-  text-shadow:none;
-}
-

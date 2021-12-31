@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="initial-scale=1, shrink-to-fit=no, user-scalable=no">
   <title>URL Specification</title>
   <link rel="stylesheet" href="style/base.css">
   <link rel="stylesheet" href="style/style.css">
@@ -13,35 +12,41 @@
 </head>
 <body>
 
+
 <header>
-  <!--  -->
+  <hgroup>
+    <h2 class=toc-exclude><!----></h2>
+  </hgroup>
 </header>
+
 
 <div id=tools>
   <div id=menu>
-  <a id=icon href=#url-specification>🌲</a>
-  <ul>
-    <li><a href=#url-specification>Introduction</a></li>
-    <li><a href=#preliminaries>Preliminaries</a></li>
-    <li><a href=#url-model><span class=url>URL</span> Model</a></li>
-    <li><a href=#parsing>Parsing</a></li>
-    <li><a href=#host-parsing >Host Parsing</a></li>
-    <li><a href=#reference-resolution >Reference Resolution</a></li>
-    <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
-    <li><a href=#percent-coding >Percent Coding</a></li>
-    <li><a href=#printing>Printing</a></li>
-  </ul>
+    <a id=icon href=#url-specification>🌲</a>
+    <ul>
+      <li><a href=#url-specification>Introduction</a></li>
+      <li><a href=#preliminaries>Preliminaries</a></li>
+      <li><a href=#url-model><span class=url>URL</span> Model</a></li>
+      <li><a href=#reference-resolution >Reference Resolution</a></li>
+      <li><a href=#parsing>Parsing</a></li>
+      <li><a href=#host-parsing >Host Parsing</a></li>
+      <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
+      <li><a href=#percent-coding >Percent Coding</a></li>
+      <li><a href=#printing>Printing</a></li>
+    </ul>
   </div>
   <div id=tooltip></div>
 </div>
 
+
+<main>
 <article>
 <h1 id=url-specification>URL Specification</h1>
 
 
 <!----------------------------->
 <section class=-short>
-<h2 class=-toc-exclude style=display:none>URL Specification</h2>
+<h2 class=toc-exclude style=display:none>URL Specification</h2>
 <!----------------------------->
   <p>
     This document provides a concise formal definition of <span class=url>URL</span>s and
@@ -55,6 +60,7 @@
 
   <p class=-inbetween>
     The goals of this document are,
+
   <ul class=-prose>
     <li>
       To provide a modular, concise formal specification of
@@ -71,20 +77,20 @@
     <li>
       To provide a concise way to describe the differences between the
       <abbr class=-caps>WHATWG</abbr> standard and 
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
       and
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
       as part of a larger effort;
     <li>
       To enable and support work towards an update of
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
       that resolves the incompatibilities with the <abbr class=-caps>WHATWG</abbr> standard.
     <li>
       To enable and support editorial changes to the 
       <abbr class=-caps>WHATWG</abbr> standard in the hope to recover the
       structural framework for relative references, normalisation and the hierarchy of 
       equivalence relations on <span class=url>URL</span>s that was put forward in 
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>.
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>.
     <!-- <li>
       To provide the authors of the <abbr class=-caps>WHATWG</abbr> standard
       with a support document that is useful to them in their efforts to
@@ -95,14 +101,14 @@
 
 <!----------------------------->
 <section class=-short>
-<h2 class=-toc-exclude>Status of this document</h2>
+<h2 class=toc-exclude>Status of this document</h2>
 <!----------------------------->
   <p class=note>
     This is a development version of the specification. 
 
   <ul>
     <li>
-      This is version 0.7.1 of the specification. This is a development 
+      This is version 0.8.0 of the specification. This is a development 
       version. 
     <li>
       The versioning scheme is specified by
@@ -126,16 +132,13 @@
 
 
 <!----------------------------->
-<section class=-short><h2 class=-toc-exclude>Structure of this document</h2>
+<section class=-short>
+<h2 class=toc-exclude>Structure of this document</h2>
 <!----------------------------->
   <p>
     As of this writing, this document has a compact format that is focused specifically on
     the definition and specification of <span class=url>URL</span>s and operations on
-    <span class=url>URL</span>s. 
-    It does not include a discussion of their history or their use in various contexts.
-    It does contain valuable non-normative references to
-    <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
-    that can be followed for additional information about the concepts involved.
+    <span class=url>URL</span>s.
 
   <p class=-inbetween>
     The sections are laid out as follows.
@@ -170,67 +173,62 @@
 
     <p style=margin-top:-.5rem>
       Furthermore, the notation
-      <span class=-nowrap><var>e</var> <b>:</b> <var>T</var></span>
-      is used to denote the concatenation of a single-element <var>e</var> in 
-      front of a sequence <var>T</var>. 
+      <var>e</var> <b>:</b> <var>T</var> is used to denote the concatenation of a
+      single-element <var>e</var> in front of a sequence <var>T</var>. 
   </div>    
 
 
   <p>
-    The notation <span class=-nowrap><var>e</var> <b>:</b> <var>T</var></span>
-    may be used to inductively specify operations on sequences.
-    For example, the length of a sequence is defined by 
-    <dfn class=noindex>length</dfn> ε = 0 and
-    <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) =
-      <span class=-nowrap>1 + <i>length</i> <var>T</var></span>.
+    The notation <var>e</var> <b>:</b> <var>T</var> may be used to inductively specify
+    operations on sequences. For example, the length of a sequence is defined by 
+    <dfn class=noindex>length</dfn> ε = 0 and
+    <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) = 
+    1 + <i>length</i> <var>T</var>.
 
   <p style=margin-top:-.5rem>
     Parentheses are used for disambiguation and as visual aides. Paired 
     parentheses are not part of a sequence-constructing operation. 
 
   <div class="dfn-scope +br">
-    <h4>Tokens</h4>
+    <h4>Components</h4>
     <p>
       <dfn style=display:none>type</dfn>
-      The word <dfn>token</dfn> is used throughout this specification to mean a
+      The word <dfn>component</dfn> is used throughout this specification to mean a
       tagged value, denoted by (<var>type</var> <var>value</var>), where
       <var>type</var> is taken from a predefined set of
-      <dfn>token-type</dfn>s.
-    The <i class=common>value</i> of a <i class=common>token</i> may be a
-    <i class=common>sequence</i> of
-    <i class=common>token</i>s itself, in which case the
-    <i class=common>token</i> may be referred
-    to as a <dfn>compound-token</dfn> for clarity.
-    <!--and the tokens present in its value may be referred to as
-    <dfn>sub-token</dfn>s.-->
+      <dfn>component-type</dfn>s.
+    The <i class=noindex>value</i> of a component may be a <i class=common>sequence</i>
+    of components itself, in which case the component may be referred to as a
+    <dfn>compound-component</dfn> for clarity.
+    <!--and the components present in its value may be referred to as
+    <dfn>sub-component</dfn>s.-->
     <!-- add to dfn index -->
     <!-- TODO I want to be able to add alt-name attributes to the dfn tags-->
     <div style=display:none><dfn>value</dfn></div>
   </div>
   <p>
-    Both <i>token-type</i> constants and their corresponding
-    <i class=common>token</i>-constructing operator are typeset in boldface.
-    For example, <b class=noindex>scheme</b> denotes a <i>token-type</i>, whilst
-    <span class=-nowrap>(<b class=noindex>scheme</b> <var>value</var>)</span>
-    denotes a <i>token</i>. Again, parentheses are used to disambiguate and as
-    visual aides. They are not part of the
-    <i class=common>token</i>-constructing operator. 
+    Both <i>component-type</i>s and their corresponding
+    <i>component</i>-constructing operator are typeset in boldface.
+    For example, <b class=noindex>scheme</b> denotes a <i>component-type</i>,
+    whilst (<b class=noindex>scheme</b> <var>value</var>) denotes a
+    <b class=noindex>scheme</b>-<i>component</i>. 
+    Again, parentheses are used to disambiguate and as visual aides. They are not part of
+    the <i class=common>component</i>-constructing operator. 
   <p>
-    When a collection of <i class=common>token</i>s contains exactly one
-    <i class=common>token</i> (<var>tag</var> <var>value</var>) for a given
-    <i class=common>tag</i>, then
-    the <i class=common>tag</i> may be used to refer to its
-    <i class=common>value</i> directly. For
-    example, given a <i class=common>sequence</i> of <i class=common>token</i>s
+    When a collection of <i class=common>component</i>s contains exactly one
+    <i class=common>component</i> for a given <i class=common>component-type</i>,
+    then the <i class=common>type</i> may be used as a reference to the
+    <i class=common>component</i>'s
+    <i class=common>value</i>. For example, given a <i class=common>sequence</i> of
+    <i class=common>component</i>s
     S := (<b class=noindex>dir</b> <var>x</var>・<b
        class=noindex>file</b> <var>y</var>・<b 
        class=noindex>query</b> 
     <var>z</var>), the phrase
     &ldquo;the <b class=noindex>query</b> of S&rdquo; identifies the
     <i class=common>value</i> <var>z</var> whereas the phrase &ldquo;the
-    <b class=noindex>query</b> <i class=common>token</i> of
-    S&rdquo; identifies 
-    <span class=-nowrap>(<b class=noindex>query</b> <var>z</var>)</span>.
+    <b class=noindex>query</b> <i class=common>component</i> of
+    S&rdquo; identifies (<b class=noindex>query</b> <var>z</var>).
 
 
   <h4>Strings and Code-Points</h4>
@@ -245,8 +243,8 @@
         <a href="https://www.unicode.org/versions/latest/">Unicode</a>
         <i>code point</i>.
       <li>
-        A <dfn>code point</dfn>, is a natural number <span
-          class=-nowrap><var>n</var> &lt; 17 × 2<sup>16</sup></span>.
+        A <dfn>code point</dfn>, is a natural number
+        <var>n</var> &lt; 17 × 2<sup>16</sup>.
       <li>
         The <dfn>empty string</dfn> is a <i class=common>sequence</i> of zero
         code points. It is denoted by ε. 
@@ -356,13 +354,13 @@
 
   <h4>Grammars</h4>
   <p>
-    The notation <var>name</var> ::= <var>expression</var> is used to define
+    The notation <var>name</var> ::= <var>expression</var> is used to define
     a production rule of a grammar, where the <dfn>expression</dfn> uses
-    square brackets ( [ _ ] ) <strong>for optional rules</strong>, a postfix
-    star ( * ) for zero-or-more, a postfix plus ( + ) for one-or-more, an infix
-    vertical line ( | ) for alternatives, monospaced type for literal
+    square brackets ( [ … ] ) <strong>for optional rules</strong>, a postfix
+    star ( * ) for zero-or-more, a postfix plus ( + ) for one-or-more, an infix
+    vertical line ( | ) for alternatives, monospaced type for literal
     <i class=common>string</i>s
-    and an epsilon ( ε ) for the empty string. Parentheses are used for 
+    and an epsilon ( ε ) for the empty string. Parentheses are used for 
     grouping and disambiguation. 
 
 
@@ -382,20 +380,20 @@
 <section><h2>URL Model</h2>
 <!------------------------>
 <p>
-  An <i><span class=url>URL</span></i> is a sequence of tokens that is
-  subject to a number of additional constraints. The ordering of the tokens 
+  An <i><span class=url>URL</span></i> is a sequence of components that is
+  subject to a number of additional constraints. The ordering of the components 
   in the sequence is analogous to the hierarchical syntax of an 
   <abbr class=-caps>URI</abbr> as described
   in <a href="https://tools.ietf.org/html/rfc3986#section-1.2.3">Hierarchical
-  Identifiers</a> in <abbr class=-caps>RFC</abbr> 3986.
+  Identifiers</a> in <abbr class=-caps>RFC</abbr> 3986.
 <p>
   It is important to stress the distinction between an
    <i><span class=url>URL</span></i> and an
    <i><span class=url>URL</span>-string</i>.
 <br>
   <span class=dfn-scope>
-    An <i class=url>URL</i> is a <em>structure</em>, indeed a special kind of 
-    sequence of tokens, whereas an <dfn><span class=url>URL</span>-string</dfn>
+    An <i class=url>URL</i> is a <em>structure</em>, indeed a special
+    sequence of components, whereas an <dfn><span class=url>URL</span>-string</dfn>
     is a special kind of <i>string</i> that <em>represents</em> an
     <i class=url>URL</i></span>. Conversions between <i class=url>URL</i>s
   and <i class=common><span class=url>URL</span>-string</i>s are described in
@@ -406,8 +404,8 @@
   <h4>URL</h4>
     <p>
       An <dfn class=url>URL</dfn> is a <i>sequence</i> of
-      <i>token</i>s that occur in ascending order by <i>token-type</i>,
-      where <i class=noindex>token-type</i> is taken from
+      <i>component</i>s that occur in ascending order by <i>component-type</i>,
+      where <i class=noindex>component-type</i> is taken from
       the ordered set: 
     <p class="-center">
       <b>scheme</b> &lt; <b>authority</b> &lt; <b>drive</b>
@@ -416,14 +414,14 @@
     <ul>
       <li>
         An <i class=url>URL</i> contains at most one
-        <i class=common>token</i> per <i class=common>type</i>, 
-        except for <b>dir</b> <i class=common>token</i>s, of which it may have
+        <i class=common>component</i> per <i class=common>type</i>, 
+        except for <b>dir</b> <i class=common>component</i>s, of which it may have
         any finite amount.
       <li class=dfn-scope><dfn style=display:none>path-root-constraint</dfn>
         If an <i class=url>URL</i> has an <b>authority</b> or a
-        <b>drive</b> <i class=common>token</i>, and it has a <b>dir</b> or a
-        <b>file</b> token, then it also has a <b>path-root</b>
-        <i class=common>token</i>.
+        <b>drive</b> <i class=common>component</i>, and it has a <b>dir</b> or a
+        <b>file</b> component, then it also has a <b>path-root</b>
+        <i class=common>component</i>.
     </ul>
     </div>
 
@@ -431,7 +429,7 @@
     <h4>Authority</h4>
     <p class=-br>
       An <dfn>Authority</dfn><dfn style=display:none>authority</dfn>
-      is a sequence of tokens ordered by their type, taken from the ordered set:
+      is a sequence of components ordered by their type, taken from the ordered set:
 
     <p class="-center">
       <b>username</b> &lt; <b>password</b> &lt; <b>host</b> &lt; <b>port</b>.
@@ -439,37 +437,37 @@
 
     <ul>
       <li>
-        Authorities have at most one <i class=common>token</i> per
+        Authorities have at most one <i class=common>component</i> per
         <i class=common>type</i>.
       <li>
-        If an Authority has a <b>password</b> <i class=common>token</i> then it
-        also has a <b>username</b> <i class=common>token</i>.
+        If an Authority has a <b>password</b> <i class=common>component</i> then it
+        also has a <b>username</b> <i class=common>component</i>.
       <li>
         If an Authority has a <b>username</b> or a <b>port</b>
-        <i class=common>token</i> then it also has a <b>host</b>
-        <i class=common>token</i>.
+        <i class=common>component</i> then it also has a <b>host</b>
+        <i class=common>component</i>.
     </ul>
-    </div>
 
   <div class="dfn-scope +br">
     <h4>Host</h4>
-    <p class=-br>
-      A <dfn>Host</dfn> is either
-    <ul>
+    <p>
+      A <dfn>Host</dfn> is either:
+    <div><ul class=-inline>
       <li>
-        an ipv6-address,
+        An ipv6-address,
       <li>
         an opaque-host,
       <li>
         an ipv4-address, or
       <li>
         a domain-name.
-    </ul>
+    </ul></div>
   </div>
 
-    <h4>Tokens</h4>
-    <p class=-br>
-      Whenever present, <i>token</i>s are subject to the following constraints:
+    <h4>URL components</h4>
+    <p>
+      Whenever present, the <i class=common>component</i>s of an <span class=url>URL</span>
+      are subject to the following constraints:
 
     <ul>
       <li class=dfn-scope>
@@ -495,7 +493,7 @@
         The <dfn><b>file</b></dfn> of an <i class=url>URL</i>
         is a nonempty <i class=common>string</i>.
       <!-- <li>
-        For all other tokens present, the tokens&rsquo; values are
+        For all other components present, the components&rsquo; values are
         <i class=common>string</i>s. -->
       <li class=dfn-scope>
         The <dfn><b>host</b></dfn> of an <i>Authority</i> is a <i>Host</i>.
@@ -503,14 +501,14 @@
         The <dfn><b>port</b></dfn> of an <i>Authority</i> is either ε 
         or a natural number <var>n</var> &lt; 2<sup>16</sup>.
       <li class=dfn-scope>
-        For all other <i class=common>token</i>s present, the
-        <i class=common>token</i>s' <i class=common>value</i>s
+        For all other <i class=common>component</i>s present, the
+        <i class=common>component</i>s' <i class=common>value</i>s
         are <i class=common>string</i>s.
     </ul>
 
     <ul style=display:none>
       <li class=dfn-scope>
-        A <dfn><b>dir</b></dfn> token is a token (<b>dir</b> <var>name</var>)
+        A <dfn><b>dir</b></dfn> component is a component (<b>dir</b> <var>name</var>)
         where <var>name</var> is a string.
       <li class=dfn-scope>
         The <dfn><b>query</b></dfn> of an <i class=url>URL</i>,
@@ -537,7 +535,7 @@
       <i class=url>URL</i> that has a <i>web-<b>scheme</b></i>.
       <!-- A <dfn>non-special <span class=url>URL</span></dfn> is an
       <span class=url>URL</span> that is not <i>special</i>. -->
-      A <dfn>web-scheme</dfn> is a <i class=common>string</i>
+      A <dfn>web-<b>scheme</b></dfn> is a <i class=common>string</i>
       <var>scheme</var> such that
       (lowercase <var>scheme</var>) :: <span class=rule>
         <code>http</code> | <code>https</code> | <code>ws</code> |
@@ -551,7 +549,7 @@
       <i class=url>URL</i> that has a <i>file-<b>scheme</b></i>.
       A <dfn>file-<b>scheme</b></dfn> is a <i class=common>string</i>
       <var>scheme</var> such that
-      <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code>. 
+      <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code></span>. 
   </div>
 
 
@@ -563,11 +561,11 @@
       <li>
         If <var>url</var> is <strong>not</strong> a
         <i>file-<span class=url>URL</span></i> 
-        then it must not have a <b>drive</b> <i class=common>token</i>.
+        then it must not have a <b>drive</b> <i class=common>component</i>.
       <li>
         If <var>url</var> <strong>is</strong> a 
         <i>file-<span class=url>URL</span></i>, and it has an <b>authority</b>,
-        then it must either be empty or it must consist of a <b>host</b> token
+        then it must either be empty or it must consist of a <b>host</b> component
         only.
     </ul>
 
@@ -580,19 +578,358 @@
   <ul>
     <li>
       A valid <i class=url>URL</i> must not have a <b>username</b> or a
-       <b>password</b> token. 
+       <b>password</b> component. 
     <li>
-      A valid <i class=url>URL</i> must not contain <i class=common>token</i>s
+      A valid <i class=url>URL</i> must not contain <i class=common>component</i>s
       that have <i class=common>value</i>s that contain
       invalid percent-encode sequences. 
   </ul>
   <p>
     Note that arbitrary <i class=common>code point</i>s are allowed in
-    <i class=common>token</i> <i class=common>value</i>s
+    <i class=common>component</i> <i class=common>value</i>s
     unless explicitly specified otherwise. The restrictions on the code points
     in an <i><span class=url>URL</span>-string</i> and the definition of a
     <i>valid <span class=url>URL</span>-string</i> is discussed in 
     the <a href=#parsing>Parsing</a> section.
+
+</section>
+
+
+<!----------------------------------->
+<section><h2>Reference Resolution</h2>
+<!----------------------------------->
+
+  <p>
+    This section defines reference resolution operations that are analogous to the
+    algorithms that are described in the chapter
+    <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference Resolution</a> of
+    <abbr class=-caps>RFC</abbr> 3986. The operations that are defined in this section are
+    used in a subsequent section to define a <em>parse-resolve-and-normalise</em>
+    operation that accurately describes the behaviour of the
+    &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
+    <span class=url>URL</span> parser</a>&rsquo; as defined in the 
+    <abbr class=-caps>WHATWG URL</abbr> standard.
+  <p>
+    Reference resolution as defined in this section does not involve
+    <i><span class=url>URL</span>-string</i>s. It operates on <i class=url>URL</i>s as
+    defined in the <a href=#url-model><span class=url>URL</span> Model</a> section above.
+    In contrast with <abbr class=-caps>RFC</abbr> 3986 and with the
+    <abbr class=-caps>WHATWG</abbr> standard, it does <strong>not</strong> do additional
+    normalisation, which is relegated to the section
+    <a href=#equivalences-and-normalisation>Equivalences and Normalisation</a> instead.
+
+
+  <h3>Order and Prefix operations</h3>
+
+  <p>
+    A property that is particularly useful is the <i>order</i> of an <i class=url>URL</i>.
+    Colloquially, the <i class=common>order</i> is the
+    <i class=common>type</i> of the first <i class=common>component</i>
+    of an <i class=url>URL</i>. The <i class=common>order</i>
+    may be used as an argument to specify various prefixes of an
+    <i class=url>URL</i>.
+
+  <div class="dfn-scope +br">
+  <h4>The Order of an <span class=url>URL</span></h4>
+    <p class=-br>
+      The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn class=fn>ord</dfn>
+      <var>url</var>) is
+      defined to be:
+    <ul>
+      <li>
+        <b>fragment</b> if <var>url</var> is the empty <i class=url>URL</i>.
+      <li>
+        The <i class=common>type</i> of its first <i class=common>component</i>
+        otherwise.
+    </ul>
+
+  <h4>Order-Limited Prefix</h4>
+    <p class=-br>
+      The <dfn>order-limited prefix</dfn>
+      (<var>url</var> <dfn class=op>upto</dfn> <var>order</var>)
+      is defined to be <br>
+      the <em>shortest</em> prefix of <var>url</var> that contains:
+      <ul>
+        <li>
+          all <i class=common>component</i>s of <em>url</em> with a
+          <i class=common>type</i> strictly
+          smaller than <var>order</var> and
+        <li>
+          all <b>dir</b> <i class=common>component</i>s with a
+          <i class=common>type</i> weakly smaller
+          than <var>order</var>.
+    </ul>
+  </div>
+
+
+  <h3>The Goto Operation</h3>
+
+  <p>
+    Based on the <i class=common>order</i> and the <i class=common>order-limited
+    prefix</i> one can define a &ldquo;<i class=common>goto</i>&rdquo; operation that is
+    analogous to the &ldquo;merge&rdquo; operation that is defined in the subsection
+    <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform References</a>
+    of <abbr class=-caps>RFC</abbr> 3986.
+    I have chosen the name &ldquo;goto&rdquo; to avert incorrect assumptions about
+    commutativity. The operation is not commutative, but it is associative.
+
+  <div class="dfn-scope">
+  <h4>Goto</h4>
+  <p>
+    The <dfn>goto</dfn> operation
+    <span class=-nowrap>(<var>url<sub>1</sub></var> <dfn class=op>goto</dfn>
+     <var>url<sub>2</sub></var>)</span> is defined to return
+     <br>
+    the <em>shortest</em> <i class=url>URL</i> that has
+    <var>url<sub>1</sub></var> <b class=fn>upto</b>
+    (<b class=fn>ord</b> <var>url<sub>2</sub></var>) as a
+    prefix and <var>url<sub>2</sub></var> as a postfix.
+  </div>
+
+  <h4>Goto Properties</h4>
+  <p class=-br>
+    The <i>goto</i> operation has a number of pleasing mathematical
+    properties, as follows:
+  <ul>
+    <li>
+      <i class=op>ord</i> (<var>url<sub>1</sub></var> <i class=op>goto</i>
+        <var>url<sub>2</sub></var>) is the least type of
+        {<i class=op>ord</i> <var>url<sub>1</sub></var>,
+         <i class=op>ord</i> <var>url<sub>2</sub></var>}.
+    <li>
+      (<var>url<sub>1</sub></var> <i class=op>goto</i>
+       <var>url<sub>2</sub></var>) <i class=op>goto</i>
+       <var>url<sub>3</sub></var> = <var>url<sub>1</sub></var>
+       <i class=op>goto</i> (<var>url<sub>2</sub></var> <i class=op>goto</i>
+       <var>url<sub>3</sub></var>).
+    <li>
+      ε <i class=op>goto</i> <var>url<sub>2</sub></var> =
+      <var>url<sub>2</sub></var>.
+    <li>
+      <var>url<sub>1</sub></var> <i class=op>goto</i> ε =
+      <var>url<sub>1</sub></var> — if <var>url<sub>1</sub></var> does not
+      have a <b>fragment</b>.
+    <li>
+      <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var>
+      <i class=op>goto</i> <var>url<sub>2</sub></var>).
+  </ul>
+
+  <p>
+    Be aware that the <i>goto</i> operation does a bit more than 
+    sequence concatenation. In some cases it creates a <b>path-root</b>
+    component to satisfy the <i>path-root-constraint</i>
+    of the <i class=url>URL</i> model. 
+    For example, if <var>url<sub>1</sub></var> is the
+    <i class=url>URL</i> represented by <code>//host</code> and <var>url<sub>2</sub></var>
+    is the <i class=url>URL</i> represented by <code>foo/bar</code>
+    then (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>)
+    is represented by <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even
+    though neither <var>url<sub>1</sub></var> nor <var>url<sub>2</sub></var> has one.
+  </p>
+
+
+  <h3>Forcing</h3>
+  <p>
+    There is an additional operation on <i class=url>URL</i>s that I have named <i>force</i>.
+    The <i class=common>force</i> operation is used as a final step in the process of resolving a
+    <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>. 
+    The operation ensures that the resulting <span class=url>URL</span> has a valid <b>authority</b>
+    token and a <b>path-root</b> token. Note that it is possible for the force operation to fail for 
+    <i>web-<span class=url>URL</span></i>s.
+  </p>
+
+  <div class="dfn-scope +br">
+  <h4>Forced File URL</h4>
+    <p class=-br>
+      To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
+      <ul>
+        <li>
+          If <var>url</var> does not have an <b>authority</b> then set its
+          <b>authority</b> component to (<b>authority</b> ε).
+        <li>
+          If <var>url</var> does not have a <b>drive</b> then set its 
+          <b>path-root</b> component to (<b>path-root</b> <code>/</code>).
+      </ul>
+  </div>
+
+  <div class="dfn-scope +br">
+  <h4>Forced Web URL</h4>
+    <p class=-br>
+      To <dfn>force</dfn> a <i>web-<span class=url>URL</span></i>
+      <var>url</var>:
+      <ul>
+        <li>
+          Set the <b>path-root</b> component of <var>url</var> to
+          (<b>path-root</b> <code>/</code>).
+        <li>
+          If <var>url</var> has an <b>authority</b> component and the
+          <i>value</i> of the component is is not ε
+          — then return.
+        <li>
+          Otherwise let <var>component</var> be the first <b>dir</b> or
+          <b>file</b> <i class=common>component</i> whose value is not ε. 
+          If no such <i class=common>component</i> exists, <strong>fail</strong>.
+        <li> 
+          Remove all <b>dir</b> or <b>file</b> <i class=common>component</i>s that
+          precede <var>component</var> and remove <var>component</var> as well. 
+        <li>
+          Let <var>auth</var> be the <i>value</i> of <var>component</var> parsed as
+          an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
+          <var>auth</var>. If the value cannot be parsed as an <i>Authority</i>
+          then <strong>fail</strong>.
+      </ul>
+  </div>
+
+  <h4>Force Properties</h4>
+  <p>
+    The <i>force</i> operation lacks a number of nice properties with respect to the
+    <i>goto</i> operation. The following equalities do not hold in general: 
+  <table class=grammar>
+    <tr>
+      <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
+      <i class=op>goto</i>
+      (<i class=op>force</i> <var>url<sub>2</sub></var>))
+      <td> ≠ 
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+    <tr>
+      <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+      <td> ≠ 
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+    <tr>
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      (<i class=op>force</i> <var>url<sub>2</sub></var>))
+      <td> ≠ 
+      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
+      <i class=op>goto</i>
+      <var>url<sub>2</sub></var>)
+  </table>
+
+
+  <h3>Resolution</h3>
+
+  <p>
+    The subsection
+    <a href="https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2"
+    >Transform References</a> of <abbr class=-caps>RFC</abbr> 3986 specifies <em>two</em>
+    variants of reference resolution. A generic, <em>strict</em> variant and an
+    alternative <em>non-strict</em> variant. 
+    This specification adds a third variant that is used to specify the behaviour of
+    web-browsers.
+
+    I have chosen to name the strict variant <i>generic resolution</i> and the
+    <em>non-strict</em> variant <i>legacy resolution</i>, so that the words
+    the words <em>strict</em> and <em>non-strict</em> can be used as modifiers
+    later on. 
+
+  <!--<p>
+    As an example, consider resolving the <abbr class=-url>URL</abbr> represented by 
+    <code>scheme:foo/bar</code> against the <abbr class=-url>URL</abbr> represented by 
+    <code>scheme://host/</code>. If <i>legacy resolution</i> is used, then the
+    <b>scheme</b> of the reference is ignored and the resolution results in 
+    <code>scheme://host/foo/bar</code>. However, <i>generic resolution</i> results in
+    <code>scheme:foo/bar</code> — notice that the result does nnot have an authority. -->
+
+  <div class="dfn-scope +br" id="resolution">
+    
+    <div style=display:none>
+      <dfn>resolution</dfn>
+      <dfn>resolve</dfn>
+      <dfn>generic resolution</dfn>
+      <dfn>legacy resolution</dfn>
+    </div>
+
+    <h4>Generic Resolution</h4>
+    <p>
+      The <dfn>generic resolution</dfn>
+      <span class=-nowrap>(<dfn class=op>generic-resolve</dfn> <var>url<sub>1</sub></var>
+      <var>url<sub>2</sub></var>)</span> of
+      an <span class=url>URL</span> <var>url<sub>1</sub></var> against
+      an <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be
+      <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
+      — if <var>url<sub>2</sub></var> has a <b>scheme</b> or <var>url<sub>1</sub></var>
+      has a <b>scheme</b>. Otherwise resolution <strong>fails</strong>.
+
+    <h4>Legacy Resolution</h4>
+    <p class=-br>
+      The <dfn>legacy resolution</dfn>
+      <span class=-nowrap>(<dfn class=op>legacy-resolve</dfn> <var>url<sub>1</sub></var>
+       <var>url<sub>2</sub></var>)</span> is defined to be the
+       <i class=common>generic resolution</i>
+      (<b class=op>generic-resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+      where <var>~url<sub>1</sub></var> is:
+
+    <ul>
+      <li>
+        <var>url<sub>1</sub></var> with its <b>scheme</b> removed if both
+          <var>url<sub>1</sub></var> and <var>url<sub>2</sub></var> have a <b>scheme</b>,
+          and the <i class=common>value</i> of their <b>scheme</b>
+          <i class=common>component</i>s case-insensitively compare equal, or
+      <li>
+        <em>url<sub>1</sub></em> itself otherwise.
+    </ul>
+  </div> <!-- Resolution -->
+
+  <p>
+    Based on the <i>generic resolution</i>, and the 
+    <i>legacy resolution</i> and the <i>force</i> operations as defined above, it is now
+    possible to define a reference resolution operation that can be used to characterise
+    the behaviour that is specified in the <abbr class=-caps>WHATWG</abbr> standard. 
+    
+  <div class="dfn-scope +br" id="whatwg-resolution">
+
+    <div style=display:none>
+      <dfn>WHATWG-resolve</dfn>
+      <dfn>WHATWG-resolution</dfn>
+    </div>
+
+    <h4><abbr class=-caps>WHATWG</abbr> Resolution</h4>
+
+    <p class=-br>
+      The <dfn><abbr class=-caps>WHATWG</abbr>-resolution</dfn> of
+      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var> is defined as:
+
+    <ul>
+      <li>
+        <i class=op>force</i> (<i class=op>legacy-resolve</i>
+          <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+        <ul>
+          <li>
+            if <var>url<sub>1</sub></var> is a <i>web-<span class=url>URL</span></i> or a
+            <i>file-<span class=url>URL</span></i>, or
+          <li>
+            if <var>url<sub>1</sub></var> does not have a <b>scheme</b> and
+            <var>url<sub>2</sub></var> is a <i>web-<span class=url>URL</span></i> or a
+            <i>file-<span class=url>URL</span></i>;
+        </ul>
+
+      <li>
+        <i class=op>generic-resolve</i>
+          <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>
+        <ul>
+          <li>
+            if otherwise the first component of <var>url<sub>1</sub></var> is 
+            a <b>scheme</b> or a <b>fragment</b>, or
+          <li>
+            if <var>url<sub>2</sub></var> has an <b>authority</b> or a <b>path-root</b>;
+        </ul>
+      <li>
+        otherwise, the operation <strong>fails</strong>.
+    </ul>
+
+    <p>
+      Any application of the <i>force</i> operation that modifies its input must issue a
+      validation warning. If in the process of <i><abbr class=-caps>WHATWG</abbr>-resolution</i>
+      either the <i>force</i> operation, or the internally used <i>generic resolution</i>
+      operation <strong>fails</strong>, then the
+      <i><abbr class=-caps>WHATWG</abbr>-resolution</i> <strong>fails</strong> as well.
+  </div> <!-- WHATWG Resolution -->
 
 </section>
 
@@ -628,8 +965,20 @@
   </ol>
 
   <h3>Preprocessing</h3>
+  <p>
+    The appendix
+    <a href=https://datatracker.ietf.org/doc/html/rfc3986#appendix-C>Delimiting a
+    <abbr class=-caps>URI</abbr> in Context</a> of <abbr class=-caps>RFC</abbr> 3986 
+    states that surrounding white-space should be removed from an
+    <abbr class=-caps>URI</abbr> when it is extracted from its surrounding context. 
+    The <abbr class=-caps>WHATWG</abbr> standard makes this more explicit and specifies a
+    preprocessing step that removes removes specific control– and white-space–characters
+    from the input string before parsing.
+
+  <div class="dfn-scope +br">
+  <h4>Preprocessing</h4>
   <p class=-br>
-    Before parsing, preprocess the input string <var>input</var> as follows:
+    Before parsing, the input string <var>input</var> must be preprocessed:
   <ul>
     <li>
       Remove all leading and trailing <i>c0-space</i>
@@ -638,6 +987,8 @@
       Remove all <b>u+9</b> (tab), <b>u+A</b> (line-feed) and <b>u+D</b>
       (carriage-return) <i class=common>character</i>s from <var>input</var>.
   </ul>
+  </div>
+
 
   <h3>Parser modes</h3>
   <p>
@@ -698,7 +1049,7 @@
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
-      <td colspan=5>The auth-path and authority rules in <b>web-mode</b> and in <b>generic-mode</b>:
+      <td colspan=3>The auth-path and authority rules in <b>web-mode</b> and in <b>generic-mode</b>:
 
     <tr>
       <td><dfn>auth-path</dfn> 
@@ -717,7 +1068,7 @@
 
 
     <tr class=-inbetween>
-      <td colspan=5>The auth-path and authority rules in <b>file-mode</b></i>:
+      <td colspan=3>The auth-path and authority rules in <b>file-mode</b>:
 
     <tr>
       <td><dfn>auth-path</dfn>
@@ -740,7 +1091,7 @@
 
 
     <tr class=-inbetween>
-      <td colspan=5>Rules for the path:
+      <td colspan=3>Rules for the path:
 
     <tr>
       <td><dfn>path</dfn>
@@ -753,7 +1104,7 @@
       <td> ( dir <i>s</i> )* [ file ]
 
     <tr class=-inbetween>
-      <td colspan=5>This refers to the following rules:
+      <td colspan=3>This refers to the following rules:
 
     <tr>
       <td>scheme 
@@ -817,7 +1168,7 @@
       <td> <i>any</i>*
 
     <tr class=-inbetween>
-      <td colspan=5>These rules are based on the following character-sets:
+      <td colspan=3>These rules are based on the following character-sets:
 
     <tr>
       <td><dfn>s</dfn> 
@@ -829,7 +1180,7 @@
       <td>s<dfn style=display:none>s</dfn>
       <td> := 
       <td> { <code>/</code>, <code>\</code> }
-         —  in <b>web-mode</b> and in <b>file-mode</b></i>
+         —  in <b>web-mode</b> and in <b>file-mode</b>
 
 
     <tr><td><dfn>uchar</dfn>
@@ -860,17 +1211,25 @@
 
   <p class=todo>
     Double check the following, and include it here
-  <h4>IPv6 Address</h4>
+
+  <h4><abbr class=-caps>IP</abbr>v6 Address — strict</h4>
   <p>
-    An IPv6 address-string <!--consists of a sequence of items, separated by
-    <code>:</code> or <code>::</code>, the items being hexadecimal except for
-    the last itme, which may consist of four decimal numbers separated by
-    <code>.</code> as follows:-->
-    is a <i class=common>string</i> representation of a natural number
-      <var>n</var> &lt; 2<sup>128</sup>. 
+    An <abbr class=-caps>IP</abbr>v6 address-string is a representation
+    of a natural number <var>n</var> &lt; 2<sup>128</sup> that is used as an identifier. 
     It is accurately described by the production rule <var>IPv6address</var>
-    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host</a>
-    section of <abbr class=-caps>RFC</abbr> 3986. 
+    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host
+    section</a> of <abbr class=-caps>RFC</abbr> 3986. 
+
+  <p>
+    The <a href=https://url.spec.whatwg.org/#concept-ipv6-parser
+    ><abbr class=-caps>IP</abbr>v6 address parser</a> in the
+    <abbr class=-caps>WHATWG</abbr> standard however implies a more tolerant definition
+    of <abbr class=-caps>IP</abbr>v6 address-strings. 
+
+  <h4>IPv6 Address — loose</h4>
+  <div class=todo>
+  </div>
+
 
   <div class=todo>
     There are additional, semantic constraints on the ipv4-address, ipv6-address
@@ -898,7 +1257,7 @@
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
-      <td colspan=5>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
+      <td colspan=3>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
     <tr>
       <td><dfn>auth-path</dfn>
       <td> ::= 
@@ -915,7 +1274,7 @@
       <td> <code>/</code> drive  |  <code>//</code> authority  [ <code>/</code> drive ]
 
     <tr class=-inbetween>
-      <td colspan=5>Rules for the authority and the path:
+      <td colspan=3>Rules for the authority and the path:
 
     <tr>
       <td><dfn>authority</dfn> 
@@ -945,7 +1304,7 @@
       <td> ( dir <code>/</code> )* [ file ]
 
     <tr class=-inbetween>
-      <td colspan=5>This refers to the following rules:
+      <td colspan=3>This refers to the following rules:
 
     <tr>
       <td><dfn>opaque-host</dfn> 
@@ -1036,8 +1395,8 @@
   <div class=todo>
     The grammar and the model, are very closely related.
     (So close even that I'm pondering if I can merge them).
-    If you record the use of each rule whose name corresponds to a token-type
-    as a token, then you end up with an URL as defined in the Model section.
+    If you record the use of each rule whose name corresponds to a component-type
+    as a component, then you end up with an URL as defined in the Model section.
     With the port, being once exception, and the definition of a host needs
     a bit of work too.
   </div> -->
@@ -1163,355 +1522,6 @@
 </section>
 
 
-<!----------------------------------->
-<section><h2>Reference Resolution</h2>
-<!----------------------------------->
-
-  <p>
-    This section defines a reference resolution operation that is analogous to
-    the algorithm that is described in the chapter
-    <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference
-    Resolution</a> of <abbr class=-caps>RFC</abbr> 3986. 
-    The operations that are defined in this section are used in a subsequent
-    section to define a <em>parse-resolve-and-normalise</em> operation that 
-    accurately describes the behaviour of the
-    &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
-    <span class=url>URL</span> parser</a>&rsquo; as defined in the 
-    <abbr class=-caps>WHATWG URL</abbr> standard.
-  <p>
-    Reference Resolution as defined in this section does not involve
-    <i><span class=url>URL</span>-string</i>s. It operates on <i class=url>URL</i>s as
-    defined in the <a href=#url-model><span class=url>URL</span> Model</a> section above.
-    In contrast with <abbr class=-caps>RFC</abbr> 3986 and with the
-    <abbr class=-caps>WHATWG</abbr> standard, it does <strong>not</strong> do additional
-    normalisation, which is relegated to the section
-    <a href=#equivalences-and-normalisation>Equivalences and Normalisation</a> instead.
-
-
-  <h3>Order and Prefix operations</h3>
-
-  <p>
-    A property that is particularly useful is the <i>order</i> of an
-    <span class=-nowrap><i class=url>URL</i>.</span>
-    Colloquially, the <i class=common>order</i> is the
-    <i class=common>type</i> of the first <i class=common>token</i>
-    of an <i class=url>URL</i>. The <i class=common>order</i>
-    may be used as an argument to specify various prefixes of an
-    <i class=url>URL</i>.
-
-  <div class="dfn-scope +br">
-  <h4>The Order of an <span class=url>URL</span></h4>
-    <p class=-br>
-      The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn class=fn>ord</dfn>
-      <var>url</var>) is
-      defined to be:
-    <ul>
-      <li>
-        <b>fragment</b> if <var>url</var> is the empty <i class=url>URL</i>.
-      <li>
-        The <i class=common>type</i> of its first <i class=common>token</i>
-        otherwise.
-    </ul>
-
-  <h4>Order-Limited Prefix</h4>
-    <p class=-br>
-      The <dfn>order-limited prefix</dfn>
-      (<var>url</var> <dfn class=op>upto</dfn> <var>order</var>)
-      is defined to be <br>
-      the <em>shortest</em> prefix of <var>url</var> that contains:
-      <ul>
-        <li>
-          all <i class=common>token</i>s of <em>url</em> with a
-          <i class=common>type</i> strictly
-          smaller than <var>order</var> and
-        <li>
-          all <b>dir</b> <i class=common>token</i>s with a
-          <i class=common>type</i> weakly smaller
-          than <var>order</var>.
-    </ul>
-  </div>
-
-
-  <h3>The Goto Operation</h3>
-
-  <p>
-    Based on the <i class=common>order</i> and the <i class=common>order-limited
-    prefix</i> one can define a &ldquo;<i class=common>goto</i>&rdquo; operation that is
-    analogous to the &ldquo;merge&rdquo; operation that is defined in section
-    <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform References</a>
-    of <abbr class=-caps>RFC</abbr> 3986.
-    I have chosen the name &ldquo;goto&rdquo; to avert incorrect assumptions about
-    commutativity. The operation is not commutative, but it is associative.
-
-  <div class="dfn-scope">
-  <h4>Goto</h4>
-  <p>
-    The <dfn>goto</dfn> operation
-    <span class=-nowrap>(<var>url<sub>1</sub></var> <dfn class=op>goto</dfn>
-     <var>url<sub>2</sub></var>)</span> is defined to return
-     <br>
-    the <em>shortest</em> <i class=url>URL</i> that has
-    <var>url<sub>1</sub></var> <b class=fn>upto</b>
-    (<b class=fn>ord</b> <var>url<sub>2</sub></var>) as a
-    prefix and <var>url<sub>2</sub></var> as a postfix.
-  </div>
-
-  <h4>Goto Properties</h4>
-  <p class=-br>
-    The <i>goto</i> operation has a number of pleasing mathematical
-    properties, as follows:
-  <ul>
-    <li>
-      <i class=op>ord</i> (<var>url<sub>1</sub></var> <i class=op>goto</i>
-        <var>url<sub>2</sub></var>) is the least type of
-        {<i class=op>ord</i> <var>url<sub>1</sub></var>,
-         <i class=op>ord</i> <var>url<sub>2</sub></var>}.
-    <li>
-      (<var>url<sub>1</sub></var> <i class=op>goto</i>
-       <var>url<sub>2</sub></var>) <i class=op>goto</i>
-       <var>url<sub>3</sub></var> = <var>url<sub>1</sub></var>
-       <i class=op>goto</i> (<var>url<sub>2</sub></var> <i class=op>goto</i>
-       <var>url<sub>3</sub></var>).
-    <li>
-      ε <i class=op>goto</i> <var>url<sub>2</sub></var> =
-      <var>url<sub>2</sub></var>.
-    <li>
-      <var>url<sub>1</sub></var> <i class=op>goto</i> ε =
-      <var>url<sub>1</sub></var> — if <var>url<sub>1</sub></var> does not
-      have a <b>fragment</b>.
-    <li>
-      <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var>
-      <i class=op>goto</i> <var>url<sub>2</sub></var>).
-  </ul>
-
-  <p>
-    Be aware that the <i>goto</i> operation does a bit more than 
-    sequence concatenation. In some cases it creates a <b>path-root</b>
-    token to satisfy the <i>path-root-constraint</i>
-    of the <i class=url>URL</i> model. 
-    For example, if <var>url<sub>1</sub></var> is the
-    <i class=url>URL</i> represented by <code>//host</code> and <var>url<sub>2</sub></var>
-    is the <i class=url>URL</i> represented by <code>foo/bar</code>
-    then (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>)
-    is represented by <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even
-    though neither <var>url<sub>1</sub></var> nor <var>url<sub>2</sub></var> has one.
-  </p>
-
-
-  <h3>Base URLs</h3>
-  
-  <p>
-    The <i>goto</i> operation can be used to define a reference resolution operation,
-    as is done in the next sub-section. For this we first need to specify the shape of a  
-    <i>base-<span class=url>URL</span></i>. 
-
-  <div class="dfn-scope +br">
-  <h4>Base-URL</h4>
-    <p>
-      An <i class=url>URL</i> is a <dfn>base-<span class=url>URL</span></dfn>
-      if it conforms to the following constraints:
-
-    <ul class=-inbetween>
-      <li style=margin-bottom:.5rem>
-        A <i>web-<span class=url>URL</span></i> is a
-        <i>base-<span class=url>URL</span></i> if it has 
-        a <b>path-root</b> and an <b>authority</b> <br>
-        whose value is <span class=-nowrap>not ε</span>.
-      <li style=margin-bottom:.5rem>
-        A <i>file-<span class=url>URL</span></i> is a
-        <i>base-<span class=url>URL</span></i> if it has
-        an <b>authority</b> and in addition, <br>
-        a <b>path-root</b> or a <b>drive</b>.
-      <li style=margin-bottom:.5rem>
-        Any other <span class=url>URL</span> is a
-        <i>base-<span class=url>URL</span></i> if it has
-        a <b>scheme</b> and in addition, <br>
-        an <b>authority</b> or a <b>path-root</b>.
-    </ul>
-    </div>
-
-  <!-- <h3>Forcing</h3> -->
-
-  <p>
-    A <dfn>force</dfn> operation can be used to coerce a
-    <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>
-    that is not yet a <i>base-<span class=url>URL</span></i>
-    into a <i>base-<span class=url>URL</span></i>. 
-    The operation has no effect on other <span class=url>URL</span>s. 
-  <br>
-    Note that it is possible for the <i>force</i> operation to <strong>fail</strong>
-    for <i>web-<span class=url>URL</span></i>s. 
-  </p>
-
-  <div class="dfn-scope +br">
-  <h4>Forced File URL</h4>
-    <p class=-br>
-      To <dfn class=noindex>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
-      <ul>
-        <li>
-          If <var>url</var> does not have an <b>authority</b> then set its
-          <b>authority</b> token to 
-          <span class=-nowrap>(<b>authority</b> ε)</span>.
-        <li>
-          If <var>url</var> does not have a <b>drive</b> then set its 
-          <b>path-root</b> token to 
-          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
-      </ul>
-  </div>
-
-  <div class="dfn-scope +br">
-  <h4>Forced Web URL</h4>
-    <p class=-br>
-      To <dfn class=noindex>force</dfn> a <i>web-<span class=url>URL</span></i>
-      <var>url</var>:
-      <ul>
-        <li>
-          Set the <b>path-root</b> token of <var>url</var> to
-          <span class=-nowrap>(<b>path-root</b> <code>/</code>)</span>.
-        <li>
-          If <var>url</var> has an <b>authority</b> token and the
-          <i>value</i> of the token is is not ε
-          — then return.
-        <li>
-          Otherwise let <var>token</var> be the first <b>dir</b> or
-          <b>file</b> <i class=common>token</i> whose value is not ε. 
-          If no such <i class=common>token</i> exists, <strong>fail</strong>.
-        <li> 
-          Remove all <b>dir</b> or <b>file</b> <i class=common>token</i>s that
-          precede <var>token</var> and remove <var>token</var> as well. 
-        <li>
-          Let <var>auth</var> be the <i>value</i> of <var>token</var> parsed as
-          an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
-          <var>auth</var>. If the value cannot be parsed as an <i>Authority</i>
-          then <strong>fail</strong>.
-      </ul>
-    </li>
-  </div>
-
-  <h4>Force Properties</h4>
-  <p>
-    The <i>force</i> operation lacks a number of nice properties with respect to the
-    <i>goto</i> operation. The following equalities do not hold in general: 
-  <table class=grammar>
-    <tr>
-      <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
-      <i class=op>goto</i>
-      (<i class=op>force</i> <var>url<sub>2</sub></var>))
-      <td> ≠ 
-      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
-      <var>url<sub>2</sub></var>)
-    <tr>
-      <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
-      <i class=op>goto</i>
-      <var>url<sub>2</sub></var>)
-      <td> ≠ 
-      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
-      <var>url<sub>2</sub></var>)
-    <tr>
-      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
-      (<i class=op>force</i> <var>url<sub>2</sub></var>))
-      <td> ≠ 
-      <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
-      <var>url<sub>2</sub></var>)
-  </table>
-
-
-  <h3>Resolution</h3>
-
-  <p>
-    Based on the <i>goto</i> and the <i>force</i> operations as defined above, it is now
-    possible to define a resolution operation that is compatible with the
-    <abbr class=-caps>WHATWG</abbr> standard. For this we first have to define
-    <i>strict resolution</i> and <i>non-strict resolution</i>. 
-  <p>
-    The distinction between <em>strict</em>– and <em>non-strict</em> resolution has been
-    adopted from the algorithm that is described in the section
-    <a href=https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2>Transform
-    References</a> of <abbr class=-caps>RFC</abbr> 3986.
-    The <abbr class=-caps>WHATWG</abbr> standard adds a third type of resolution, which I 
-    have named <i>forced-resolution</i>.
-
-  <div class="dfn-scope +br">
-    <h4>Strict Resolution</h4>
-    <dfn style=display:none>resolution</dfn>
-    <p class=-br>
-      The <dfn>strict resolution</dfn> 
-      <span class=-nowrap>(<dfn class=op>resolve</dfn> <var>url<sub>1</sub></var>
-      <var>url<sub>2</sub></var>)</span> of
-      an <span class=url>URL</span> <var>url<sub>1</sub></var> against
-      an <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be:
-      <dfn style=display:none>resolve</dfn>
-    <ul>
-      <li>
-        <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
-        — if <var>url<sub>2</sub></var> is a <i>base-<span class=url>URL</span></i>
-          or <var>url<sub>1</sub></var> has a <b>scheme</b>, or
-      <li>
-        <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
-        — if
-          <var>url<sub>2</sub></var> has a <b>scheme</b> and
-          <var>url<sub>1</sub></var> consists of a <b>fragment</b> token only.
-      <li>
-        Otherwise resolution <strong>fails</strong>. 
-    </ul>
-
-    <h4>Non-Strict Resolution</h4>
-    <p class=-br>
-      The <dfn>non-strict resolution</dfn>
-      <span class=-nowrap>(<dfn class=op>~resolve</dfn> <var>url<sub>1</sub></var>
-       <var>url<sub>2</sub></var>)</span> is defined to be the
-       <i class=common>strict resolution</i>
-      (<b class=op>resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</var>)
-      where <var>~url<sub>1</var> is defined to be:
-    <ul>
-      <li>
-        <var>url<sub>1</var> with its <b>scheme</b> removed if both
-          <var>url<sub>1</var> and <var>url<sub>2</var> have a <b>scheme</b>,
-          and the <i class=common>value</i> of their <b>scheme</b>
-          <i class=common>token</i>s case-insensitively compare equal, or
-      <li>
-        <em>url<sub>1</sub></em> itself otherwise.
-    </ul>
-  </div>
-
-  <p>
-    Note that resolution defined as such, may return an <i class=url>URL</i> that is not
-    a <i>base-<span class=url>URL</span></i> according to this specification. 
-    This is remedied in the following resolution operation that characterises the
-    behaviour of the <abbr class=-caps>WHATWG</abbr> standard, modulo normalisation. 
-
-  <div class="dfn-scope +br">
-    <dfn style=display:none>force-resolve</dfn>
-    <h4>Forced Resolution</h4>
-    <p class=-br>
-      The <dfn>forced-resolution</dfn> of
-      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var> is defined as:
-    <ul>
-      <li>
-        <i class=op>force</i> (<i class=op>~resolve</i>
-        <var>url<sub>1</sub></var> (<i class=op>force</i> <var>url<sub>2</sub></var>))
-        — if <var>url<sub>2</sub></var> is a <i>web-<span class=url>URL</span></i>
-        or a <i>file-<span class=url>URL</span></i>.
-      <li>
-        <i class=op>force</i> (<i class=op>resolve</i>
-        <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
-        — otherwise.
-    </ul>
-    <p>
-      Any application of the <i>force</i> operation that modifies its input must issue a
-      validation warning. If in the process of
-      <i>forced-resolution</i>, the <i>strict resolution</i> or
-      the <i>force</i> operation <strong>fails</strong>, then the
-      <i>forced-resolution</i> <strong>fails</strong> as well.
-  </div>
-
-</section>
-
-
 <!--------------------------------------------->
 <section><h2>Equivalences and Normalisation</h2>
 <!--------------------------------------------->
@@ -1519,7 +1529,7 @@
 <p>
   This section is analogous to the section
   <a href="https://tools.ietf.org/html/rfc3986#section-6.2">Normalization and 
-  Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
+  Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
   <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
   particular normal form. The <abbr class=-caps>WHATWG</abbr> standard
   does, however implicitly. 
@@ -1619,9 +1629,9 @@
   Like path normalisation,
   the equations must be exhaustively applied from left-to-right
   to normalise an <i class=url>URL</i>. This has the same effect as removing
-  any empty <b>port</b> or <b>password</b> token, and if the
+  any empty <b>port</b> or <b>password</b> component, and if the
   <span class=url>URL</span> does not have a <b>password</b> after that, 
-  to also remove any empty <b>username</b> token. 
+  to also remove any empty <b>username</b> component. 
 </p>
 
   <table>
@@ -1693,17 +1703,19 @@
 
 <p>
   This section is analogous to the section 
-  <a href="https://tools.ietf.org/html/rfc3986#section-2">Characters</a> 
-  in <abbr class=-caps>RFC</abbr> 3986 and the section 
-  <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded
-    bytes</a> of the <abbr class=-caps>WHATWG</abbr> standard. 
-  On an abstract level, <em>percent encoding</em> provides a means to use 
-  use characters within <i class=common>token</i>s, that are not otherwise
-  allowed by the <i class=url>URL</i> grammar.
+  <a href="https://tools.ietf.org/html/rfc3986#section-2">Characters</a> of
+  <abbr class=-caps>RFC</abbr> 3986 and the section 
+  <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded bytes</a>
+  of the <abbr class=-caps>WHATWG</abbr> standard. 
+  On an abstract level, <em>percent encoding</em> is a means to include characters in
+  <i class=common>component</i> <i class=common>value</i>s that can not be used within
+  <i><span class=url>URL</span>-string</i>s directly. 
+
+<p>
   The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em>
-  specify the semantics of percent-encoded-bytes in the tokens of an
+  specify the semantics of percent-encoded-bytes in the components of an
   <i class=url>URL</i> other than the <b>host</b>, and any
-  percent-encoded bytes that are present in other tokens are <em>not</em> decoded.
+  percent-encoded bytes that are present in other components are <em>not</em> decoded.
 
 <h4>Percent Encoded String</h4>
 <p>
@@ -1788,7 +1800,7 @@
   and not make it configurable via the encode set, but this is work in progress. 
   <br>
   Furthermore, this needs to discuss the encoding override, which is only 
-  allowed for the query; all other tokens must use UTF8.
+  allowed for the query; all other components must use UTF8.
 
 <p class=todo>
   To <i>percent-encode</i> a given <i class=common>string</i> <var>string</var>,
@@ -1800,7 +1812,7 @@
 
 <p>
   Percent encoding can be extended from <i class=common>string</i>s to
-  <i class=url>URL</i>s by percent encoding the tokens' 
+  <i class=url>URL</i>s by percent encoding the components' 
   <i class=common>value</i>s of an <i class=url>URL</i>. This means that instead
   of a single <i class=common>percent-encode-set</i>,
   a <i>percent-encode-profile</i> is required as an argument to the
@@ -1809,7 +1821,7 @@
 <h4>Percent Encode Profile</h4>
   <p>
     A <dfn>percent-encode-profile</dfn> is a mapping that maps 
-    each <i>token-type</i> in the set 
+    each <i>component-type</i> in the set 
     { <b>username</b>, <b>password</b>, <b>host</b>, <b>dir</b>,
       <b>file</b>, <b>query</b>, <b>fragment</b> } 
     to a <i>percent-encode-set</i>. 
@@ -1901,8 +1913,8 @@
 
 <h4>Encode Profile Selection</h4>
   <p>
-    The <i>canonical-percent-encode-profile</i> for a given <i class=url>URL</i>
-    <var>url</var> and a default profile <var>supplied-profile</var>
+    The <i>percent-encode-profile-for</i> for a given <i class=url>URL</i>
+    <var>url</var> and a default profile <var>fallback</var>
     is defined to be:
     <ul>
       <li>
@@ -1915,7 +1927,7 @@
       <li>
         <i>minimal</i> — if otherwise <var>url</var> has a <b>scheme</b>, or
       <li>
-        <var>supplied-profile</var> — otherwise. 
+        <var>fallback</var> — otherwise. 
     </ul>
 
 
@@ -1940,10 +1952,10 @@
 <h4>Normalise for Printing</h4>
 <p>
   If an <span class=url>URL</span> does <em>not</em> have a <b>drive</b> nor an <b>authority</b>
-  but it <em>does</em> have a <b>path-root</b> and one or more <b>dir</b> tokens,
-  and its first <b>dir</b> token is (<b>dir</b> ε)
+  but it <em>does</em> have a <b>path-root</b> and one or more <b>dir</b> components,
+  and its first <b>dir</b> component is (<b>dir</b> ε)
   then it must be <dfn>normalised for printing</dfn>
-  by inserting a token (<b>dir</b> <code>.</code>) immediately after its <b>path-root</b>. 
+  by inserting a component (<b>dir</b> <code>.</code>) immediately after its <b>path-root</b>. 
 
 <p>
   This additional normalisation step is necessary because it is not possible to represent
@@ -1973,7 +1985,7 @@
   <li>
     In addition percent encode a subset of 
     <i>printable-<abbr class=-caps>ASCII</abbr></i>, depending on the 
-    <i class=common>token</i>, as indicated by the percent coding table. 
+    <i class=common>component</i>, as indicated by the percent coding table. 
 </ul>
 
 
@@ -1981,8 +1993,8 @@
 <ul>
   <li>
     Let output be the empty string, then, for each of the
-    <i class=common>token</i>s (<var>tag</var>, <var>value</var>) of
-    <var>url2</var> in tree order, convert the <i class=common>token</i> to a
+    <i class=common>component</i>s (<var>tag</var>, <var>value</var>) of
+    <var>url2</var> in tree order, convert the <i class=common>component</i> to a
     <i class=common>string</i>, depending on its <i>type</i> according to the
     following table, and append it to the output.
 </ul>
@@ -2047,7 +2059,7 @@ One can then wrap around that to describe the URL class of web browsers:
   <li>The href getter returns the printed URL.
   <li>The protocol getter returns the scheme + <code>:</code> or ε if absent.
   <li>The username and password getters return ε if absent or the value of the
-    corresponding token otherwise
+    corresponding component otherwise
   <li>The host getter returns ε if absent, the value
     of the <b>host</b> if the port is absent, and the value
     of the <b>host</b> + <code>:</code> + the value of the <b>port</b> otherwise.
@@ -2065,7 +2077,7 @@ One can then wrap around that to describe the URL class of web browsers:
 </div>
 
 </section>
-
-
+</article>
+</main>
 </body>
 </html>

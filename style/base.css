@@ -88,7 +88,7 @@ header,main,aside,article,footer,nav,div,dd,dt,fieldset,legend,figcaption,h3,h4,
 tr.-inbetween {
   height:2rem;
 }
-.-nowrap {
+.-nowrap, .-nobr {
   white-space:nowrap;
 }
 :not(table).-center {
@@ -103,14 +103,18 @@ ol, ul {
 li {
   counter-increment: list-counter;
 }
-.-inline, ol.-inline {
+.-inline, ol.-inline, ul.-inline {
   display:inline;
 }
 .-inline > li {
   display:inline-block;
 }
-.-inline > li::before {
+ol.-inline > li::before {
   content: counter(list-counter) '. ';
+}
+ul.-inline > li::before {
+  content: '– ';
+  margin-left:0;
 }
 .-inline > li::after {
   content:' ';
