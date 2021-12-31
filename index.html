@@ -535,7 +535,7 @@
       <i class=url>URL</i> that has a <i>web-<b>scheme</b></i>.
       <!-- A <dfn>non-special <span class=url>URL</span></dfn> is an
       <span class=url>URL</span> that is not <i>special</i>. -->
-      A <dfn>web-scheme</dfn> is a <i class=common>string</i>
+      A <dfn>web-<b>scheme</b></dfn> is a <i class=common>string</i>
       <var>scheme</var> such that
       (lowercase <var>scheme</var>) :: <span class=rule>
         <code>http</code> | <code>https</code> | <code>ws</code> |
@@ -728,55 +728,20 @@
   </p>
 
 
-  <h3>Base URLs</h3>
-  
+  <h3>Forcing</h3>
   <p>
-    The <i>goto</i> operation can be used to define a reference resolution operation,
-    as is done in the next sub-section. For this we first need to specify the shape of a  
-    <i>base-<span class=url>URL</span></i>. 
-
-  <div class="dfn-scope +br">
-  <h4>Base-URL</h4>
-    <p>
-      An <i class=url>URL</i> is a <dfn>base-<span class=url>URL</span></dfn>
-      if it conforms to the following constraints:
-
-    <ul class=-inbetween>
-      <li style=margin-bottom:.5rem>
-        A <i>web-<span class=url>URL</span></i> is a
-        <i>base-<span class=url>URL</span></i> if it has 
-        a <b>path-root</b> and an <b>authority</b> <br>
-        whose value is not ε.
-      <li style=margin-bottom:.5rem>
-        A <i>file-<span class=url>URL</span></i> is a
-        <i>base-<span class=url>URL</span></i> if it has
-        an <b>authority</b> and in addition, <br>
-        a <b>path-root</b> or a <b>drive</b>.
-      <li style=margin-bottom:.5rem>
-        Any other <span class=url>URL</span> is a
-        <i>base-<span class=url>URL</span></i> if it has
-        a <b>scheme</b> and in addition, <br>
-        an <b>authority</b> or a <b>path-root</b>.
-    </ul>
-    </div>
-
-  <!-- <h3>Forcing</h3> -->
-
-  <p>
-    A <dfn>force</dfn> operation can be used to coerce a
-    <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>
-    that is not a <i class=-nowrap>base-<span class=url>URL</span></i>
-    to a <i>base-<span class=url>URL</span></i>. 
-    The operation has no effect on other <span class=url>URL</span>s. 
-  <br>
-    Note that it is possible for the <i>force</i> operation to <strong>fail</strong>
-    for <i>web-<span class=url>URL</span></i>s. 
+    There is an additional operation on <i class=url>URL</i>s that I have named <i>force</i>.
+    The <i class=common>force</i> operation is used as a final step in the process of resolving a
+    <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>. 
+    The operation ensures that the resulting <span class=url>URL</span> has a valid <b>authority</b>
+    token and a <b>path-root</b> token. Note that it is possible for the force operation to fail for 
+    <i>web-<span class=url>URL</span></i>s.
   </p>
 
   <div class="dfn-scope +br">
   <h4>Forced File URL</h4>
     <p class=-br>
-      To <dfn class=noindex>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
+      To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
       <ul>
         <li>
           If <var>url</var> does not have an <b>authority</b> then set its
@@ -790,7 +755,7 @@
   <div class="dfn-scope +br">
   <h4>Forced Web URL</h4>
     <p class=-br>
-      To <dfn class=noindex>force</dfn> a <i>web-<span class=url>URL</span></i>
+      To <dfn>force</dfn> a <i>web-<span class=url>URL</span></i>
       <var>url</var>:
       <ul>
         <li>

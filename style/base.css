@@ -88,7 +88,7 @@ header,main,aside,article,footer,nav,div,dd,dt,fieldset,legend,figcaption,h3,h4,
 tr.-inbetween {
   height:2rem;
 }
-.-nowrap {
+.-nowrap, .-nobr {
   white-space:nowrap;
 }
 :not(table).-center {
