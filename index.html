@@ -1949,10 +1949,9 @@
 <h4>Normalise for Printing</h4>
 <p>
   If an <span class=url>URL</span> does <em>not</em> have a <b>drive</b> nor an <b>authority</b>
-  but it <em>does</em> have a <b>path-root</b> and one or more <b>dir</b> components,
-  and its first <b>dir</b> component is (<b>dir</b> ε)
-  then it must be <dfn>normalised for printing</dfn>
-  by inserting a component (<b>dir</b> <code>.</code>) immediately after its <b>path-root</b>. 
+  but it <em>does</em> have an empty first <b>dir</b> component (<b>dir</b> ε) then it must be
+  <dfn>normalised for printing</dfn> by inserting a component (<b>dir</b> <code>.</code>)
+  immediately before its first <b>dir</b> component.
 
 <p>
   This additional normalisation step is necessary because it is not possible to represent
@@ -1966,10 +1965,8 @@
   (<b>authority</b> (<b>host</b> <code>foo</code>)) instead. 
   
 <p class=todo>
-  This is not sufficient.
-  (<b>dir</b> ε)・(<b>dir</b> ε)・(<b>file</b> <code>foo</code>) also causes issues,
-  however this is not an issue for the WHATWG standard because it only considers absolute
-  URLs. There are similar issues around URLs with drive letters, which is an open issue. 
+  This is not sufficient. 
+  There are similar issues around URLs with drive letters, which is an open issue. 
   
 <ul>
   <li>
