@@ -398,8 +398,8 @@
         A <dfn>byte-sequence</dfn> is a <i class=common>sequence</i> of
         <i>byte</i>s.
     </ul>
-
   <div class=+br>
+
   <h4>Percent Encoded Bytes</h4>
     <p>
       A <i>byte-sequence</i> may be <dfn>percent-encoded</dfn> as a <i>string</i> by rendering each
@@ -417,14 +417,13 @@
     </table>
   </div>
 
-  <p class=todo>
-    This makes it possible to embed byte-sequences within strings.
-
   <h4>Percent Encoded String</h4>
   <p>
-    The following defines the grammar for <dfn>percent-encoded–strings</dfn>. 
+    A <dfn>percent-encoded–string</dfn> is a string that may have zero or more 
+    <i class=common>percent-encoded</i> <i>byte-sequences</i>
+    embedded within, as follows:
 
-  <table class=grammar>
+  <table class="grammar">
     <tr>
       <td>pct-encoded-string
       <td> ::=
@@ -438,9 +437,8 @@
       <td> :=
       <td> <i>any</i> \ { <code>%</code> }
   </table>
-
-  <h4>Percent Encoded String — Loose</h4>
-  <p>
+  
+  <p class=-inbetween>
     The grammar above may be relaxed in situations where error recovery is desired. 
     This is achieved by adding a <i>pct-invalid</i> rule as follows:
   </p>
@@ -456,31 +454,45 @@
   </table>
 
   <p>
-    There introduces an ambiguity in this grammar due to the overlap between <i>pct-encoded-byte</i>
+    There is an ambiguity in the loose grammar due to the overlap between <i>pct-encoded-byte</i>
     and <i>pct-invalid</i> combined with <i>uncoded</i>. The ambiguity must be resolved by using the
     <i>pct-encoded-byte</i> rule instead of the <i>pct-invalid</i> rule wherever possible.
 
-
-  <h4>Percent Encoding Strings</h4>
+  <h4>Percent Encoding</h4>
   <p>
-  
-  <p class=todo>
-    To <i>percent-encode</i> a given <i class=common>string</i> <var>string</var>,
-    using a given <i class=common>percent-encode-set</i> <var>encode-set</var>,
+    To <i>percent-encode</i> a <i class=common>string</i> <var>string</var> using a given
+    <i class=common>character-set</i> <var>encode-set</var>
     …
 
-  <h4>Percent Decoding Strings</h4>
+  <!-- <h4>Percent Encode Set</h4>
+    <p>
+      A <dfn>percent-encode-set</dfn> is a subset of the
+      <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
+      that is used as a configuration argument to a
+      <i>percent-encode</i> operation on <i>string</i>s.
+
+  <p class=note>
+    This restricts the encode sets to printable ASCII. 
+    Non-url codepoints must also be encoded, but it makes sense to mandate that
+    and not make it configurable via the encode set, but this is work in progress. 
+    <br>-->
+
+  <p class=todo>
+    Wrap this up. Furthermore, this needs to discuss the encoding override, which is only 
+    allowed for the query; all other components must use UTF8.
+
+  <h4>Percent Decoding</h4>
   <p class=-br>
     Percent decoding of strings is stratified into the following phases:
   <ul>
     <li>
-      Analysing the string into <i>pct-encoded-bytes</i>, <i>pct-invalid</i> and 
-      <i>uncoded</i> parts according to the grammar in the previous subsection.
+      Analyse the string as into <i>pct-encoded-bytes</i>, <i>pct-invalid</i> and <i>uncoded</i>
+      parts according to the <i>pct-encoded-string</i> grammar.
     <li>
-      Converting the percent-coded-bytes to sequences of unicode characters,
-      whilst leaving the <i>pct-invalid</i> and <i>uncoded</i> parts unmodified.
+      Convert the percent-coded-bytes to a <i>byte-sequence</i> and decode the byte sequence
+      to a <i>string</i> whilst leaving the <i>pct-invalid</i> and <i>uncoded</i> parts unmodified.
     <li>
-      Recomposing the string.
+      Recompose the string.
   </ul>
 
   <div class=todo>
@@ -1692,38 +1704,22 @@
 <h3>Percent Coding Normalisation</h3>
 
 <p>
-  The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em>
-  specify the semantics of percent-encoded-bytes in the components of an
-  <i class=url>URL</i> other than the <b>host</b>, and any
-  percent-encoded bytes that are present in other components are <em>not</em> decoded.
+  The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em> specify the semantics of
+  percent-encoded-bytes in the components of an <i class=url>URL</i> other than the <b>host</b>,
+  and any percent-encoded bytes that are present in other components are <em>not</em> decoded.
 
-<p>
-  To <i>percent-encode</i> a <i class=common>string</i>, a set of 
-  <i class=common>character</i>s is used to specify <em>which</em> <i class=common>character</i>s
-  are to be <i>percent-encode</i>d. Such a set is called a <i>percent-encode-set</i>.
-
-<h4>Percent Encode Set</h4>
-  <p>
-    A <dfn>percent-encode-set</dfn> is a subset of the
-    <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
-    that is used as a configuration argument to a
-    <i>percent-encode</i> operation on <i>string</i>s.
-
-<p class=note>
-  This restricts the encode sets to printable ASCII. 
-  Non-url codepoints must also be encoded, but it makes sense to mandate that
-  and not make it configurable via the encode set, but this is work in progress. 
-  <br>
-  Furthermore, this needs to discuss the encoding override, which is only 
-  allowed for the query; all other components must use UTF8.
+<p class=todo>
+  With the changes to the grammar, this can now be simplified, much. 
+  It can use the character sets from the grammar and use their complement as a percent-encode set. 
 
 <p>
   Percent encoding can be extended from <i class=common>string</i>s to
   <i class=url>URL</i>s by percent encoding the components' 
-  <i class=common>value</i>s of an <i class=url>URL</i>. This means that instead
+  <i class=common>value</i>s of an <i class=url>URL</i>. 
+  <!-- This means that instead
   of a single <i class=common>percent-encode-set</i>,
   a <i>percent-encode-profile</i> is required as an argument to the
-  percent-encode-operation on <i class=url>URL</i>s.
+  percent-encode-operation on <i class=url>URL</i>s. -->
 
 <h4>Percent Encode Profile</h4>
   <p>
@@ -1732,8 +1728,8 @@
     { <b>username</b>, <b>password</b>, <b>host</b>, <b>dir</b>,
       <b>file</b>, <b>query</b>, <b>fragment</b> } 
     to a <i>percent-encode-set</i>. 
-    A <i class=common>percent-encode-profile</i> is used as a configuration
-    argument to the <i>percent-encode</i> operation on <i class=url>URL</i>s.
+    <!-- A <i class=common>percent-encode-profile</i> is used as a configuration
+    argument to the <i>percent-encode</i> operation on <i class=url>URL</i>s. -->
 
 <div class="dfn-scope +br">
 <h4>Percent Encode Profiles</h4>
@@ -1820,7 +1816,7 @@
 
 <h4>Encode Profile Selection</h4>
   <p>
-    The <i>percent-encode-profile-for</i> for a given <i class=url>URL</i>
+    The <i>percent-encode-profile-for</i> a given <i class=url>URL</i>
     <var>url</var> and a default profile <var>fallback</var>
     is defined to be:
     <ul>
