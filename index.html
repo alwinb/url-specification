@@ -31,7 +31,6 @@
       <li><a href=#parsing>Parsing</a></li>
       <li><a href=#host-parsing >Host Parsing</a></li>
       <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
-      <li><a href=#percent-coding >Percent Coding</a></li>
       <li><a href=#printing>Printing</a></li>
     </ul>
   </div>
@@ -1706,25 +1705,19 @@
         <td> ≈ 
         <td colspan=3><b>scheme</b> (lowercase <var>scheme</var>)
     </table>
-</section>
 
 
-
-<!----------------------------->
-<section><h2>Percent Coding</h2>
-<!----------------------------->
+<h3>Percent Coding Normalisation</h3>
 
 <p>
-  The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em>
-  specify the semantics of percent-encoded-bytes in the components of an
-  <i class=url>URL</i> other than the <b>host</b>, and any
-  percent-encoded bytes that are present in other components are <em>not</em> decoded.
-
-
-
-<p>
-
+  There is a natural notion of equivalence for percent-encoded-strings:
+  one <em>could</em> consider two percent-encoded strings equivalent if their percent-decodings
+  are equal. However, for URL components, this notion of equivalence is too strong. 
+  
 <p class=todo>
+  … RFC3986 specifies reserved characters to allow for additional,
+  application-specific interpretation. For reserved characters, one cannot assume that
+  they are equivalent to their percent-encoding.
 
 <!-- <p>
   Percent encoding can be extended from <i class=common>string</i>s to
@@ -1734,6 +1727,12 @@
   a <i>percent-encode-profile</i> is required as an argument to the
   percent-encode-operation on <i class=url>URL</i>s. -->
 
+<p>
+  The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em> specify the semantics of
+  percent-encoded-bytes in the components of an <i class=url>URL</i> other than the <b>host</b>
+  at all, and any percent-encoded bytes that are present in other components are not
+  decoded. It <em>does</em> however specify sets of characters that must be <em>encoded</em>.
+  
 <h4>Percent Encode Profile</h4>
   <p>
     A <dfn>percent-encode-profile</dfn> is a mapping that maps 
