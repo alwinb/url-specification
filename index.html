@@ -1049,26 +1049,15 @@
         [ <code>?</code> query ] [ <code>#</code> fragment ]
 
     <tr class=-inbetween>
-      <td colspan=3>The auth-path and authority rules in <b>web-mode</b> and in <b>generic-mode</b>:
+      <td colspan=3>The auth-path rule in <b>web-mode</b> and in <b>generic-mode</b>:
 
     <tr>
       <td><dfn>auth-path</dfn> 
       <td> ::= 
       <td> <i>s</i> <i>s</i> authority [ path-root  path-rel ]
 
-    <tr>
-      <td><dfn>authority</dfn> 
-      <td> ::= 
-      <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
-
-    <tr>
-      <td>credentials 
-      <td> ::= 
-      <td>username [ <code>:</code> password ]
-
-
     <tr class=-inbetween>
-      <td colspan=3>The auth-path and authority rules in <b>file-mode</b>:
+      <td colspan=3>The auth-path rule in <b>file-mode</b>:
 
     <tr>
       <td><dfn>auth-path</dfn>
@@ -1081,17 +1070,27 @@
       <td> [ <i>s</i> <i>s</i> authority<sub>ε</sub>] [ <i>s</i> ] drive
          |  <i>s</i> <i>s</i> authority [ <i>s</i> drive ]
 
+    <!-- <tr>
+      <td><dfn>authority</dfn>
+      <td> ::=
+      <td> ε  |  <i>host</i> -->
+
+    <tr class=-inbetween>
+      <td colspan=3>Rules for the authority and the path:
+
     <tr>
       <td><dfn>authority</dfn> 
       <td> ::= 
-      <td> ε  |  <i>host</i>
+      <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+
     <tr>
       <td><dfn>authority<sub>ε</sub></dfn> 
       <td> ::= <td> ε
 
-
-    <tr class=-inbetween>
-      <td colspan=3>Rules for the path:
+    <tr>
+      <td>credentials 
+      <td> ::= 
+      <td>username [ <code>:</code> password ]
 
     <tr>
       <td><dfn>path</dfn>
@@ -1104,7 +1103,7 @@
       <td> ( dir <i>s</i> )* [ file ]
 
     <tr class=-inbetween>
-      <td colspan=3>This refers to the following rules:
+      <td colspan=3>Rules for the components:
 
     <tr>
       <td>scheme 
@@ -1115,12 +1114,12 @@
     <tr>
       <td>username 
       <td> ::= 
-      <td> <i>uchar</i>*
+      <td> ( <i>pcts</i> | <i>uchar</i> )*
 
     <tr>
       <td>password 
       <td> ::= 
-      <td> <i>pchar</i>*
+      <td> ( <i>pcts</i> | <i>pchar</i> )*
 
     <tr>
       <td><dfn>host</dfn> 
@@ -1130,7 +1129,7 @@
     <tr>
       <td><dfn>opaque-host</dfn> 
       <td> ::= 
-      <td> <i>hchar</i>+
+      <td> ( <i>pcts</i> | <i>hchar</i> )+
 
     <tr>
       <td><dfn>port</dfn> 
@@ -1150,25 +1149,64 @@
     <tr>
       <td>dir 
       <td> ::= 
-      <td> <i>pchar</i>*
+      <td> ( <i>pcts</i> | <i>pchar</i> )*
 
     <tr>
       <td>file 
       <td> ::= 
-      <td> <i>pchar</i>+
+      <td> ( <i>pcts</i> | <i>pchar</i> )+
 
     <tr>
       <td>query 
       <td> ::= 
-      <td> <i>qchar</i>*
+      <td> ( <i>pcts</i> | <i>qchar</i> )*
 
     <tr>
       <td>fragment 
       <td> ::= 
-      <td> <i>any</i>*
+      <td> ( <i>pcts</i> | <i>url-char</i> )*
 
     <tr class=-inbetween>
-      <td colspan=3>These rules are based on the following character-sets:
+      <td colspan=3>Where <i>pcts</i> is defined as follows:
+
+    <tr>
+      <td><dfn>pcts</dfn> 
+      <td> ::= 
+      <td> <i>pct-encoded-bytes</i> | <i>pct-invalid</i>
+
+    <tr class=-inbetween>
+      <td colspan=3>The rules are based on the following character-sets:
+
+  <tr>
+    <td><dfn>url-char</dfn> 
+    <td> := <td> <i>any</i> \ <nowrap>{ <b>u+9</b>, <b>u+A</b>, <b>u+D</b> }</nowrap>
+
+    <tr><td><dfn>uchar</dfn>
+      <td> :=
+      <td> <i>url-char</i> \  <i>s</i>  \
+        <nowrap>{ <code>#</code>, <code>?</code>, <code>:</code> }</nowrap>
+
+    <tr><td><dfn>hchar</dfn>
+      <td> :=
+      <td> <i>url-char</i> \  <i>s</i>  \
+        { <code>#</code>, <code>?</code>, <code>:</code> , <code>@</code> }  \
+        { <b>u+0</b>, 
+        <code><span style=display:inline-block;width:1ch> </span></code>,
+        <code>&lt;</code>, <code>&gt;</code>, <code>[</code>, <code>\</code>, <code>]</code>,
+        <code>^</code>, <code>|</code> }
+
+    <tr>
+      <td><dfn>pchar</dfn>
+      <td> := 
+      <td> <i>url-char</i> \  <i>s</i>  \ <nowrap>{ <code>#</code>, <code>?</code> }</nowrap>
+
+    <tr>
+      <td><dfn>qchar</dfn> 
+      <td> := 
+      <td class=-nowrap> <i>url-char</i> \ { <code>#</code> }
+
+    <tr class=-inbetween>
+      <td colspan=3>Where <i>s</i> depends on the <i>parser-mode</i>:
 
     <tr>
       <td><dfn>s</dfn> 
@@ -1180,39 +1218,62 @@
       <td>s<dfn style=display:none>s</dfn>
       <td> := 
       <td> { <code>/</code>, <code>\</code> }
-         —  in <b>web-mode</b> and in <b>file-mode</b>
-
-
-    <tr><td><dfn>uchar</dfn>
-      <td> :=
-      <td> <i>any</i> \  <i>s</i>  \
-        { <code>#</code>, <code>:</code>, <code>?</code> }
-
-    <tr><td><dfn>hchar</dfn>
-      <td> :=
-      <td> <i>any</i> \ { <b>u+0</b>, <b>u+9</b>, <b>u+A</b>, <b>u+D</b>,
-        <code><span style=display:inline-block;width:1ch> </span></code>,
-        <code>#</code>, <code>/</code>, <code>:</code>, <code>&lt;</code>,
-        <code>&gt;</code>, <code>?</code>, <code>@</code>, <code>[</code>,
-        <code>\</code>, <code>]</code>, <code>^</code>, <code>|</code> }
-
-    <tr>
-      <td><dfn>pchar</dfn>
-      <td> := 
-      <td> <i>any</i> \  <i>s</i>  \ { <code>#</code>, <code>?</code> }
-
-    <tr>
-      <td><dfn>qchar</dfn> 
-      <td> := 
-      <td class=-nowrap> <i>any</i> \ { <code>#</code> }
-
+         —  otherwise
     </table>
 
+  <h3>Strict URL Grammar</h3>
+
+  <p>
+    For an <span class=url>URL</span>-string</dfn> to be considered <dfn>valid</dfn>, it must
+    conform to a more restricted grammar. The strict grammar is obtained by modifying the
+    <i>auth-drive</i> and <i>pcts</i> rules and the <i>url-char</i> and <i>s</i> character-sets as follows:
+
+  <table class=grammar>
+    <tr>
+      <td><dfn>auth-drive</dfn>
+      <td> ::= 
+      <td> <i>s</i> drive  |  <i>s</i> <i>s</i> authority  [ <i>s</i> drive ]
+    <tr>
+      <td><dfn>pcts</dfn> 
+      <td> ::=
+      <td> <i>pct-encoded-bytes</i>
+         —  note the absence of <i>pct-invalid</i>
+
+    <tr class=-inbetween>
+      <td colspan=3>The rules are based on the following character-sets:
+    <tr>
+      <td><dfn>url-char</dfn> 
+      <td> := 
+      <td colspan=4> <i>base-char</i> \ <span class=-nowrap>{
+        <code><span style=display:inline-block;width:1ch> </span></code>,</span>
+        <code>"</code>,
+        <code>#</code>,
+        <code>%</code>,
+        <code>&lt;</code>,
+        <code>&gt;</code>,
+        <code>[</code>,
+        <code>\</code>,
+        <code>]</code>,
+        <code>^</code>,
+        <code>`</code>,
+        <code>{</code>,
+        <code>|</code>,
+        <code>}</code> }
+  <tr>
+    <td><dfn>s</dfn> 
+    <td> := 
+    <td> { <code>/</code> }
+       —  in all modes.
+  </table>
+
+
+
+<h3>IPv6 Addresses</h4>
 
   <p class=todo>
     Double check the following, and include it here
 
-  <h4><abbr class=-caps>IP</abbr>v6 Address — strict</h4>
+  <h4><abbr class=-caps>IP</abbr>v6 Address — Strict</h4>
   <p>
     An <abbr class=-caps>IP</abbr>v6 address-string is a representation
     of a natural number <var>n</var> &lt; 2<sup>128</sup> that is used as an identifier. 
@@ -1235,161 +1296,6 @@
     There are additional, semantic constraints on the ipv4-address, ipv6-address
     and the port. 
   </div>
-
-
-  <h3>Strict URL Grammar</h3>
-
-  <p>
-    The grammar in the previous subsection defines
-    <i><span class=url>URL</span>-string</i>s in general. 
-    In this subsection a number of amendments are made to arrive at a grammar
-    for <dfn>valid <span class=url>URL</span>-string</dfn>s. 
-    Implementations however, must tolerate 
-    <i><span class=url>URL</span>-string</i>s that are <em>not</em> <i>valid</i>
-    and they must use the grammar for <i><span class=url>URL</span>-string</i>s
-    as specified in the previous subsection for parsing <i class=url>URL</i>s.
-
-  <table class=grammar>
-    <tr>
-      <td>url-strict
-      <td> ::= 
-      <td> [ scheme <code>:</code> ] ( auth-path | path )
-        [ <code>?</code> query ] [ <code>#</code> fragment ]
-
-    <tr class=-inbetween>
-      <td colspan=3>The <i>auth-path</i> rule depends on the <i>parser-mode</i>:
-    <tr>
-      <td><dfn>auth-path</dfn>
-      <td> ::= 
-      <td>     auth-drive [ path-root  path-rel ]
-       —  in <b>file-mode</b>
-    <tr>
-      <td><dfn>auth-path</dfn> 
-      <td> ::= 
-      <td> <code>//</code> authority [ path-root  path-rel ]
-       —  in other modes
-    <tr>
-      <td><dfn>auth-drive</dfn>
-      <td> ::= 
-      <td> <code>/</code> drive  |  <code>//</code> authority  [ <code>/</code> drive ]
-
-    <tr class=-inbetween>
-      <td colspan=3>Rules for the authority and the path:
-
-    <tr>
-      <td><dfn>authority</dfn> 
-      <td> ::= 
-      <td> ε  |  <i>host</i>
-       —  in <b>file-mode</b>
-
-    <tr>
-      <td><dfn>authority</dfn> 
-      <td> ::= 
-      <td> ε  |  <i>host</i>  [ <code>:</code> port ]
-       —  in other modes
-
-    <tr>
-      <td><dfn>host</dfn> 
-      <td> ::= 
-      <td> <code>[</code> <i>ip6-address</i> <code>]</code>  |  <i>opaque-host</i>
-
-    <tr>
-      <td><dfn>path</dfn>
-      <td> ::= 
-      <td> [ path-root ]  path-rel
-
-    <tr>
-      <td><dfn>path-rel</dfn>
-      <td> ::= 
-      <td> ( dir <code>/</code> )* [ file ]
-
-    <tr class=-inbetween>
-      <td colspan=3>This refers to the following rules:
-
-    <tr>
-      <td><dfn>opaque-host</dfn> 
-      <td> ::= 
-      <td> (<i>pct</i> | <i>hchar</i>)+
-
-    <tr>
-      <td>drive 
-      <td> ::= 
-      <td> <i>alpha</i> <code>:</code>
-
-    <tr>
-      <td>path-root 
-      <td> ::= 
-      <td> <code>/</code>
-
-    <tr>
-      <td>dir 
-      <td> ::= 
-      <td> (<i>pct</i> | <i>pchar</i>)*
-
-    <tr>
-      <td>file 
-      <td> ::= 
-      <td> (<i>pct</i> | <i>pchar</i>)+
-
-    <tr>
-      <td>query 
-      <td> ::= 
-      <td> (<i>pct</i> | <i>url-char</i>)*
-    <tr>
-      <td>fragment 
-      <td> ::= 
-      <td> (<i>pct</i> | <i>url-char</i>)*
-
-    <tr>
-      <td><dfn>pct</dfn>
-        <td> ::=
-        <td> <code>%</code>  <i>hex-digit</i>  <i>hex-digit</i>
-
-    <tr class=-inbetween>
-      <td colspan=3>
-        These rules are based on the modified character-sets:
-    <tr>
-      <td><dfn>url-char</dfn> 
-      <td> := 
-      <td colspan=4> <i>base-char</i> \ <span class=-nowrap>{
-        <code><span style=display:inline-block;width:1ch> </span></code>,</span>
-        <code>"</code>,
-        <code>#</code>,
-        <code>%</code>,
-        <code>&lt;</code>,
-        <code>&gt;</code>,
-        <code>[</code>,
-        <code>\</code>,
-        <code>]</code>,
-        <code>^</code>,
-        <code>`</code>,
-        <code>{</code>,
-        <code>|</code>,
-        <code>}</code> }
-    <tr>
-      <td><dfn>hchar</dfn>
-      <td> :=
-      <td> <i>url-char</i> \ 
-        <span class=-nowrap>{ <code>/</code>, <code>:</code>, 
-          <code>?</code>, <code>@</code> }</span>
-    <tr>
-      <td><dfn>pchar</dfn>
-      <td> := 
-      <td> <i>url-char</i> \  <span class=-nowrap>{ <code>/</code>, <code>?</code> }</span>
-  </table>
-
-  <p>
-    Note that the sets of allowed characters are more restricted; the presence of
-    credentials in the authority is prohibited altogether and drives are expected to be
-    preceded by a single <code>/</code> delimiter and must be must not be of the form
-    <span class=rule><var>drive</var> :: <i>alpha</i> <code>|</code></span>. 
-
-  <!-- <p>
-  <div class=todo>
-    Double check. It is unclear to me whether the presence of a 
-    drive letter is maybe considered invalid in all cases. 
-  </div> -->
-
 
   <!-- <h3>URL Model</h3>
   <div class=todo>
