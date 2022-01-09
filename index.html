@@ -1726,13 +1726,13 @@
 
 <p class=todo>
 
-<p>
+<!-- <p>
   Percent encoding can be extended from <i class=common>string</i>s to
   <i class=url>URL</i>s by percent encoding the components' 
   <i class=common>value</i>s of an <i class=url>URL</i>. This means that instead
   of a single <i class=common>percent-encode-set</i>,
   a <i>percent-encode-profile</i> is required as an argument to the
-  percent-encode-operation on <i class=url>URL</i>s.
+  percent-encode-operation on <i class=url>URL</i>s. -->
 
 <h4>Percent Encode Profile</h4>
   <p>
@@ -1741,8 +1741,8 @@
     { <b>username</b>, <b>password</b>, <b>host</b>, <b>dir</b>,
       <b>file</b>, <b>query</b>, <b>fragment</b> } 
     to a <i>percent-encode-set</i>. 
-    A <i class=common>percent-encode-profile</i> is used as a configuration
-    argument to the <i>percent-encode</i> operation on <i class=url>URL</i>s.
+    <!-- A <i class=common>percent-encode-profile</i> is used as a configuration
+    argument to the <i>percent-encode</i> operation on <i class=url>URL</i>s. -->
 
 <div class="dfn-scope +br">
 <h4>Percent Encode Profiles</h4>
@@ -1829,7 +1829,7 @@
 
 <h4>Encode Profile Selection</h4>
   <p>
-    The <i>percent-encode-profile-for</i> for a given <i class=url>URL</i>
+    The <i>percent-encode-profile-for</i> a given <i class=url>URL</i>
     <var>url</var> and a default profile <var>fallback</var>
     is defined to be:
     <ul>
@@ -1847,6 +1847,10 @@
     </ul>
 
 
+<div class=note>
+  Note, that the generic and special do not produce valid URLs, 
+  this is as is specified by the WHATWG.
+</div>
 <div class=todo>
   Wrap this up. 
 </div>
