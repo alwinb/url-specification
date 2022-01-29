@@ -1711,8 +1711,9 @@
 
 <p>
   There is a natural notion of equivalence for percent-encoded-strings:
-  one <em>could</em> consider two percent-encoded strings equivalent if their percent-decodings
-  are equal. However, for URL components, this notion of equivalence is too strong. 
+  one could consider two percent-encoded strings to be equivalent if their
+  percent-decodings are equal. However, for <span class=url>URL</span>-components,
+  this notion of equivalence is too strong. 
   
 <p class=todo>
   … RFC3986 specifies reserved characters to allow for additional,
@@ -1823,35 +1824,32 @@
   Unfortunately, like parsing, the percent-encoding
   of <span class=url>URL</span>s as prescribed by the 
   <abbr class=-caps>WHATWG</abbr> standard, is scheme dependent. 
-  The consequence is that for scheme-less <span class=url>URL</span>s,
-  a <i class=common>percent-encode-profile</i> must be manually specified. 
 
 <h4>Encode Profile Selection</h4>
-  <p>
-    The <i>percent-encode-profile-for</i> a given <i class=url>URL</i>
-    <var>url</var> and a default profile <var>fallback</var>
-    is defined to be:
-    <ul>
-      <li>
-        <i>special</i> — if <var>url</var> is a
-        <i>file-<span class=url>URL</span></i> or if <var>url</var> is a
-        <i>web-<span class=url>URL</span></i>,
-      <li>
-        <i>generic</i> — if otherwise <var>url</var> is a
-        <i>base-<span class=url>URL</span></i>,
-      <li>
-        <i>minimal</i> — if otherwise <var>url</var> has a <b>scheme</b>, or
-      <li>
-        <var>fallback</var> — otherwise. 
-    </ul>
+  <p class=-br>
+    The <i>percent-encode-profile-for</i> a given <i class=url>URL</i> is
+  <ul>
+    <li>
+      the <i>special</i> profile — if the <span class=url>URL</span> is a
+      <i>file-<span class=url>URL</span></i> or a <i>web-<span class=url>URL</span></i>,
+    <li>
+      the <i>special</i> profile — if the <span class=url>URL</span> does not have a <b>scheme</b>,
+    <li>
+      the <i>generic</i> profile — if otherwise the <span class=url>URL</span> has an
+      <b>authority</b> or a <b>path-root</b>, or
+    <li>
+      the <i>minimal</i> profile — otherwise.
+  </ul>
 
 
 <div class=note>
-  Note, that the generic and special do not produce valid URLs, 
-  this is as is specified by the WHATWG.
+  Note that these profiles do not lead to valid URL-strings after printing. 
+  This is as is specified by the WHATWG.
 </div>
 <div class=todo>
-  Wrap this up. 
+  I prefer renaming generic to normal, special to normal-special, add a valid profile, 
+  and change the minimal profile to be truly minimal, only encoding characters that would cause
+  reparse bugs. Furthermore. 
 </div>
 
 </section>
