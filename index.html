@@ -518,11 +518,29 @@
         is a string.
     </ul>
 
-
-
-
+  <p>
+    Note that arbitrary <i class=common>code point</i>s are allowed in
+    <i class=common>component</i> <i class=common>value</i>s
+    unless explicitly specified otherwise. The restrictions on the code points
+    in an <i><span class=url>URL</span>-string</i> is discussed in 
+    the <a href=#parsing>Parsing</a> section.
 
   <h3>Types and Shapes</h3>
+
+  <p>
+    There is an additional number of soft constraints that must be met for
+    an <i class=url>URL</i> in order to be called <i>valid</i>. 
+    However, implementations must tolerate <i><span class=url>URL</span></i>s
+    that are not <i>valid</i> as an error recovery strategy.
+
+  <div class="dfn-scope +br">
+  <h4>Valid URL</h4>
+    <p>
+      A <dfn>valid</dfn> <i class=url>URL</i> must not have a <b>username</b> or a
+      <b>password</b> component and it must not have <i class=common>component</i>s
+      that contain invalid percent-encode sequences. 
+  </div>
+
 
   <p>
     There is a further categorisation of <i class=url>URL</i>s that is used in 
@@ -551,46 +569,6 @@
       <var>scheme</var> such that
       <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code></span>. 
   </div>
-
-
-  <h3>Additional Constraints</h3>
-    <p class=-br>
-      If an <i class=url>URL</i> <var>url</var> has a <b>scheme</b> then 
-      it is subject to two additional constraints:
-    <ul>
-      <li>
-        If <var>url</var> is <strong>not</strong> a
-        <i>file-<span class=url>URL</span></i> 
-        then it must not have a <b>drive</b> <i class=common>component</i>.
-      <li>
-        If <var>url</var> <strong>is</strong> a 
-        <i>file-<span class=url>URL</span></i>, and it has an <b>authority</b>,
-        then it must either be empty or it must consist of a <b>host</b> component
-        only.
-    </ul>
-
-  <h4>Valid URL</h4>
-  <p>
-    There is an additional number of soft constraints that must be met for
-    an <i class=url>URL</i> in order to be called <dfn>valid</dfn>. 
-    However, implementations must tolerate <i><span class=url>URL</span></i>s
-    that are not <i>valid</i> as an error recovery strategy.
-  <ul>
-    <li>
-      A valid <i class=url>URL</i> must not have a <b>username</b> or a
-       <b>password</b> component. 
-    <li>
-      A valid <i class=url>URL</i> must not contain <i class=common>component</i>s
-      that have <i class=common>value</i>s that contain
-      invalid percent-encode sequences. 
-  </ul>
-  <p>
-    Note that arbitrary <i class=common>code point</i>s are allowed in
-    <i class=common>component</i> <i class=common>value</i>s
-    unless explicitly specified otherwise. The restrictions on the code points
-    in an <i><span class=url>URL</span>-string</i> and the definition of a
-    <i>valid <span class=url>URL</span>-string</i> is discussed in 
-    the <a href=#parsing>Parsing</a> section.
 
 </section>
 
@@ -733,7 +711,7 @@
     There is an additional operation on <i class=url>URL</i>s that I have named <i>force</i>.
     The <i class=common>force</i> operation is used as a final step in the process of resolving a
     <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>. 
-    The operation ensures that the resulting <span class=url>URL</span> has a valid <b>authority</b>
+    The operation ensures that the resulting <span class=url>URL</span> has an <b>authority</b>
     token and a <b>path-root</b> token. Note that it is possible for the force operations to
     <strong>fail</strong>.
   </p>
@@ -765,13 +743,11 @@
           Set the <b>path-root</b> component of <var>url</var> to
           (<b>path-root</b> <code>/</code>).
         <li>
-          If <var>url</var> has an <b>authority</b> component and the
-          <i>value</i> of the component is is not ε
-          — then return.
+          If <var>url</var> has a non-empty <b>authority</b> then return.
         <li>
           Otherwise let <var>component</var> be the first <b>dir</b> or
           <b>file</b> <i class=common>component</i> whose value is not ε. 
-          If no such <i class=common>component</i> exists, <strong>fail</strong>.
+          <br>If no such <i class=common>component</i> exists, <strong>fail</strong>.
         <li> 
           Remove all <b>dir</b> or <b>file</b> <i class=common>component</i>s that
           precede <var>component</var> and remove <var>component</var> as well. 
