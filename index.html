@@ -734,8 +734,8 @@
     The <i class=common>force</i> operation is used as a final step in the process of resolving a
     <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>. 
     The operation ensures that the resulting <span class=url>URL</span> has a valid <b>authority</b>
-    token and a <b>path-root</b> token. Note that it is possible for the force operation to fail for 
-    <i>web-<span class=url>URL</span></i>s.
+    token and a <b>path-root</b> token. Note that it is possible for the force operations to
+    <strong>fail</strong>.
   </p>
 
   <div class="dfn-scope +br">
@@ -744,8 +744,11 @@
       To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
       <ul>
         <li>
-          If <var>url</var> does not have an <b>authority</b> then set its
+          If <var>url</var> does <strong>not</strong> have an <b>authority</b> then set its
           <b>authority</b> component to (<b>authority</b> ε).
+        <li>
+          If otherwise the <b>authority</b> of <var>url</var> has a
+          <b>username</b> or a <b>port</b> then <strong>fail</strong>.
         <li>
           If <var>url</var> does not have a <b>drive</b> then set its 
           <b>path-root</b> component to (<b>path-root</b> <code>/</code>).
