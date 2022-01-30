@@ -104,7 +104,7 @@ dfn, i, var, em {
   font:var(--serif-italic);
 }
 
-dfn {
+dfn, i, var, nowrap {
   white-space:nowrap;
 }
 
