@@ -11,7 +11,7 @@
 }
 
 @media screen {
-  html, header, #tools {
+  html, header {
     background-color:var(--bgcolor);
   }
 }
@@ -26,7 +26,7 @@ a, a:hover, b:hover, i:hover  {
 
 code {
   background:var(--screen);
-  border-radius:calc(3rem/25);
+  border-radius:calc(3rem/26);
   padding:.05em .23em .11em .23em;
 }
 
@@ -54,9 +54,9 @@ where
 */
 
 :root {
-  ---serif: 'Times New Roman', 'Times', 'Times New Roman', Serif;
-  ---sans: Helvetica, Sans-Serif;
-  ---mono: 'Hack', 'Monaco', 'Menlo', MonoSpace;
+  ---serif: 'Times', 'Times New Roman', Serif;
+  ---sans:  'Helvetica', Sans-Serif;
+  ---mono:  'Hack', 'Monaco', 'Menlo', MonoSpace;
 }
 
 :root {
@@ -96,20 +96,16 @@ h4, a {
   letter-spacing:0.012em;
 }
 
-b {
-  font:var(--sans-bold);
+pre, code, tt {
+  font:var(--mono);
 }
 
 dfn, i, var, em {
   font:var(--serif-italic);
 }
 
-dfn, i, var, nowrap {
-  white-space:nowrap;
-}
-
-.op, .fn, i.op, i.fn {
-  font:var(--sans);
+b {
+  font:var(--sans-bold);
 }
 
 strong {
@@ -120,11 +116,16 @@ strong em {
   font:var(--serif-bold-italic);
 }
 
-code, pre {
-  font:var(--mono);
+.op, .fn, i.op, i.fn {
+  font:var(--sans);
 }
 
-abbr, .url, .-caps {
+b.na {
+  font-weight:normal;
+  color:var(--screen);
+}
+
+abbr, .url, .caps {
   font-variant:small-caps;
   font-variant:all-small-caps;
   font-style:normal;
@@ -138,11 +139,7 @@ th {
   font:var(--serif);
 }
 
-#menu a.-focus {
-  font:var(--sans);
-}
-
-:not(body, html) {
+*:not(body, html) {
   font-size:inherit;
 }
 
@@ -151,17 +148,18 @@ th {
 /* ============= */
 
 html {
-  font-size:25px; /* set the rem */
+  font-size:22px; /* set the rem */
 }
 
 body {
-  font-size:0.7rem;
+  font-size:0.74rem;
 }
 
 h1 {
   font-size:1.7rem;
   line-height:2rem;
   margin-bottom:2rem;
+  margin-top:-1rem;
 }
 
 h2 {
@@ -169,12 +167,7 @@ h2 {
   margin-bottom:1rem;
   font-size:.9rem;
 }
-section.-short {
-  margin-bottom:2rem;
-}
-section {
-  margin-bottom:5rem;
-}
+
 h3 {
   margin-top:2.25rem;
   margin-bottom:.75rem;
@@ -186,17 +179,16 @@ h4 {
   font-size:0.64rem;
 }
 
-sup, sub {
-  font-size:.75em;
+section {
+  margin-bottom:5rem;
 }
 
-/* convert to inline-block
-   this is a hack to prevent these items
-   from increasing the line-box height  */
+section.-short {
+  margin-bottom:2rem;
+}
 
-sub, sup, a, var, dfn, code, b, i, h4, em, strong, abbr, .-caps,
-span.url, i.url, .-caps {
-  line-height:0;
+sup, sub {
+  font-size:.75em;
 }
 
 
@@ -207,10 +199,14 @@ span.url, i.url, .-caps {
   --spine:0;
   --left:1rem;
   --right:1rem;
-  --width:25rem;
+  --width:26rem;
 }
 
-html, body, main, header, #tools {
+header, #tools {
+  position:fixed;
+}
+
+/*html, body, main, header, #tools {
   position:absolute;
   top:0;
   left:0;
@@ -222,103 +218,73 @@ html, body, main, header, #tools {
 main {
   overflow-y:auto;
 }
-
+*/
 header {
-  height:3rem;
+  height:2rem;
   width:100vw;
   z-index:100;
   padding:0;
+  top:0;
+  display:none;
 }
 
 header.-hidden {
   display:none;
 }
 
-main, header { /** The spine **/
-  border-left:var(--spine) solid var(--acolor);
+/* This is a somewhat messy way to draw the spine;
+  and in a way such that it does extend beyond the rubber banding
+  effect in Safari */
+
+html { /** The spine **/
+  background:linear-gradient(
+    to right,
+    var(--acolor),
+    var(--acolor) var(--spine),
+    #0000 var(--spine),
+    #0000
+  ), var(--bgcolor);
+}
+body {
+  padding-left:var(--spine);
 }
 
 article, header hgroup {
   box-sizing:content-box;
   width:var(--width);
-  margin:3rem var(--right) 8rem var(--left);
+  margin:2rem var(--right) 8rem var(--left);
 }
 
 header hgroup {
   margin:0 var(--right) 0 var(--left);
-  height:3rem;
+  height:2rem;
   line-height:1rem;
 }
 
 header hgroup h2 {
   line-height:1rem;
-  padding:1.46rem .25rem .5rem;
+  padding:.46rem .25rem .5rem;
   border-bottom:0.04rem solid var(--acolor);
   margin:0 -0.25rem 0;
   white-space:nowrap;
 }
 
+script[type=bnf] {
+  display:block;
+  font:var(--mono);
+  font-size:.85em;
+  white-space:pre;
+}
+
 #tools {
-  left:31rem;
+  left:32rem;
   height:100vh;
-  width:8rem;
+  width:10rem;
   z-index:100;
   padding:3rem 0 0 0;
   counter-reset: list-counter;
   display:none;
 }
-
-h1 {
-  margin-top:-1rem;
-}
-
-/* Responsive Relayout
-/* =================== */
-
-@media (max-width:675px) {
-  html {
-    font-size:calc(100vw/27);
-  }
-}
-
-@media (min-width:675px) {
-  :root {
-    --left:auto;
-    --right:auto;
-  }
-}
-
-@media (min-width: 775px) {
-  :root {
-    --spine:1.75rem;
-    --left:2rem;
-    --right:5rem;
-  }
-}
-@media (min-width: 923px) {
-  #tools {
-    left:29rem;
-    display:block;
-  }
-}
-
-@media (min-width: 980px) {
-  :root {
-    --spine:1.75rem;
-    --left:3rem;
-    --right:5rem;
-  }
-  #tools { left:31rem }
-}
-
-/* Hide the spine */
-@media print {
-  :root { --spine:0 }
-}
-
-
-
-
 
 #menu, #menu ul {
   list-style:none;
@@ -342,18 +308,10 @@ h1 {
 }
 
 #tooltip>* {
-  width:8rem;
+  width:10rem;
 }
 
 h1::before {
-  /* For fragment references */
-  display:block;
-  content:'';
-  height:3rem;
-  margin-top:-3rem;
-}
-
-article h2::before {
   /* For fragment references */
   display:block;
   content:'';
@@ -361,17 +319,68 @@ article h2::before {
   margin-top:-2rem;
 }
 
+article h2::before {
+  /* For fragment references */
+  display:block;
+  content:'';
+  height:1rem;
+  margin-top:-1rem;
+}
+
 #icon {
   display:block;
   font-size:3.5rem;
-  line-height:3.5rem;
-  height:4rem;
+  line-height:4.5rem;
+  height:4.5rem;
   margin-top:-1rem;
   margin-bottom:0;
   background:url(../icon.png) top center no-repeat;
   position:relative;
   text-indent:100vw;
   overflow:hidden;
+}
+
+
+/* Responsive Relayout
+/* =================== */
+
+@media (max-width:635px) {
+  html {
+    font-size:calc(99vw/28);
+  }
+}
+
+@media (min-width:635px) {
+  :root {
+    --left:auto;
+    --right:auto;
+  }
+}
+
+@media (min-width: 675px) {
+  :root {
+    --spine:1.75rem;
+    --left:2rem;
+    --right:5rem;
+  }
+}
+@media (min-width: 823px) {
+  #tools {
+    display:block;
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --spine:1.75rem;
+    --left:3rem;
+    --right:5rem;
+  }
+}
+
+/* Hide the spine */
+@media print {
+  :root { --spine:0 }
 }
 
 
@@ -388,12 +397,12 @@ ol {
   list-style-position:inside;
 }
 
-ul.-prose, ol.-prose {
+ul.prose, ol.prose {
   list-style-position:inside;
   padding:0;
 }
 
-ul.-prose > li::before {
+ul.prose > li::before {
   margin-left:0;
 }
 
@@ -422,7 +431,7 @@ article h4 + p::after {
   margin:0 0 1rem;
 }
 
-article h4 + p.-inbetween::after {
+article h4 + p.inbetween::after {
   margin:0 0 .5rem;
 }
 
@@ -430,9 +439,12 @@ article h4 + p.-br::after {
   margin:0;
 }
 
-
+table tr.inbetween td {
+  padding-top:.5rem;
+  padding-bottom:.5rem;
+}
 table td, table th {
-  white-space:nowrap;
+  white-space:normal;
 }
 
 table {
@@ -446,12 +458,18 @@ td:nth-child(2n+2) {
 
 
 .todo, .note {
+  display:block;
   font:var(--sans-italic);
+  padding:.5rem .7rem;
+  margin:0 1.3rem 0 .3rem;
   margin-bottom:1rem;
-  padding:.5rem;
   background-color:var(--highlight);
-  font-size:.61rem;
+  font-size:.65rem;
 }
+td>.note {
+  margin:0;
+}
+
 .note::before, .todo::before {
   content:'TODO ';
   color:var(--acolor);
@@ -460,10 +478,19 @@ td:nth-child(2n+2) {
   font-variant:all-small-caps;
   font-size:.9rem;
 }
+
 .note::before {
   content:'NB ';
 }
 
+.indent {
+  margin-left:1rem;
+}
+
+p.center {
+  text-align:center;
+  width:auto;
+}
 
 /* Typography for Idioms
 /* ===================== */
@@ -471,13 +498,13 @@ td:nth-child(2n+2) {
 /* Using <i> For idioms */
 /* Using <b> and <code> for constants */
 
-b:hover, i:hover, dfn:hover, dfn.-focus {
-  cursor:crosshair;
+b:hover, i:hover {
+  cursor:pointer;
 }
 
-abbr, .url, .-caps {
+abbr, .url, .caps {
   font-style:normal;
-  font-size:1.3em;
+  font-size:1.18em;
 }
 
 /** Underlines **/
@@ -485,29 +512,39 @@ abbr, .url, .-caps {
 a {
   text-decoration:none;
 }
-dfn, i, a:hover {
+
+#menu ul a:hover {
+  /*font:var(--sans);*/
+  background-image:none;
+  text-shadow:none;
+}
+
+dfn, i, a:hover, #menu ul a.-focus, #menu ul a.-focus:hover {
 /*  text-decoration:underline;*/
   background-image:linear-gradient(to top,
     #0001 0,
     currentColor 0, 
-    currentColor calc(1rem/25), 
-    #0000 calc(1rem/25));
+    currentColor calc(1rem/26), 
+    #0000 calc(1rem/26));
     background-size:100% calc(1em);
     background-position:center;
     background-repeat:no-repeat;
 
   text-shadow:
-    calc(2rem/25)  0 0 var(--bgcolor),
-    calc(1rem/25)  0 0 var(--bgcolor),
-    calc(1rem/50)  0 0 var(--bgcolor),
-    calc(1rem/-50) 0 0 var(--bgcolor),
-    calc(1rem/-25) 0 0 var(--bgcolor),
-    calc(2rem/-25) 0 0 var(--bgcolor);
+    calc(2rem/26)  0 0 var(--bgcolor),
+    calc(1rem/26)  0 0 var(--bgcolor),
+    calc(1rem/52)  0 0 var(--bgcolor),
+    calc(1rem/-52) 0 0 var(--bgcolor),
+    calc(1rem/-26) 0 0 var(--bgcolor),
+    calc(2rem/-26) 0 0 var(--bgcolor);
 }
 
-dfn:hover, dfn.-focus, dfn.-focus > dfn {
+
+
+dfn:hover,
+dfn.-focus, dfn.-focus > dfn {
   text-shadow:none;
-  border-radius:calc(3rem/25);
+  border-radius:calc(3rem/26);
   padding:0 .15em 0 .15em;
   margin:0 -.15em 0 -.15em;
   background:var(--highlight);
@@ -537,10 +574,12 @@ i.noindex:hover, b.noindex:hover {
   color:unset;
 }
 
-i.noindex, a, abbr, .op, .fn, i.op, i.fn {
+dfn.b, i.noindex, a, abbr, .op, .fn, i.op, i.fn {
+  /* text-decoration:none */
   background:none;
   text-shadow:none;
 }
+
 
 #toc a, #menu a {
   text-decoration:none;
@@ -594,14 +633,14 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 }
 #tooltip li::before {
   margin-left:0;
-  padding:0;
+  padding:0 .2ch;
   content:'(' counter(list-counter, lower-roman) ')';
   font:var(--serif);
   font-size:1.05em;
 }
 #tooltip li li::before {
   margin-left:0;
-  padding:0;
+  padding:0 .2ch;
   font:var(--serif);
   content:'(' counter(list-counter, lower-alpha) ')';
 }
@@ -625,7 +664,7 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 #tooltip h4:first-child {
   margin-top:0rem;
 }
-#tooltip .-inbetween {
+#tooltip .inbetween {
   margin-top:0;
   margin-bottom:0;
 }
@@ -640,76 +679,72 @@ i.noindex, a, abbr, .op, .fn, i.op, i.fn {
 /* Specific elements
 /* ================= */
 
-#percent-encode-sets {
-  caption-side: bottom;
+table#characters {
+  font-size:.9em;
+  margin-top:2.5rem;
+  margin-bottom:2.5rem;
 }
 
-#percent-encode-sets caption {
-  margin-top:.5rem;
-  margin-bottom:.5rem;
-}
-
-#percent-encode-sets colgroup:not(:first-child) {
-  border-left:calc(1rem/25) solid #0002;
-}
-
-#percent-encode-sets tr:not(last-child) {
-  border-bottom:calc(1rem/25) solid #0002;
-}
-
-#percent-encode-sets tr:first-child th * {
-  font-size:.55rem;
-}
-#percent-encode-sets th:first-child {
-  text-align:left;
-}
-#percent-encode-sets td {
+table#characters th,
+table#characters td {
+  white-space:nowrap;
   text-align:center;
-  cursor:crosshair;
+  border:1px solid #0002;
+  width:1.5rem;
+  height:1rem;
   padding:0;
 }
-#percent-encode-sets td code {
-  text-align:center;
+
+table#characters th {
+  border-left:none;
+  padding:0 .5rem;
+  text-align:right;
+}
+
+table#characters tfoot th,
+table#characters thead th {
+  text-align:left;
+  padding:0;
+  border: none;
+}
+table#characters td:last-child,
+table#characters th:last-child {
+  border-right:none;
+}
+
+table#characters thead th span,
+table#characters tfoot th span {
+  width:1.5rem;
+  height:1.5rem;
+  padding-top:.3rem;
   display:block;
-  margin:0;
-  width:.63rem;
-  height:calc(1rem - 5px);
-  line-height:calc(1rem - 6rem/25);
-  margin:calc(3rem/25) 0 calc(1rem/25) calc(4rem/25);
+  overflow:visible;
+  transform-origin:0 1.5rem;
+  transform:translate(1.5rem,0) rotate(-60deg);
+  border-bottom:1px solid #0002;
 }
-#percent-encode-sets td.-screen {
-  opacity:.12;
-  cursor:default;
-  pointer-events:none;
+table#characters tfoot th span {
+  transform-origin:0 0;
+  padding-top:.05rem;
+  text-align:right;
+  transform:translate(1.5rem,0) rotate(60deg);
+  border-top:1px solid #0002;
+  border-bottom:none;
 }
 
-
-#printer td, #printer th {
-  padding:0 .5em;
-  text-align:center;
+table#characters .inbetween {
+  height:2rem;
+  display:none;
+}
+table#characters td:first-child,
+table#characters th:first-child {
+  border-left:none;
+  border-right:none;
   white-space:nowrap;
-  vertical-align:bottom;
-  border:calc(1rem/25) solid #0004;
-  border-bottom:none;
-  border-top:none;
+  padding:0 1ch;
 }
-#printer td {
-  border:calc(1rem/25) solid #0004;
-  border-top:none;
-  border-bottom:none;
-}
-#printer td, #printer th {
-  padding:0 .3em;
-}
-table#printer table {
-  margin:-calc(1rem/25) calc(-.3em - 1rem/25);
-}
-
-#percent-encode-sets td.-screen code {
-  user-select: none;
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* Internet Explorer/Edge */
+.R {
+  color:darkred;
 }
 
 
@@ -717,12 +752,8 @@ table#printer table {
 /* Tweaks
 /* ====== */
 
-#percent-encode-sets {
-  margin-left:-0.5ch;
-}
-
-td, .rule {
-  white-space:nowrap;
+td, .rule, dfn, i, var, nowrap {
+  white-space: nowrap;
 }
 
 #tools .rule {
@@ -736,6 +767,16 @@ td, .rule {
 #scheme-based-normalisation td:nth-child(4) {
   padding:0 1em 0 1em;
 }
+
+/* Hack to prevent these items
+ from increasing the line-box height  */
+
+sub, sup, a, var, dfn, code, tt, b, i, h4, em, strong, abbr, .caps,
+span.url, i.url, .caps {
+  line-height:0;
+}
+
+
 
 /* Tweaks - Manual font size adjust
 /* ================================ */
@@ -756,6 +797,15 @@ code {
   font-size:0.53rem;
 }
 
+.note b {
+  font-size:1em;
+}
+
+.note i {
+  font-size:1.05em;
+}
+
+
 /* Likewise, in tooltip
 /* ==================== */
 
@@ -767,8 +817,8 @@ code {
   font-size:1.1em;
 }
 
-#tooltip span.url,
 #tooltip i.url,
+#tooltip span.url,
 #tooltip dfn.url,
 #tooltip dfn .url,
 #tooltip i .url {

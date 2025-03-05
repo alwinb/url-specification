@@ -1,17 +1,17 @@
-<!DOCTYPE html>
-<html lang="en" class="-debug">
+<!DOCTYPE html><html lang=en>
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  <meta name="viewport" content="initial-scale=1, shrink-to-fit=no, user-scalable=no">
+  <meta charset=utf-8>
+  <meta http-equiv=x-ua-compatible content="ie=edge">
+  <meta name=viewport content="initial-scale=1", shrink-to-fit=no, user-scalable=no>
   <title>URL Specification</title>
-  <link rel="stylesheet" href="style/base.css">
-  <link rel="stylesheet" href="style/style.css">
-  <script src="lib/specurl.min.js"></script>
-  <script src="scripts/main.js"></script>
+  <link rel=stylesheet href=style/base.css>
+  <link rel=stylesheet href=style/style.css>
+  <script src=lib/bnf.js></script>
+  <script src=scripts/main.js></script>
 </head>
 <body>
 
+<!----------------------------->
 
 <header>
   <hgroup>
@@ -19,17 +19,18 @@
   </hgroup>
 </header>
 
+<!----------------------------->
 
 <div id=tools>
   <div id=menu>
     <a id=icon href=#url-specification>🌲</a>
     <ul>
-      <li><a href=#url-specification>Introduction</a></li>
-      <li><a href=#preliminaries>Preliminaries</a></li>
+      <li><a href=#prelude>Prelude</a></li>
       <li><a href=#url-model><span class=url>URL</span> Model</a></li>
+      <li><a href=#authority-model>Authority</a></li>
+      <li><a href=#component-characters>Characters</a></li>
       <li><a href=#reference-resolution >Resolution</a></li>
       <li><a href=#parsing>Parsing</a></li>
-      <li><a href=#host-parsing >Host Parsing</a></li>
       <li><a href=#equivalences-and-normalisation >Normalisation</a></li>
       <li><a href=#printing>Printing</a></li>
     </ul>
@@ -38,198 +39,178 @@
 </div>
 
 
+<!----------------------------->
+
+
 <main>
 <article>
 <h1 id=url-specification>URL Specification</h1>
 
 
-<!----------------------------->
 <section class=-short>
-<h2 class=toc-exclude style=display:none>URL Specification</h2>
-<!----------------------------->
+
+  <h2 id=goals class=toc-exclude style=display:none>URL Specification</h2>
+
   <p>
     This document provides a concise formal definition of <span class=url>URL</span>s and
     the language of <span class=url>URL</span>s. It offers a rephrasing of the 
-    <a href="https://url.spec.whatwg.org/"><abbr class=-caps>WHATWG URL</abbr>
+    <a href="https://url.spec.whatwg.org/"><abbr class=caps>WHATWG URL</abbr>
       standard</a> in an effort to better reveal the internal structure of 
     <span class=url>URL</span>s and the operations on them.
     It provides a formal grammar and a set of elementary operations that are eventually
     combined together in such a way that the end result is equivalent with the
-    <abbr class=-caps>WHATWG</abbr> standard. 
+    <abbr class=caps>WHATWG</abbr> standard.
 
-  <p class=-inbetween>
-    The goals of this document are,
-
-  <ul class=-prose>
-    <li>
-      To provide a modular, concise formal specification of
-      <span class=url>URL</span>s that is behaviourally equivalent with, and 
-      covers all of the <a href="https://url.spec.whatwg.org/"
-      ><abbr class=-caps>WHATWG URL</abbr> standard</a> with the exception of
-      the web <abbr class=-caps>API</abbr>'s setters and the url-encoded
-      form format.
-    <li>
-      To provide a general model for <span class=url>URL</span>s that can
-      express relative references and to define reference resolution by means
-      of a number of elementary operations, in such a way that the end result is 
-      in agreement with the <abbr class=-caps>WHATWG</abbr> standard.
-    <li>
-      To provide a concise way to describe the differences between the
-      <abbr class=-caps>WHATWG</abbr> standard and 
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>
-      and
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
-      as part of a larger effort;
-    <li>
-      To enable and support work towards an update of
-      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=-caps>RFC</abbr> 3987</a>
-      that resolves the incompatibilities with the <abbr class=-caps>WHATWG</abbr> standard.
-    <li>
-      To enable and support editorial changes to the 
-      <abbr class=-caps>WHATWG</abbr> standard in the hope to recover the
-      structural framework for relative references, normalisation and the hierarchy of 
-      equivalence relations on <span class=url>URL</span>s that was put forward in 
-      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=-caps>RFC</abbr> 3986</a>.
-    <!-- <li>
-      To provide the authors of the <abbr class=-caps>WHATWG</abbr> standard
-      with a support document that is useful to them in their efforts to
-      understand and standardise the behaviour of web browsers. -->
-  </ul>
-</section>
-
-
-<!----------------------------->
-<section class=-short>
-<h2 class=toc-exclude>Status of this document</h2>
-<!----------------------------->
-  <p class=note>
-    This is a development version of the specification. 
+  <p class=inbetween>
+    The goals of this project are:
 
   <ul>
     <li>
-      This is version 0.9.0 of the specification. This is a development 
-      version. 
+      To provide a modular, concise formal specification of <span class=url>URL</span>s
+      that is behaviourally equivalent with, and  covers all of the
+      <a href="https://url.spec.whatwg.org/"><abbr class=caps>WHATWG URL</abbr>
+        standard</a> with the exception of the web <abbr class=caps>API</abbr>'s setters
+      and the url-encoded form format.
     <li>
-      The versioning scheme is specified by
-      <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.
+      To provide a general model for <span class=url>URL</span>s that can express
+      relative references and to define reference resolution by means of a number of
+      elementary operations, in such a way that the end result is  in agreement with
+      the <abbr class=caps>WHATWG</abbr> standard.
+    <li>
+      To provide a concise way to describe the differences between the
+      <abbr class=caps>WHATWG</abbr> standard and
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=caps>RFC</abbr> 3986</a>
+      and
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=caps>RFC</abbr> 3987</a>
+      as part of a larger effort;
+    <li>
+      To enable and support work towards an update of
+      <a href="https://tools.ietf.org/html/rfc3987"><abbr class=caps>RFC</abbr> 3987</a>
+      that resolves the incompatibilities with the <abbr class=caps>WHATWG</abbr>
+      standard.
+    <li>
+      To enable and support editorial changes to the <abbr class=caps>WHATWG</abbr>
+      standard in the hope to recover the structural framework for relative references,
+      normalisation and the hierarchy of equivalence relations that was put forward in
+      <a href="https://tools.ietf.org/html/rfc3986"><abbr class=caps>RFC</abbr> 3986</a>.
+  </ul>
+
+</section>
+
+
+<!----------------------------->
+
+
+<section class=-short>
+
+  <h2 class=toc-exclude>Status</h2>
+
+  <ul>
+    <li>
+      This is version 0.10.0 of the specification.
     <li>
       This document is licensed under a
       <a href="https://creativecommons.org/licenses/by-sa/2.0/">
-      Creative Commons - <abbr class=-caps>CC BY-SA</abbr> 2.0</a> license. 
+      Creative Commons - <abbr class=caps>CC BY-SA</abbr> 2.0</a> license. 
     <li>
-      The development of this specification can be discussed on
-      <a href="https://github.com/alwinb/url-specification">GitHub</a>. 
+      Development can be discussed on
+      <a href="https://github.com/alwinb/url-specification">GitHub</a>.
+      Questions are welcome there as well.
     <li>
-      There is a <a href="https://github.com/alwinb/spec-url">reference implementation</a>
-      to accompany this specification. 
+      There is a <a href="https://github.com/alwinb/spec-url">Reference Implementation</a>
+      to accompany this specification.
     <li>
-      The reference implementation currently passes 630 out of the 632
-      <span class=url>URL</span> constructor tests from the
-      <a href=https://web-platform-tests.org>web-platform-tests</a>.
+      The reference implementation <strong>passes all</strong> 
+      the <span class=url>URL</span>-constructor tests  
+      in the <a href=https://web-platform-tests.org>web-platform</a> test-suite.
   </ul>
 </section>
 
 
 <!----------------------------->
-<section class=-short>
-<h2 class=toc-exclude>Structure of this document</h2>
-<!----------------------------->
+
+
+<section>
+
+  <h2 id=prelude>Prelude</h2>
+
   <p>
-    As of this writing, this document has a compact format that is focused specifically on
-    the definition and specification of <span class=url>URL</span>s and operations on
-    <span class=url>URL</span>s.
+    This section introduces basic concepts and notational conventions that are used
+    throughout the rest of this document.
 
-  <p class=-inbetween>
-    The sections are laid out as follows.
-  <ul id=toc>
-    <!-- auto generated -->
-  </ul>
-</section>
+  <h4>Components</h4>
+    <p>
+      <dfn style=display:none>type</dfn><dfn style=display:none>value</dfn>
+      The word <dfn>component</dfn> is used throughout this document to mean a
+      tagged value, denoted by (<var>type</var> <var>value</var>), where
+      <var>type</var> is taken from a predefined set of
+      <dfn>component-type</dfn>s.
 
+    <p>
+      The <i>component-type</i> is typeset in boldface and it may be used stand-alone
+      as a <i class=common>component-type</i> or in prefix position to denote a 
+      <i>component</i>.
 
-<!----------------------------->
-<section><h2>Preliminaries</h2>
-<!----------------------------->
-  <p>
-    This section introduces basic concepts and notational conventions which are used
-    throughout the rest of this document. 
+    <p>
+      For example, <b class=noindex>scheme</b> denotes a <i>component-type</i>,
+      whilst e.g. (<b class=noindex>scheme</b> <code>http</code>) denotes a
+      <b class=noindex>scheme</b>-<i>component</i> that has the 
+      string <code>http</code> as its value.
 
+    <p>
+      When we are dealing with a collection of <i class=common>component</i>s,
+      and the collection contains exactly one <i class=common>component</i> with 
+      a given <i class=common>component-type</i>, then we may use the type of
+      the component to refer to its value directly.
+
+    <p>
+      For example, if S is a <i class=common>sequence</i> of
+      <i class=common>component</i>s (<b class=noindex>dir</b> <var>x</var>・<b
+       class=noindex>file</b> <var>y</var>・<b class=noindex>query</b> <var>z</var>) then
+       the phrase &ldquo;the <b class=noindex>query</b> of S&rdquo; is used to refer to
+       the <i class=common>value</i> <var>z</var> whereas
+       &ldquo;the <b class=noindex>query</b> <i class=common>component</i> of S&rdquo;
+       is used to refer to the <i class=common>component</i>
+       (<b class=noindex>query</b> <var>z</var>) as a whole.
+
+    <p class=dfn-scope>
+      The <i class=noindex>value</i> of a <i class=common>component</i> may be a
+      <i class=common>sequence</i> of <i class=common>component</i>s itself, in which case the
+      <i class=common>component</i> may be referred to as a <dfn>compound-component</dfn> for clarity.
+      <!--and the components present in its value may be referred to as
+      <dfn>sub-component</dfn>s.-->
+
+  <div class="dfn-scope +br">
   <h4>Sequences</h4>
-  <p>
-    This specification uses an algebraic notation for <i>sequence</i>s
-    that makes no distinction between one-element sequences and their first
-    element. It uses the following notation:
-
-  <div class="dfn-scope -inbetween">
+    <p>
+      This specification uses a notation for <dfn>sequence</dfn>s
+      that makes no distinction between one-element sequences and single
+      elements. It uses the following notation:
     <ul>
       <li>
-        <dfn style=display:none>sequence</dfn>
         The empty sequence is denoted by ε. 
       <li>
         The concatenation of two sequences <var>S</var> and <var>T</var> is
         denoted by <var>S</var>・<var>T</var>. 
     </ul>
+  </div>
 
-    <p style=margin-top:-.5rem>
-      Furthermore, the notation
-      <var>e</var> <b>:</b> <var>T</var> is used to denote the concatenation of a
-      single-element <var>e</var> in front of a sequence <var>T</var>. 
-  </div>    
-
+  <!-- <p>
+    Furthermore, the notation
+    <var>e</var> <b>:</b> <var>T</var> is used to denote the concatenation of a
+    single-element <var>e</var> in front of a sequence <var>T</var>.
 
   <p>
     The notation <var>e</var> <b>:</b> <var>T</var> may be used to inductively specify
-    operations on sequences. For example, the length of a sequence is defined by 
+    operations on sequences. For example, the length of a sequence is defined by
     <dfn class=noindex>length</dfn> ε = 0 and
-    <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) = 
-    1 + <i>length</i> <var>T</var>.
+    <dfn class=noindex>length</dfn> (<var>e</var> <b>:</b> <var>T</var>) =
+    1 + <i>length</i> <var>T</var>. -->
 
-  <p style=margin-top:-.5rem>
-    Parentheses are used for disambiguation and as visual aides. Paired 
-    parentheses are not part of a sequence-constructing operation. 
+  <!-- <p style=margin-top:-.5rem>
+    Parentheses are used for disambiguation and as visual aides. Paired
+    parentheses are not part of a sequence-constructing operation.  -->
 
-  <div class="dfn-scope +br">
-    <h4>Components</h4>
-    <p>
-      <dfn style=display:none>type</dfn>
-      The word <dfn>component</dfn> is used throughout this document to mean a
-      tagged value, denoted by (<var>type</var> <var>value</var>), where
-      <var>type</var> is taken from a predefined set of
-      <dfn>component-type</dfn>s.
-    The <i class=noindex>value</i> of a component may be a <i class=common>sequence</i>
-    of components itself, in which case the component may be referred to as a
-    <dfn>compound-component</dfn> for clarity.
-    <!--and the components present in its value may be referred to as
-    <dfn>sub-component</dfn>s.-->
-    <!-- add to dfn index -->
-    <!-- TODO I want to be able to add alt-name attributes to the dfn tags-->
-    <div style=display:none><dfn>value</dfn></div>
-  </div>
-  <p>
-    Both <i>component-type</i>s and their corresponding <i>component</i>-constructing operator are
-    typeset in boldface. For example, <b class=noindex>scheme</b> denotes a <i>component-type</i>,
-    whilst (<b class=noindex>scheme</b> <var>value</var>) denotes a
-    <b class=noindex>scheme</b>-<i>component</i>. 
-    Again, parentheses are used to disambiguate and as visual aides. They are not part of
-    the <i class=common>component</i>-constructing operator. 
-  <p>
-    When a collection of <i class=common>component</i>s contains exactly one
-    <i class=common>component</i> for a given <i class=common>component-type</i>,
-    then the <i class=common>type</i> may be used as a reference to the
-    <i class=common>component</i>'s
-    <i class=common>value</i>. For example, given a <i class=common>sequence</i> of
-    <i class=common>component</i>s
-    S := (<b class=noindex>dir</b> <var>x</var>・<b
-       class=noindex>file</b> <var>y</var>・<b 
-       class=noindex>query</b> 
-    <var>z</var>), the phrase
-    &ldquo;the <b class=noindex>query</b> of S&rdquo; identifies the
-    <i class=common>value</i> <var>z</var> whereas the phrase &ldquo;the
-    <b class=noindex>query</b> <i class=common>component</i> of
-    S&rdquo; identifies (<b class=noindex>query</b> <var>z</var>).
-
-
-  <h3>Strings and Grammars</h3>
 
   <h4>Strings and Code-Points</h4>
     <p class=-br>
@@ -250,21 +231,17 @@
         code points. It is denoted by ε. 
     </ul>
     <p>
-      Code points are denoted by a number in <em>hexadecimal</em> notation
-      preceded by <b class=noindex>u+</b>, in boldface. In addition, code points
-      that correspond to <i class=common>printable <abbr
-        class=-caps>ASCII</abbr> characters</i> are
-      often denoted by their corresponding glyph, typeset in monospace and on a
-      screened background.
-      For example, <b>u+41</b> and <code>A</code> denote the same
-      code point. Strings that contain only
-      <i class=common>printable <abbr class=-caps>ASCII</abbr> characters</i>
+      Code points are denoted by a number in <em>hexadecimal</em> notation preceded by
+      <b class=noindex>u+</b>, in boldface. Code points that correspond to
+      <i class=common>printable <abbr class=caps>ASCII</abbr> characters</i> are often
+      denoted by their corresponding glyph, typeset in monospace and on a screened background.
+      For example, <b>u+41</b> and <code>A</code> denote the same code point. Strings that
+      contain only <i class=common>printable <abbr class=caps>ASCII</abbr> characters</i>
       are often denoted as a connected sequence of glyphs, typeset likewise.
     <p>
-      The <dfn class=common>printable <abbr
-        class=-caps>ASCII</abbr> characters</dfn> are
-      codepoints in the range <b>u+20</b> to <b>u+7E</b>, inclusive. Note that
-      this includes the space <i class=common>character</i> <b>u+20</b>.
+      The <dfn class=common>printable <abbr class=caps>ASCII</abbr> characters</dfn> are
+      code points in the range <b>u+20</b> to <b>u+7E</b>, inclusive. Note that this includes
+      the space <i class=common>character</i> <b>u+20</b>.
 
 
   <div class=dfn-scope>
@@ -284,74 +261,28 @@
     are defined below: 
   </div>
 
-  <table class="grammar">
-    <tr>
-      <td><dfn>any</dfn> 
-      <td> := 
-      <td class=-nowrap> { <b>u+0</b>–<b>u+10FFFF</b> }
-    <tr>
-      <td><dfn>control-c0</dfn> 
-      <td> := 
-      <td class=-nowrap> { <b>u+0</b>–<b>u+1F</b> }
-    <tr>
-      <td><dfn>c0-space</dfn> 
-      <td> := 
-      <td class=-nowrap> { <b>u+0</b>–<b>u+20</b> }
-    <tr>
-      <td><dfn>printable-<abbr class=-caps>ASCII</abbr></dfn>
-      <td> := 
-      <td> { <b>u+20</b>–<b>u+7E</b> } — i.e. { <code><span 
-        style=width:1ch;display:inline-block;padding:0> </span></code>–<code>~</code> }
-    <tr>
-      <td><dfn>octal-digit</dfn> 
-      <td> := 
-      <td class=-nowrap>{ <code>0</code>–<code>7</code> }
-    <tr>
-      <td><dfn>digit</dfn> 
-      <td> := 
-      <td class=-nowrap> { <code>0</code>–<code>9</code> }
-    <tr>
-      <td><dfn>hex-digit</dfn> 
-      <td> := 
-      <td><span class=-nowrap>{ <code>0</code>–<code>9</code>, 
-        <code>A</code>–<code>F</code>,  <code>a</code>–<code>f</code> }</span>
-    <tr>
-      <td><dfn>digit-nonzero</dfn> 
-      <td> := 
-      <td> { <code>1</code>–<code>9</code> }
-    <tr>
-      <td><dfn>alpha</dfn> 
-      <td> := 
-      <td class=-nowrap> { <code>A</code>–<code>Z</code>,
-        <code>a</code>–<code>z</code> }
-    <tr>
-      <td><dfn>del-c1</dfn> 
-      <td> := 
-      <td> { <b>u+7F</b>–<b>u+9F</b> }
-    <tr>
-      <td><dfn>control-c1</dfn> 
-      <td> := 
-      <td class=-nowrap> { <b>u+80</b>–<b>u+9F</b> }
-    <tr>
-      <td><dfn>latin-1</dfn> 
-      <td> := 
-      <td class=-nowrap> { <b>u+A0</b>–<b>u+FF</b> }
-    <tr>
-      <td><dfn>surrogate</dfn> 
-      <td> := 
-      <td class=-nowrap> { <b>u+D800</b>–<b>u+DFFF</b> }
-    <tr>
-      <td><dfn>non-char</dfn> 
-      <td> := 
-      <td> { <b>u+FDD0</b>–<b>u+FDEF</b> }
-        ∪ { <var>c</var> | <var>c</var> in <i>any</i> and
-           (<var>c</var> + 2) <b class=op>mod</b> 2<sup>16</sup>  ≤  1 }
-    <tr>
-      <td><dfn>base-char</dfn>
-      <td> := 
-      <td> <i>any</i> \ <i>control-c0</i> \ <i>del-c1</i> \ <i>surrogate</i> \ <i>non-char</i>
-  </table>
+  <script class="grammar" type=bnf>
+    any             := { u+0-u+10FFFF }
+    ascii           := { u+0-u+7F }
+    control-c0      := { u+0-u+1F }
+    c0-space        := { u+0-u+20 }
+    printable-ASCII := { u+20-u+7E }
+    octal-digit     := { 0-7 }
+    digit           := { 0-9 }
+    hex-digit       := { 0-9,  A-F,  a-f }
+    digit-nonzero   := { 1-9 }
+    alpha           := { A-Z, a-z }
+    del-c1          := { u+7F-u+9F }
+    control-c1      := { u+80-u+9F }
+    non-ASCII       := { u+80-u+10FFFF }
+    surrogate       := { u+D800-u+DFFF }
+    non-char        := { u+FDD0-u+FDEF } ∪ { c | c in any and (c + 2) mod 2^16 < 2 }
+    other-unicode   := non-ASCII \ surrogate \ non-char
+    control         := control-c0 ∪ del-c1 ∪ surrogate ∪ non-char
+  </script>
 
+  <p class=todo>
+    Fix the notaton of 2<sup>16</sup> above
 
   <h4>Grammars</h4>
   <p>
@@ -360,8 +291,9 @@
     square brackets ( [ … ] ) <strong>for optional rules</strong>, a postfix
     star ( * ) for zero-or-more, a postfix plus ( + ) for one-or-more, an infix
     vertical line ( | ) for alternatives, monospaced type for literal
-    <i class=common>string</i>s
-    and an epsilon ( ε ) for the empty string. Parentheses are used for 
+    <i class=common>string</i>s and an epsilon ( ε ) for the empty string. 
+    Concatenation takes the highest precedence, followed by ( * ) and ( + ),
+    and ( | ) is used with lowest operator precedence. Parentheses are used for 
     grouping and disambiguation. 
 
 
@@ -374,91 +306,73 @@
     <var>string</var> :: <var>expression</var> is used to express that 
     <var>string</var> can be generated by <var>expression</var>.
 
-
+  
   <h3>Percent Coding</h3>
-
   <p>
     This subsection is analogous to the section 
     <a href="https://tools.ietf.org/html/rfc3986#section-2.1">Percent-Encoding</a> of
-    <abbr class=-caps>RFC</abbr> 3986 and the section 
+    <abbr class=caps>RFC</abbr> 3986 and the section 
     <a href="https://url.spec.whatwg.org/#percent-encoded-bytes">Percent-encoded bytes</a>
-    of the <abbr class=-caps>WHATWG</abbr> standard. 
-    <!--On an abstract level, <em>percent encoding</em> is a means to include characters in
+    of the <abbr class=caps>WHATWG</abbr> standard.
+    
+  <!-- <p>
+    On an abstract level, <em>percent encoding</em> is a means to include characters in
     <i class=common>component</i> <i class=common>value</i>s that can not be used within
-    <i><span class=url>URL</span>-string</i>s directly.-->
+    <i><span class=url>URL</span>-string</i>s directly. -->
 
 
   <h4>Bytes</h4>
-    <p class=-br>
-      For the purpose of this specification,
-    <ul class=dfn-scope>
-      <li>
-        A <dfn>byte</dfn> is a natural number
-        <var>n</var> &lt; 2<sup>8</sup>.
-      <li>
-        A <dfn>byte-sequence</dfn> is a <i>sequence</i> of
-        <i>byte</i>s.
-    </ul>
-  <div class=+br>
+  <p>
+    For the purpose of this specification,
+  <ul class="indent dfn-scope">
+    <li>
+      A <dfn>byte</dfn> is a natural number <var>n</var> &lt; 2<sup>8</sup>.
+    <li>
+      A <dfn>byte-sequence</dfn> is a <i>sequence</i> of <i>byte</i>s.
+  </ul>
+
 
   <h4>Percent Encoded Bytes</h4>
-    <p>
-      A non-empty <i>byte-sequence</i> may be <dfn>percent-encoded</dfn> as
-      a <i>string</i> by rendering each individual <i class=common>byte</i>
-      in two-digit hexadecimal notation, prefixed by <code>%</code>.
-    <table class="grammar dfn-scope">
-      <tr>
-        <td><dfn>pct-encoded-byte</dfn> 
-        <td> ::= 
-        <td class=-nowrap> <code>%</code> <i>hex-digit</i> <i>hex-digit</i>
-      <tr>
-        <td><dfn>pct-encoded-bytes</dfn> 
-        <td> ::= 
-        <td class=-nowrap><i>pct-encoded-byte</i>+
-    </table>
-  </div>
+  <p>
+    A non-empty <i>byte-sequence</i> may be <dfn>percent-encoded</dfn> as
+    a <i>string</i> by rendering each individual <i class=common>byte</i>
+    in two-digit hexadecimal notation, prefixed by <code>%</code>.
+  </p>
+  
+  <script class="indent grammar dfn-scope" type=bnf>
+    pct-encoded-byte  ::= `%` hex-digit hex-digit
+    pct-encoded-bytes ::= pct-encoded-byte+
+  </script>
+
 
   <h4>Percent Encoded String</h4>
   <p>
     A <dfn>percent-encoded–string</dfn> is a string that may have zero or more 
     <i>percent-encoded</i>–<i>byte-sequence</i>s
     embedded within, as follows:
+  </p>
 
-  <table class="grammar">
-    <tr>
-      <td>pct-encoded-string
-      <td> ::=
-      <td>( <i>pct-encoded-bytes</i>  |  <i>uncoded</i> )*
-    <tr>
-      <td><dfn>uncoded</dfn>
-      <td> ::=
-      <td> <i>non-pct</i>+
-    <tr>
-      <td><dfn>non-pct</dfn>
-      <td> :=
-      <td> <i>any</i> \ { <code>%</code> }
-  </table>
-  
+  <script class="indent grammar" type=bnf>
+    percent-encoded-string  ::= ( pct-encoded-bytes | uncoded )*
+    uncoded                 ::= non-pct+
+    non-pct                 := any \ { `%` }
+  </script>
+
   <p>
     The grammar above may be relaxed in situations where error recovery is desired. 
     This is achieved by adding a <i>pct-invalid</i> rule as follows:
   </p>
 
-  <table class=grammar>
-    <tr>
-      <td>pct-encoded-string
-      <td> ::=
-      <td>( <i>pct-encoded-bytes</i>  |  <i>pct-invalid</i>  |  <i>uncoded</i> )*
-    <tr>
-      <td><dfn>pct-invalid</dfn>
-      <td> ::=
-      <td> <nowrap><code>%</code> [ <i>hex-digit</i> ]</nowrap>
-  </table>
+  <script class="indent grammar" type=bnf>
+    percent-encoded-string  ::= ( pct-encoded-bytes  |  pct-invalid  |  uncoded )*
+    pct-invalid             ::= `%` [ hex-digit ]
+  </script>
 
   <p>
-    There is an ambiguity in the loose grammar due to the overlap between <i>pct-encoded-byte</i>
-    and <i>pct-invalid</i> combined with <i>uncoded</i>. The ambiguity must be resolved by using the
-    <i>pct-encoded-byte</i> rule instead of the <i>pct-invalid</i> rule wherever possible.
+    There is an ambiguity in the loose grammar due to the overlap between <i>pct-encoded-bytes</i>
+    and <i>pct-invalid</i> combined with <i>uncoded</i>. The ambiguity must be resolved by using
+    the <i>pct-encoded-bytes</i> rule instead of the <i>pct-invalid</i> rule wherever possible.
+
 
   <h4>Percent Encoding</h4>
   <p>
@@ -469,208 +383,148 @@
   <!-- <h4>Percent Encode Set</h4>
     <p>
       A <dfn>percent-encode-set</dfn> is a subset of the
-      <i class=common>printable-<abbr class=-caps>ASCII</abbr></i> characters
+      <i class=common>printable-<abbr class=caps>ASCII</abbr></i> characters
       that is used as a configuration argument to a
-      <i>percent-encode</i> operation on <i>string</i>s.
+      <i>percent-encode</i> operation on <i>string</i>s.us
 
   <p class=note>
     This restricts the encode sets to printable ASCII. 
-    Non-url codepoints must also be encoded, but it makes sense to mandate that
+    Non-url code points must also be encoded, but it makes sense to mandate that
     and not make it configurable via the encode set, but this is work in progress. 
     <br>-->
 
   <p class=todo>
-    Wrap this up. Furthermore, this needs to discuss the encoding override, which is only 
-    allowed for the query; all other components must use UTF8.
+    The only tricky bit in this is is the encoding of multi-byte UTF8 sequences, and the optional
+    encoding override to specify a non-UTF8 encoding for the query component.
 
   <h4>Percent Decoding</h4>
   <p class=-br>
     Percent decoding of strings is stratified into the following phases:
+
   <ul>
     <li>
-      Analyse the string as into <i>pct-encoded-bytes</i>, <i>pct-invalid</i> and <i>uncoded</i>
+      Analyse the string into <i>pct-encoded-bytes</i>, <i>pct-invalid</i> and <i>uncoded</i>
       parts according to the <i>pct-encoded-string</i> grammar.
     <li>
-      Convert the percent-coded-bytes to a <i>byte-sequence</i> and decode the byte sequence
-      to a <i>string</i> whilst leaving the <i>pct-invalid</i> and <i>uncoded</i> parts unmodified.
+      Convert each of the the <i>pct-encoded-bytes</i> parts to a <i>byte-sequence</i> and decode
+      the byte sequence to a <i>string</i> assuming that <i>byte-sequence</i> uses the
+      <a href="https://www.unicode.org/versions/latest/">Unicode</a>
+      UTF-8 encoding. Leave the <i>pct-invalid</i> and <i>uncoded</i> parts unmodified.<br>
+      <!-- TODO handling invalid UTF8 -->
     <li>
-      Recompose the string.
+      Recompose the string by concatenating each of the parts
   </ul>
-
-  <div class=todo>
-    Wrap this up. 
-    Note that the decoding of the percent-coded-bytes must use UTF8. 
-  </div>
-
 
 </section>
 
 
-<!------------------------>
-<section><h2>URL Model</h2>
-<!------------------------>
-<p>
-  An <i><span class=url>URL</span></i> is a sequence of components that is
-  subject to a number of additional constraints. The ordering of the components 
-  in the sequence is analogous to the hierarchical syntax of an 
-  <abbr class=-caps>URI</abbr> as described
-  in <a href="https://tools.ietf.org/html/rfc3986#section-1.2.3">Hierarchical
-  Identifiers</a> in <abbr class=-caps>RFC</abbr> 3986.
-<p>
-  It is important to stress the distinction between an
-   <i><span class=url>URL</span></i> and an
-   <i><span class=url>URL</span>-string</i>.
-<br>
-  <span class=dfn-scope>
-    An <i class=url>URL</i> is a <em>structure</em>, indeed a special
-    sequence of components, whereas an <dfn><span class=url>URL</span>-string</dfn>
-    is a special kind of <i>string</i> that <em>represents</em> an
-    <i class=url>URL</i></span>. Conversions between <i class=url>URL</i>s
-  and <i class=common><span class=url>URL</span>-string</i>s are described in
-  the sections <a href="#parsing">Parsing</a>
-  and <a href="#printing">Printing</a>.
+<!----------------------------->
+
+
+<section>
+
+  <h2 id=url-model>URL Model</h2>
+
+  <p>
+    An <span class=url>URL</span>, or specifically an <i class=url>URL</i>-<em>structure</em>, is
+    conceptually distinct from an <span class=url>URL</span>-<em>string</em>.
+
+    An <i class=common><span class=url>URL</span></i>-<em>structure</em> is a collection of
+    components that adheres to a number of constraints, whereas an <span class=url>URL</span>-<em>string</em>
+    is a <em>string</em> that <em>represents</em> an <span class=url>URL</span>. 
+
+    An <span class=url>URL</span>-<em>string</em> has an internal structure that can be parsed as
+    an <span class=url>URL</span>-<em>structure</em>.
+    Conversely, an <span class=url>URL</span>-<em>structure</em> may be converted to an
+    <span class=url>URL</span>-<em>string</em>.
 
   <div class="dfn-scope +br">
-  <h4>URL</h4>
+    <h4>URL</h4>
     <p>
       An <dfn class=url>URL</dfn> is a <i>sequence</i> of
-      <i>component</i>s that occur in ascending order by <i>component-type</i>,
-      where <i class=noindex>component-type</i> is taken from
-      the ordered set: 
-    <p class="-center">
-      <b>scheme</b> &lt; <b>authority</b> &lt; <b>drive</b>
-      &lt; <b>path-root</b> &lt; <b>dir</b> &lt; <b>file</b>
-      &lt; <b>query</b> &lt; <b>fragment</b>.
-    <ul>
-      <li>
-        An <i class=url>URL</i> contains at most one
-        <i class=common>component</i> per <i class=common>type</i>, 
-        except for <b>dir</b> <i class=common>component</i>s, of which it may have
-        any finite amount.
-      <li class=dfn-scope><dfn style=display:none>path-root-constraint</dfn>
-        If an <i class=url>URL</i> has an <b>authority</b> or a
-        <b>drive</b> <i class=common>component</i>, and it has a <b>dir</b> or a
-        <b>file</b> component, then it also has a <b>path-root</b>
-        <i class=common>component</i>.
-    </ul>
-    </div>
+      <i>component</i>s. The components are ordered by their type
+      in an ascending order where the types are taken from the ordered set: 
 
-    <div class="dfn-scope +br">
-    <h4>Authority</h4>
-    <p class=-br>
-      An <dfn>Authority</dfn><dfn style=display:none>authority</dfn>
-      is a sequence of components ordered by their type, taken from the ordered set:
+    <p class=center>
+      <b>scheme</b>  &lt;  <b>authority</b>  &lt; <b>drive</b>
+       &lt;  <b>path-root</b>  &lt;  <b>dir</b>  &lt;  <b>file</b>
+       &lt;  <b>query</b>  &lt;  <b>fragment</b>.
 
-    <p class="-center">
-      <b>username</b> &lt; <b>password</b> &lt; <b>host</b> &lt; <b>port</b>.
-    </div>
-
-    <ul>
-      <li>
-        Authorities have at most one <i class=common>component</i> per
-        <i class=common>type</i>.
-      <li>
-        If an Authority has a <b>password</b> <i class=common>component</i> then it
-        also has a <b>username</b> <i class=common>component</i>.
-      <li>
-        If an Authority has a <b>username</b> or a <b>port</b>
-        <i class=common>component</i> then it also has a <b>host</b>
-        <i class=common>component</i>.
-    </ul>
-
-  <div class="dfn-scope +br">
-    <h4>Host</h4>
     <p>
-      A <dfn>Host</dfn> is either:
-    <div><ul class=-inline>
-      <li>
-        An ipv6-address,
-      <li>
-        an opaque-host,
-      <li>
-        an ipv4-address, or
-      <li>
-        a domain-name.
-    </ul></div>
+      An <i class=url>URL</i> must contain <strong>at most</strong> one <i class=common>component</i>
+      of each <i class=common>type</i> except for <b>dir</b> <i class=common>component</i>s,
+      of which it may have any finite amount. 
+      <span class=dfn-scope>It must uphold the <dfn>path-root-constraint</dfn>: 
+      If an <i class=url>URL</i> has an
+      <b>authority</b> or a <b>drive</b> <i class=common>component</i>,
+      and it also has a <b>dir</b> or a <b>file</b> component, then it must also have a <b>path-root</b>
+      <i class=common>component</i>.</span>
+      If present, then the <i>value</i> of each of
+       the <i class=common>component</i>s have the following structure:
+
+    <p class=indent>
+      The <b>scheme</b> is a <i class=common>string</i>
+      <span class=rule><var>scheme</var> :: <i>alpha</i> (<i>alpha</i> | <i>digit</i> |
+        <code>+</code> | <code>-</code> | <code>.</code>)*</span>.
+      <br>
+        The <b>authority</b> component is a <i>compound-component</i> and its value is an
+        <i>Authority</i>.
+      <br>
+        The <b>drive</b> is a two-character <i class=common>string</i>
+        <nowrap><var>drive</var> :: <i>alpha</i> (<code>:</code> | <code>|</code>)</nowrap>.
+      <br>
+        The <b>path-root</b> is the single character string <code>/</code>.
+      <br>
+        The <b>dir</b>, <b>file</b>, <b>query</b> and <b>fragment</b> are <i>percent-encoded-string</i>s.
+      <br>
+         However, the <b>file</b> must be a <em>nonempty</em> <i class=common>percent-encoded-string</i>, if present.
   </div>
+  
+  <p>
+    In an <span class=url>URL</span>-<i class=common>string</i> the component values are delineated
+    from each other by means of <dfn>sigil</dfn>s. Most component-types have an associated
+    sigil that is used either in a prefix– or postfix position to its value.
+    However, in the case of the <b>path-root</b> the sigil is the single <code>/</code> 
+    character itself, and the <b>file</b>, <b>host</b> and <b>username</b> components do not
+    have an associated sigil at all.
 
-    <h4>URL components</h4>
-    <p>
-      Whenever present, the <i class=common>component</i>s of an <span class=url>URL</span>
-      are subject to the following constraints:
+    The components of an <span class=url>URL</span> are paired with sigils as follows:
 
-    <ul>
-      <li class=dfn-scope>
-        <dfn style=display:none><b>scheme</b>-string</dfn>
-        The <dfn><b>scheme</b></dfn> of an <i class=url>URL</i>
-        is a <i class=common>string</i>
-        <span class=rule><var>scheme</var> :: <i>alpha</i> (<i>alpha</i>
-          | <i>digit</i> | <code>+</code> | <code>-</code>
-          | <code>.</code>)*</span>.
-      <li class=dfn-scope>
-        The <dfn><b>authority</b></dfn> of an <i class=url>URL</i>
-        is
-        an <i>Authority</i>.
-      <li class=dfn-scope>
-        The <dfn><b>path-root</b></dfn> of an <i class=url>URL</i>
-        is the <i class=common>string</i> <code>/</code>. 
-      <li class=dfn-scope>
-        The <dfn><b>drive</b></dfn> of an <i class=url>URL</i>
-        is a
-        <i class=common>string</i> <span class=-nowrap><var>drive</var> ::
-          <i>alpha</i> (<code>:</code> | <code>|</code>)</span>.
-      <li class=dfn-scope>
-        The <dfn><b>file</b></dfn> of an <i class=url>URL</i>
-        is a nonempty <i class=common>string</i>.
-      <!-- <li>
-        For all other components present, the components&rsquo; values are
-        <i class=common>string</i>s. -->
-      <li class=dfn-scope>
-        The <dfn><b>host</b></dfn> of an <i>Authority</i> is a <i>Host</i>.
-      <li class=dfn-scope>
-        The <dfn><b>port</b></dfn> of an <i>Authority</i> is either ε 
-        or a natural number <var>n</var> &lt; 2<sup>16</sup>.
-      <li class=dfn-scope>
-        For all other <i class=common>component</i>s present, the
-        <i class=common>component</i>s' <i class=common>value</i>s
-        are <i class=common>string</i>s.
-    </ul>
+    <table class=indent>
+    <tr>
+      <td><b>scheme</b> <var>scheme</var><td>  ⟼  <td><var>scheme</var> <code>:</code>
+    <tr>
+      <td><b>authority</b> <var>auth</var> <td>  ⟼  <td><code>//</code> <var>auth</var>
+    <tr>
+      <td><b>drive</b> <var>x</var> <td>  ⟼  <td><code>/</code> <var>x</var>
+    <tr>
+      <td><b>path-root</b> <var>s</var> <td>  ⟼  <td><code>/</code>
+    <tr>
+      <td><b>dir</b> <var>name</var> <td>  ⟼  <td><var>name</var> <code>/</code>
+    <tr>
+      <td><b>file</b> <var>name</var> <td>  ⟼  <td><var>name</var>
+    <tr>
+      <td><b>query</b> <var>query</var> <td>  ⟼  <td><code>?</code> <var>query</var>
+    <tr>
+      <td><b>fragment</b> <var>frag</var> <td>  ⟼  <td><code>#</code> <var>frag</var>
+  </table>
 
-    <ul style=display:none>
-      <li class=dfn-scope>
-        A <dfn><b>dir</b></dfn> component is a component (<b>dir</b> <var>name</var>)
-        where <var>name</var> is a string.
-      <li class=dfn-scope>
-        The <dfn><b>query</b></dfn> of an <i class=url>URL</i>,
-        is a string.
-      <li class=dfn-scope>
-        The <dfn><b>fragment</b></dfn> of an <i class=url>URL</i>,
-        is a string.
-    </ul>
+  <!-- <p>
+    The pairing of the components with sigils is very carefully chosen
+    mirror the constraints on an <i class=url>URL</i>, on its
+    <i>Authority</i> and its <i>Userinfo</i>. -->
 
   <p>
-    Note that arbitrary <i class=common>code point</i>s are allowed in
-    <i class=common>component</i> <i class=common>value</i>s
-    unless explicitly specified otherwise. The restrictions on the code points
-    in an <i><span class=url>URL</span>-string</i> is discussed in 
-    the <a href=#parsing>Parsing</a> section.
+    Note that the second character <code>:</code> or <code>|</code>
+    of a <b>drive</b> component value is not considered to be its sigil,
+    but is instead a part of its value.
+
+
+  <script class="grammar url-grammar" type=bnf>
+    url              ::= [ scheme `:` ] ( auth-path | path ) [ `?` query ] [ `#` fragment ]
+  </script>
 
   <h3>Types and Shapes</h3>
-
-  <p>
-    There is an additional number of soft constraints that must be met for
-    an <i class=url>URL</i> in order to be called <i>valid</i>. 
-    However, implementations must tolerate <i><span class=url>URL</span></i>s
-    that are not <i>valid</i> as an error recovery strategy.
-
-  <div class="dfn-scope +br">
-  <h4>Valid URL</h4>
-    <p>
-      A <dfn>valid</dfn> <i class=url>URL</i> must not have a <b>username</b> or a
-      <b>password</b> component and it must not have <i class=common>component</i>s
-      that contain invalid percent-encode sequences. 
-  </div>
-
 
   <p>
     There is a further categorisation of <i class=url>URL</i>s that is used in 
@@ -700,34 +554,552 @@
       <span class=rule>(lowercase <var>scheme</var>) :: <code>file</code></span>. 
   </div>
 
+  <div class="dfn-scope +br">
+  <h4>Schemeless-URL</h4>
+    <p>
+      A <dfn>schemeless-<span class=url>URL</span></dfn> is an
+      <i class=url>URL</i> that does not have a <b>scheme</b> <i class=common>component</i>.
+  </div>
+</section>
+
+
+<!----------------------------->
+
+
+<section>
+
+  <h2 id=authority-model>Authority Model</h2>
+
+  <p>
+    The <b>authority</b> component of an <i class=url>URL</i> is a <i>compound-component</i>
+    and its value is an <i>Authority</i> structure:
+  
+  <div class="dfn-scope +br">
+    <h4>Authority</h4>
+
+    <p>
+      An <dfn>Authority</dfn><dfn class=hidden>authority</dfn>
+      is a sequence of components ordered by their type, taken from the ordered set:
+
+    <p class=indent>
+      <b>userinfo</b>  &lt;  <b>host</b>  &lt;  <b>port</b>.
+
+    <p>
+      An Authoritiy must have <strong>at most</strong> one <i class=common>component</i>
+      per <i class=common>type</i>, but if it does have a <b>userinfo</b> or a
+      <b>port</b> <i class=common>component</i> then it must also have a <b>host</b>
+      <i class=common>component</i>. If present, the <i>value</i> of the
+      <i class=common>components</i> have the following structure:
+    
+    <p class=indent>
+      The <b>userinfo</b> is a <i>Userinfo</i> structure.
+    <br>
+      The <b>password</b> is a <i>percent-encoded-string</i>.
+    <br>
+      The <b>host</b> is a <i>Host</i> structure.
+    <br>
+      The <b>port</b> is a natural number <var>n</var>  &lt;  2<sup>16</sup>
+      or the empty string <i>ε</i>.
+  </div>
+
+  <p>
+   In an <span class=url>URL</span>-string, 
+   the components of an <i>Authority</i> are paired with sigils as follows:
+    
+  <table class=indent>
+    <tr>
+      <td><b>userinfo</b> <var>info</var>
+      <td>  ⟼ 
+      <td><var>info</var> <code>@</code>
+    <tr>
+      <td><b>host</b> <var>value</var>
+      <td>  ⟼  
+      <td><var>value</var>
+    <tr>
+      <td><b>port</b> <var>ε</var>
+      <td>  ⟼  
+      <td><code>:</code>
+    <tr>
+      <td><b>port</b> <var>n</var>
+      <td>  ⟼  
+      <td><code>:</code> <var>n</var>
+  </table>
+
+  <div class="dfn-scope +br">
+    <h4>Userinfo</h4>
+    <p>
+      <dfn class=hidden>userinfo</dfn>
+      The <dfn>Userinfo</dfn> is a sequence of components ordered by their type,
+      taken from the ordered set:
+
+    <p class=indent>
+      <b>username</b> &lt; <b>password</b>.
+
+    <p>
+      The <i>Userinfo</i> must have a single <b>username</b> component, and at most one
+      <b>password</b> component.
+  </div>
+
+  <p>
+    Finally, the components of the <i>Userinfo</i>
+    are paired with sigils as follows:
+
+  <table class=indent>
+    <tr>
+      <td><b>username</b> <var>name</var>
+      <td>  ⟼  
+      <td><var>name</var>
+    <tr>
+      <td><b>password</b> <var>pass</var>
+      <td>  ⟼  
+      <td><code>:</code> <var>pass</var>
+  </table>
+
+  <div class="dfn-scope +br">
+    <h4>Host</h4>
+    <p>
+      A <dfn>Host</dfn> is either:
+    <div><ul class=-inline>
+      <li>
+        An ipv6-address,
+      <li>
+        an opaque-host,
+      <li>
+        an ipv4-address, or
+      <li>
+        a domain-name.
+    </ul></div>
+  </div>
+
+  <p>
+    The <abbr class=caps>WHATWG</abbr> standard specifies scheme-dependent expectations
+    on the <i>Host</i> of an <i class=url>URL</i>.
+    For any generic <i class=url>URL</i> it merely enforces that its <i>opaque-host</i>
+    does not contain certain characters, as is specified by the
+    <span class=url>URL</span>-grammar. 
+    However, for <b>file</b> and <b>web</b>-<i class=url>URL</i>s it attempts to parse
+    their <i>opaque-host</i> as a domain or ipv4-address.
+    This additional <i>Host</i> parsing is stratified into the following phases:
+
+  <ul>
+    <li>
+      Percent decode.
+    <li>
+      Apply domain-to-<abbr class=caps>ASCII</abbr>
+    <li>
+      Err on 'forbidden domain codepoints'.
+    <li>
+      Detect and interpret IPv4 addresses.
+  </ul>
+
+
+  <h3>IPv6 Address</h4>
+
+  <h4><abbr class=caps>IP</abbr>v6 Address — Strict</h4>
+  <p>
+    An <abbr class=caps>IP</abbr>v6 address-string is a representation
+    of a natural number <var>n</var> &lt; 2<sup>128</sup> that is used as an identifier. 
+    It is accurately described by the production rule <var>IPv6address</var>
+    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host
+    section</a> of <abbr class=caps>RFC</abbr> 3986. 
+
+  <p>
+    The <a href=https://url.spec.whatwg.org/#concept-ipv6-parser><abbr class=caps>IP</abbr>v6 address parser</a>
+    in the <abbr class=caps>WHATWG</abbr> standard however implies a more tolerant definition
+    of <abbr class=caps>IP</abbr>v6 address-strings. 
+
+  <h4>IPv6 Address — Loose</h4>
+  <div class=todo>
+  </div>
+
+
+  
+  <h3>Domain and IPv4 Address</h3>
+
+  <section>
+  <h4>IPv4 Address</h4>
+  <p>
+    An IPv4 address-string consists of one up to four dot-separated numbers with
+    an optional trailing dot. The numbers may use decimal, octal or hexadecimal
+    notation, as follows:
+  </p>
+
+  <script class="indent grammar" type=bnf>
+    ip4-address ::= num [`.` num [`.` num [`.` num ] ] ] [`.`]
+    num         ::= num-dec | num-oct | num-hex
+    num-dec     ::= `0` | (digit-nonzero digit*)
+    num-oct     ::= `0` octal-digit+
+    num-hex     ::= (`0x` | `0X`) hex-digit*
+  </script>
+
+  <p>
+    Note that <code>0x</code> is parsed as a hexadecimal number;
+    it is interpreted as 0.
+
+  <p class=todo>
+    There is an additional semantic constraint that can render invalid an ipv4-address that uses
+    the loose grammar; specifically, it must not represent a number that exceeds the addressable
+    range of 2<sup>32</sup>; Where the amount of segments determines the magnitude of the segment. …
+
+  <h4>IPv4 Address – Strict</h4>
+  <p>
+    A <em>strict</em> IPv4 address-string consists of four dot-separated numbers, <em>without</em> a
+    trailing dot, where in addition each number must use the shortest possible decimal
+    representation of a natural number <var>n</var> ≤ 255.
+
+  <div class=indent>
+    <script class="grammar" type=bnf>
+      ip4-address-strict ::= num-dec `.` num-dec `.` num-dec `.` num-dec
+    </script>
+
+    <p class="inbetween">
+      The use of the shortest decimal representation can be expressed as follows:
+    </p>
+  
+    <script class="grammar" type=bnf>
+      ip4-address-strict ::= dec-octet `.` dec-octet `.` dec-octet `.` dec-octet
+      dec-octet ::= digit | digit-nonzero digit | `1` digit digit
+                  | `2` pental-digit digit
+                  | `2` `5` senary-digit
+      -- Where pental-digit and senary-digit are defined as follows:
+      pental-digit := { 0-4 }
+      senary-digit := { 0-5 }
+    </script>
+  </div>
+  </section>
+
 </section>
 
 
 <!----------------------------------->
-<section><h2>Reference Resolution</h2>
+
+
+<section>
+  
+  <h2 id=component-characters>Component Characters</h2>
+
+
+  <!-- <p>
+    There is an additional number of soft constraints that must be met for
+    an <i class=url>URL</i> in order to be called <i>valid</i>.
+
+  <div class="dfn-scope +br">
+  <h4>Valid URL</h4>
+    <p>
+      A <dfn>valid</dfn> <i class=url>URL</i> must not have a <b>username</b> or a
+      <b>password</b> component and it must not have <i class=common>component</i>s
+      that contain invalid percent-encode sequences.
+  </div> -->
+
+    <p>
+      When it comes to handling characters that may occur in <span class=url>URL</span>-component
+      values we have &lsquo;for historical reasons&rsquo; ended up in
+      a situation where we distinguish <em>per</em> component, characters that are:
+    <ul>
+      <li>
+        <dfn class=op>v</dfn>: 
+        valid;
+      <li>
+        <dfn class=op>E</dfn>: 
+        valid but percent-encoded;
+      <li>
+        <dfn class=op>T</dfn>: 
+        invalid but tolerated;
+      <li>
+        <dfn class=op>F</dfn>: 
+        invalid and fixed by percent-encoding;
+      <li>
+        <dfn class="op R">R</dfn>: 
+        invalid and rejected.
+    </ul>
+
+  <p>
+    In order to specify the how characters must be handled in components, it us useful to first
+    divide the entire space of characters <i>any</i> into <strong>non-overlapping</strong>
+    character sets as follows:
+  </p>
+
+  <script class="indent grammar" type=bnf>
+  unreserved    :=  { `-`, `.`, `_`, `~` } ∪ alpha ∪ digit ∪ other-unicode
+  sub-delims    :=  { `!`, `$`, `&`, `'`, `(`, `)`, `*`, `+`, `,`, `;`, `=` }
+  gen-delims    :=  { `:`, `@`, `/`, `?`, `#` }
+  invalid       :=  { ` `, `"`, '`', `<`, `>`, `[`, `]`, `{`, `}`, `\`, `^`, `|` } ∪ control
+  pct           :=  { `%` }
+  </script>
+
+  <p>
+    This collection of character sets covers the entire character space.
+    To exhaustively specify how characters in components should be handled we divide each of these sets
+    into further subdivisions and specify per component the status of the characters in this subset:
+
+  <table id=characters class=indent>
+    <thead>
+      <tr><th><th>
+      <th><span><b>username</b></span>
+      <th><span><b>password</b></span>
+      <th><span><i class=common>opaque-host</i></span>
+      <th><span><b>dir</b> and <b> file</b></span>
+      <th><span>opaque path</td></span>
+      <th><span><b>query</b></span>
+      <th><span style=border:none><b>fragment</b></span>
+    </th>
+    </thead>
+
+    <tbody>
+      <tr>
+        <th rowspan=3>unreserved</th>
+        <th><code>-</code> <code>.</code> <code>_</code> <code>~</code>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+      <tr>
+        <th><i class=common>alpha ∪ digit</i>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+      <tr><th colspan=1><i class=common>other-unicode</i>
+        <td><b>E</b>
+        <td><b>E</b>
+        <td><b>E</b>
+        <td><b>E</b>
+        <td><b>E</b>
+        <td><b>E</b>
+        <td><b>E</b>
+
+      <tr>
+        <th rowspan=3>sub-delims</th>
+        <th><code>!</code> <code>$</code> <code>&</code>
+          <code>(</code> <code>)</code>
+          <code>*</code> <code>+</code> <code>,</code>
+
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+      <tr>
+        <th><code>'</code>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b>E</b><sup>1</sup>
+        <td><b class=op>v</b>
+      <tr>
+        <th><code>;</code> <code>=</code>
+        <td><b>E</b>
+        <td><b>E</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+
+      <tr>
+        <th rowspan=5><i class=common>gen-delims</i>
+        <th><code>@</code>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b class=R>R</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+
+      <tr>
+        <th><code>:</code>
+        <td><b class=na>n/a</b>
+        <td><b>F</b>
+        <td><b class=na>n/a</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+      <tr>
+        <th><code>/</code>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><i class=op>T</i>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+      <tr><th><code>?</code>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=op>v</b>
+        <td><b class=op>v</b>
+      <tr><th><code>#</code>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><i class=op>T</i>
+      </tr>
+      <tr>
+        <th rowspan=1><i class=common>pct</i>
+        <th><code>%</code></th>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+      <tr>
+        <th rowspan=9><i class=common>invalid</i>
+        <th><b>u+9</b>, <b>u+A</b>, <b>u+D</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+        <td><b class=na>n/a</b>
+      <tr>
+        <th><b>u+0</b>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b class=R>R</b>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b>F</b>
+      <tr><th>other <i class=common>control</i>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b>F</b>
+      <tr>
+        <th><code><span style=display:inline-block;width:1ch> </span></code>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b class=R>R</b>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><b>F</b>
+        <td><b>F</b>
+      <tr>
+        <th><code>"</code>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><b>F</b>
+        <td><b>F</b>
+      <tr>
+        <th><code>&lt;</code> <code>></code>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b class=R>R</b>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><b>F</b>
+        <td><b>F</b>
+      <tr>
+        <th><code>`</code>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><i class=op>T</i>
+        <td><b>F</b>
+      <tr>
+        <th><code>[</code> <code>\</code> <code>]</code> <code>|</code> <code>^</code>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><b class=R>R</b>
+        <td><i class=op>T</i>
+        <td><i class=op>T</i>
+        <td><i class=op>T</i>
+        <td><i class=op>T</i>
+      <tr>
+        <th><code>{</code> <code>}</code>
+        <td><b>F</b>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><b>F</b>
+        <td><i class=op>T</i>
+        <td><i class=op>T</i>
+        <td><i class=op>T</i>
+
+    </tbody>
+    <tfoot>
+      <tr><th><th>
+      <th><span><b>username</b></span>
+      <th><span><b>password</b></span>
+      <th><span><i class=common>opaque-host</i></span>
+      <th><span><b>dir</b> and <b> file</b></span>
+      <th><span>opaque path</td></span>
+      <th><span><b>query</b></span>
+      <th><span><b>fragment</b></span>
+    </th>
+    </tfoot>
+  </table></div>
+  </div>
+
+  <p class=note>
+    Note that applying the rules for encoding component characters does <strong>not</strong>
+    necessarily produce valid URLs, specifically, if a component contains a character that is 
+    marked as <b>T</b>: invalid but tolerated.
+
+  <p class=todo>
+    Note that the apostrophe ' must instead be left untouched in the <b>query</b> of non-special urls;
+    and the path of generic urls that have no auth nor root are handled as per the opaque path column.
+
+</section>
+
+
 <!----------------------------------->
+
+
+<section>
+  
+  <h2 id=reference-resolution>Reference Resolution</h2>
 
   <p>
     This section defines reference resolution operations that are analogous to the
     algorithms that are described in the chapter
     <a href="https://tools.ietf.org/html/rfc3986#section-5">Reference Resolution</a> of
-    <abbr class=-caps>RFC</abbr> 3986. The operations that are defined in this section are
+    <abbr class=caps>RFC</abbr> 3986. The operations that are defined in this section are
     used in a subsequent section to define a <em>parse-resolve-and-normalise</em>
     operation that accurately describes the behaviour of the
     &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
     <span class=url>URL</span> parser</a>&rsquo; as defined in the 
-    <abbr class=-caps>WHATWG URL</abbr> standard.
+    <abbr class=caps>WHATWG URL</abbr> standard.
+
   <p>
     Reference resolution as defined in this section does not involve
     <i><span class=url>URL</span>-string</i>s. It operates on <i class=url>URL</i>s as
     defined in the <a href=#url-model><span class=url>URL</span> Model</a> section above.
-    In contrast with <abbr class=-caps>RFC</abbr> 3986 and with the
-    <abbr class=-caps>WHATWG</abbr> standard, it does <strong>not</strong> do additional
+    In contrast with <abbr class=caps>RFC</abbr> 3986 and with the
+    <abbr class=caps>WHATWG</abbr> standard, it does <strong>not</strong> do additional
     normalisation, which is relegated to the section
     <a href=#equivalences-and-normalisation>Equivalences and Normalisation</a> instead.
 
 
-  <h3>Order and Prefix operations</h3>
+  <h3>Order and Prefix</h3>
 
   <p>
     A property that is particularly useful is the <i>order</i> of an <i class=url>URL</i>.
@@ -738,7 +1110,7 @@
     <i class=url>URL</i>.
 
   <div class="dfn-scope +br">
-  <h4>The Order of an <span class=url>URL</span></h4>
+    <h4>The Order of an <span class=url>URL</span></h4>
     <p class=-br>
       The <dfn>order</dfn> of an <i class=url>URL</i> (<dfn class=fn>ord</dfn>
       <var>url</var>) is
@@ -751,9 +1123,9 @@
         otherwise.
     </ul>
 
-  <h4>Order-Limited Prefix</h4>
+    <h4>Order Prefix</h4>
     <p class=-br>
-      The <dfn>order-limited prefix</dfn>
+      The <dfn>order-prefix</dfn>
       (<var>url</var> <dfn class=op>upto</dfn> <var>order</var>)
       is defined to be <br>
       the <em>shortest</em> prefix of <var>url</var> that contains:
@@ -770,84 +1142,71 @@
   </div>
 
 
-  <h3>The Goto Operation</h3>
+  <h3>Reference Transformation</h3>
 
   <p>
-    Based on the <i class=common>order</i> and the <i class=common>order-limited
-    prefix</i> one can define a &ldquo;<i class=common>goto</i>&rdquo; operation that is
-    analogous to the &ldquo;merge&rdquo; operation that is defined in the subsection
+    Based on the <i class=common>order</i> and the <i class=common>order-prefix</i> we define
+    a &ldquo;<i class=common>rebase</i>&rdquo; operation that slightly generalises reference
+    transformation as specified in the section
     <a href="https://tools.ietf.org/html/rfc3986#section-5.2.2">Transform References</a>
-    of <abbr class=-caps>RFC</abbr> 3986.
-    I have chosen the name &ldquo;goto&rdquo; to avert incorrect assumptions about
-    commutativity. The operation is not commutative, but it is associative.
+    of <abbr class=caps>RFC</abbr> 3986.
 
   <div class="dfn-scope">
-  <h4>Goto</h4>
-  <p>
-    The <dfn>goto</dfn> operation
-    <span class=-nowrap>(<var>url<sub>1</sub></var> <dfn class=op>goto</dfn>
-     <var>url<sub>2</sub></var>)</span> is defined to return
-     <br>
-    the <em>shortest</em> <i class=url>URL</i> that has
-    <var>url<sub>1</sub></var> <b class=fn>upto</b>
-    (<b class=fn>ord</b> <var>url<sub>2</sub></var>) as a
-    prefix and <var>url<sub>2</sub></var> as a postfix.
+    <h4>Rebase</h4>
+    <p>
+      The <dfn>rebase</dfn> operation
+      <span class=-nowrap>(<var>url</var> <dfn class=op>onto</dfn> <var>base-url</var>)</span>
+       is defined to return <br>
+      the <em>shortest</em> <i class=url>URL</i> that has <var>base-url</var> <b class=fn>upto</b>
+      (<b class=fn>ord</b> <var>url</var>) as a prefix and <var>url</var> as a postfix.
   </div>
 
-  <h4>Goto Properties</h4>
+  <p>
+    Be aware that <i>rebase</i> does a bit more than simple sequence concatenation.
+    It may add a <b>path-root</b> component to satisfy the
+    <i>path-root-constraint</i> of the <i class=url>URL</i> model. 
+    For example, if <var>base</var> is the <i class=url>URL</i> represented by <code>//host</code>
+    and <var>input</var> is the <i class=url>URL</i> represented by <code>foo/bar</code>
+    then (<var>input</var> <i class=op>onto</i> <var>base</var>)
+    is represented by <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even
+    though neither <var>base</var> nor <var>input</var> has one.
+
+  <h4>Rebase Properties</h4>
   <p class=-br>
-    The <i>goto</i> operation has a number of pleasing mathematical
+    The <i>rebase</i> operation has a number of pleasing mathematical
     properties, as follows:
   <ul>
     <li>
-      <i class=op>ord</i> (<var>url<sub>1</sub></var> <i class=op>goto</i>
-        <var>url<sub>2</sub></var>) is the least type of
-        {<i class=op>ord</i> <var>url<sub>1</sub></var>,
-         <i class=op>ord</i> <var>url<sub>2</sub></var>}.
+      <i class=op>ord</i> (<var>url<sub>2</var> <i class=op>onto</i> <var>url<sub>1</sub></var>)
+         is the least type of  { <i class=op>ord</i> <var>url<sub>1</sub></var>, 
+          <i class=op>ord</i> <var>url<sub>2</sub></var> }
     <li>
-      (<var>url<sub>1</sub></var> <i class=op>goto</i>
-       <var>url<sub>2</sub></var>) <i class=op>goto</i>
-       <var>url<sub>3</sub></var> = <var>url<sub>1</sub></var>
-       <i class=op>goto</i> (<var>url<sub>2</sub></var> <i class=op>goto</i>
-       <var>url<sub>3</sub></var>).
+      (<var>url<sub>3</sub></var> <i class=op>onto</i>
+       <var>url<sub>2</sub></var>) <i class=op>onto</i>
+       <var>url<sub>1</sub></var>  = 
+       <var>url<sub>3</sub></var> <i class=op>onto</i>
+      (<var>url<sub>2</sub></var> <i class=op>onto</i>
+       <var>url<sub>1</sub></var>)
     <li>
-      ε <i class=op>goto</i> <var>url<sub>2</sub></var> =
-      <var>url<sub>2</sub></var>.
+      <var>url<sub>1</sub></var> <i class=op>onto</i> ε  = 
+      <var>url<sub>1</sub></var>
     <li>
-      <var>url<sub>1</sub></var> <i class=op>goto</i> ε =
-      <var>url<sub>1</sub></var> — if <var>url<sub>1</sub></var> does not
-      have a <b>fragment</b>.
-    <li>
-      <var>url<sub>2</sub></var> is a postfix of (<var>url<sub>1</sub></var>
-      <i class=op>goto</i> <var>url<sub>2</sub></var>).
+      ε <i class=op>onto</i> <var>url<sub>1</sub></var>  = 
+      <var>url<sub>1</sub></var>
+       — if <var>url<sub>1</sub></var> does not have a <b>fragment</b>.
   </ul>
-
-  <p>
-    Be aware that the <i>goto</i> operation does a bit more than 
-    sequence concatenation. In some cases it creates a <b>path-root</b>
-    component to satisfy the <i>path-root-constraint</i>
-    of the <i class=url>URL</i> model. 
-    For example, if <var>url<sub>1</sub></var> is the
-    <i class=url>URL</i> represented by <code>//host</code> and <var>url<sub>2</sub></var>
-    is the <i class=url>URL</i> represented by <code>foo/bar</code>
-    then (<var>url<sub>1</sub></var> <i class=op>goto</i> <var>url<sub>2</sub></var>)
-    is represented by <code>//host/foo/bar</code>, thus containing a <b>path-root</b> even
-    though neither <var>url<sub>1</sub></var> nor <var>url<sub>2</sub></var> has one.
-  </p>
-
 
   <h3>Forcing</h3>
   <p>
-    There is an additional operation on <i class=url>URL</i>s that I have named <i>force</i>.
-    The <i class=common>force</i> operation is used as a final step in the process of resolving a
+    Forcing is used as a final step in the process of resolving a
     <i>web-<span class=url>URL</span></i> or a <i>file-<span class=url>URL</span></i>. 
-    The operation ensures that the resulting <span class=url>URL</span> has an <b>authority</b>
-    token and a <b>path-root</b> token. Note that it is possible for the force operations to
+    It ensures that the forced <span class=url>URL</span> has an <b>authority</b>
+    component and a <b>path-root</b> component. Note that it is possible for the force operations to
     <strong>fail</strong>.
   </p>
 
   <div class="dfn-scope +br">
-  <h4>Forced File URL</h4>
+  <h4>Forcing a File URL</h4>
     <p class=-br>
       To <dfn>force</dfn> a <i>file-<span class=url>URL</span></i> <var>url</var>:
       <ul>
@@ -864,59 +1223,59 @@
   </div>
 
   <div class="dfn-scope +br">
-  <h4>Forced Web URL</h4>
+    <h4>Forcing a Web URL</h4>
     <p class=-br>
       To <dfn>force</dfn> a <i>web-<span class=url>URL</span></i>
       <var>url</var>:
-      <ul>
-        <li>
-          Set the <b>path-root</b> component of <var>url</var> to
-          (<b>path-root</b> <code>/</code>).
-        <li>
-          If <var>url</var> has a non-empty <b>authority</b> then return.
-        <li>
-          Otherwise let <var>component</var> be the first <b>dir</b> or
-          <b>file</b> <i class=common>component</i> whose value is not ε. 
-          <br>If no such <i class=common>component</i> exists, <strong>fail</strong>.
-        <li> 
-          Remove all <b>dir</b> or <b>file</b> <i class=common>component</i>s that
-          precede <var>component</var> and remove <var>component</var> as well. 
-        <li>
-          Let <var>auth</var> be the <i>value</i> of <var>component</var> parsed as
-          an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
-          <var>auth</var>. If the value cannot be parsed as an <i>Authority</i>
-          then <strong>fail</strong>.
-      </ul>
+    <ul>
+      <li>
+        Set the <b>path-root</b> component of <var>url</var> to
+        (<b>path-root</b> <code>/</code>).
+      <li>
+        If <var>url</var> has a non-empty <b>authority</b> then return.
+      <li>
+        Otherwise let <var>component</var> be the first <b>dir</b> or
+        <b>file</b> <i class=common>component</i> whose value is not ε.
+        <br>If no such <i class=common>component</i> exists, <strong>fail</strong>.
+      <li> 
+        Remove all <b>dir</b> or <b>file</b> <i class=common>component</i>s that
+        precede <var>component</var> and remove <var>component</var> as well. 
+      <li>
+        Let <var>auth</var> be the <i>value</i> of <var>component</var> parsed as
+        an <i>Authority</i> and set the <b>authority</b> of <var>url</var> to
+        <var>auth</var>. If the value cannot be parsed as an <i>Authority</i>
+        then <strong>fail</strong>.
+    </ul>
   </div>
 
   <h4>Force Properties</h4>
   <p>
-    The <i>force</i> operation lacks a number of nice properties with respect to the
-    <i>goto</i> operation. The following equalities do not hold in general: 
-  <table class=grammar>
+    The <i>force</i> operation does not have pleasing mathematical properties with respect to the
+    <i>rebase</i> operation. The following equalities do not hold in general: 
+  <table class="indent grammar">
     <tr>
       <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
-      <i class=op>goto</i>
+      <i class=op>onto</i>
       (<i class=op>force</i> <var>url<sub>2</sub></var>))
       <td> ≠ 
       <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
+      <i class=op>onto</i>
       <var>url<sub>2</sub></var>)
     <tr>
       <td><i class=op>force</i> ((<i class=op>force</i> <var>url<sub>1</sub></var>)  
-      <i class=op>goto</i>
+      <i class=op>onto</i>
       <var>url<sub>2</sub></var>)
       <td> ≠ 
       <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
+      <i class=op>onto</i>
       <var>url<sub>2</sub></var>)
     <tr>
       <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
+      <i class=op>onto</i>
       (<i class=op>force</i> <var>url<sub>2</sub></var>))
       <td> ≠ 
       <td><i class=op>force</i> (<var>url<sub>1</sub></var>  
-      <i class=op>goto</i>
+      <i class=op>onto</i>
       <var>url<sub>2</sub></var>)
   </table>
 
@@ -926,16 +1285,13 @@
   <p>
     The subsection
     <a href="https://datatracker.ietf.org/doc/html/rfc3986#section-5.2.2"
-    >Transform References</a> of <abbr class=-caps>RFC</abbr> 3986 specifies <em>two</em>
+    >Transform References</a> of <abbr class=caps>RFC</abbr> 3986 specifies <em>two</em>
     variants of reference resolution. A generic, <em>strict</em> variant and an
     alternative <em>non-strict</em> variant. 
-    This specification adds a third variant that is used to specify the behaviour of
-    web-browsers.
+    I have chosen to rename the <em>non-strict</em> variant to <i>legacy resolution</i>. 
 
-    I have chosen to name the strict variant <i>generic resolution</i> and the
-    <em>non-strict</em> variant <i>legacy resolution</i>, so that the words
-    the words <em>strict</em> and <em>non-strict</em> can be used as modifiers
-    later on. 
+    This specification adds a third variant that characterises 
+    the behaviour that is specified in the <abbr class=caps>WHATWG</abbr> standard. 
 
   <!--<p>
     As an example, consider resolving the <abbr class=-url>URL</abbr> represented by 
@@ -950,101 +1306,93 @@
     <div style=display:none>
       <dfn>resolution</dfn>
       <dfn>resolve</dfn>
-      <dfn>generic resolution</dfn>
-      <dfn>legacy resolution</dfn>
+      <dfn>strict-resolution</dfn>
+      <dfn>legacy-resolution</dfn>
     </div>
 
-    <h4>Generic Resolution</h4>
+    <h4>Strict Resolution</h4>
     <p>
-      The <dfn>generic resolution</dfn>
-      <span class=-nowrap>(<dfn class=op>generic-resolve</dfn> <var>url<sub>1</sub></var>
-      <var>url<sub>2</sub></var>)</span> of
-      an <span class=url>URL</span> <var>url<sub>1</sub></var> against
-      an <span class=url>URL</span> <var>url<sub>2</sub></var> is defined to be
-      <var>url<sub>2</sub></var> <i class=op>goto</i> <var>url<sub>1</sub></var>
-      — if <var>url<sub>2</sub></var> has a <b>scheme</b> or <var>url<sub>1</sub></var>
+      The <dfn>strict-resolution</dfn>
+      <span class=-nowrap>(<dfn class=op>strict-resolve</dfn> <var>url</var>
+      <var>base</var>)</span> of an <span class=url>URL</span> <var>url</var>
+      onto an <span class=url>URL</span> <var>base</var> is defined to be
+      <var>url</var> <i class=op>onto</i> <var>base</var>
+      — if <var>url</var> has a <b>scheme</b> or <var>base</var>
       has a <b>scheme</b>. Otherwise resolution <strong>fails</strong>.
 
     <h4>Legacy Resolution</h4>
     <p class=-br>
-      The <dfn>legacy resolution</dfn>
-      <span class=-nowrap>(<dfn class=op>legacy-resolve</dfn> <var>url<sub>1</sub></var>
-       <var>url<sub>2</sub></var>)</span> is defined to be the
-       <i class=common>generic resolution</i>
-      (<b class=op>generic-resolve</b> <var>~url<sub>1</sub></var> <var>url<sub>2</sub></var>)
-      where <var>~url<sub>1</sub></var> is:
+      The <dfn>legacy-resolution</dfn>
+      <span class=-nowrap>(<dfn class=op>legacy-resolve</dfn> <var>url</var>
+       <var>base</var>)</span> is defined to be the
+       <i class=common>strict-resolution</i>
+      (<b class=op>strict-resolve</b> <var>~url</var> <var>base</var>)
+      where <var>~url</var> is:
 
     <ul>
       <li>
-        <var>url<sub>1</sub></var> with its <b>scheme</b> removed if both
-          <var>url<sub>1</sub></var> and <var>url<sub>2</sub></var> have a <b>scheme</b>,
+        <var>url</var> with its <b>scheme</b> removed if both
+          <var>url</var> and <var>base</var> have a <b>scheme</b>
           and the <i class=common>value</i> of their <b>scheme</b>
           <i class=common>component</i>s case-insensitively compare equal, or
       <li>
-        <em>url<sub>1</sub></em> itself otherwise.
+        <var>url</var> itself otherwise.
     </ul>
   </div> <!-- Resolution -->
 
-  <p>
-    Based on the <i>generic resolution</i>, and the 
-    <i>legacy resolution</i> and the <i>force</i> operations as defined above, it is now
-    possible to define a reference resolution operation that can be used to characterise
-    the behaviour that is specified in the <abbr class=-caps>WHATWG</abbr> standard. 
-    
   <div class="dfn-scope +br" id="whatwg-resolution">
-
     <div style=display:none>
       <dfn>WHATWG-resolve</dfn>
       <dfn>WHATWG-resolution</dfn>
     </div>
 
-    <h4><abbr class=-caps>WHATWG</abbr> Resolution</h4>
+    <h4>WHATWG Resolution</h4>
 
     <p class=-br>
-      The <dfn><abbr class=-caps>WHATWG</abbr>-resolution</dfn> of
-      <var>url<sub>1</sub></var> against <var>url<sub>2</sub></var> is defined as:
+      The <dfn>whatwg-resolution</dfn> of
+      <var>url</var> onto <var>base</var> is defined to be:
 
     <ul>
       <li>
         <i class=op>force</i> (<i class=op>legacy-resolve</i>
-          <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>)
+          <var>url</var> <var>base</var>)
         <ul>
           <li>
-            if <var>url<sub>1</sub></var> is a <i>web-<span class=url>URL</span></i> or a
+            if <var>url</var> is a <i>web-<span class=url>URL</span></i> or a
             <i>file-<span class=url>URL</span></i>, or
           <li>
-            if <var>url<sub>1</sub></var> does not have a <b>scheme</b> and
-            <var>url<sub>2</sub></var> is a <i>web-<span class=url>URL</span></i> or a
+            if <var>url</var> does not have a <b>scheme</b> and
+            <var>base</var> is a <i>web-<span class=url>URL</span></i> or a
             <i>file-<span class=url>URL</span></i>;
         </ul>
 
       <li>
-        <i class=op>generic-resolve</i>
-          <var>url<sub>1</sub></var> <var>url<sub>2</sub></var>
+        <i class=op>strict-resolve</i>
+          <var>url</var> <var>base</var>
         <ul>
           <li>
-            if otherwise the first component of <var>url<sub>1</sub></var> is 
+            if otherwise the first component of <var>url</var> is 
             a <b>scheme</b> or a <b>fragment</b>, or
           <li>
-            if <var>url<sub>2</sub></var> has an <b>authority</b> or a <b>path-root</b>;
+            if <var>base</var> has an <b>authority</b> or a <b>path-root</b>;
         </ul>
       <li>
         otherwise, the operation <strong>fails</strong>.
     </ul>
 
     <p>
-      Any application of the <i>force</i> operation that modifies its input must issue a
-      validation warning. If in the process of <i><abbr class=-caps>WHATWG</abbr>-resolution</i>
-      either the <i>force</i> operation, or the internally used <i>generic resolution</i>
+      If <i>force</i> modifies its input then &ldquo;applications are encouraged&rdquo; to
+      issue a validation warning. If in the process of <i>whatwg-resolution</i>
+      either the <i>force</i> operation, or the internally used <i>strict-resolution</i>
       operation <strong>fails</strong>, then the
-      <i><abbr class=-caps>WHATWG</abbr>-resolution</i> <strong>fails</strong> as well.
+      <i>whatwg-resolution</i> <strong>fails</strong> as well.
   </div> <!-- WHATWG Resolution -->
 
 </section>
 
 
 <!------------------------>
-<section><h2>Parsing</h2>
+<section><h2 id=parsing>Parsing</h2>
 <!------------------------>
   <!--<ul>
     <li>
@@ -1067,7 +1415,7 @@
     Parsing is stratified into the following phases:
 
   <ol>
-    <li>Preprocessing.
+    <li> Preprocessing.
     <li> Selecting a parser mode.
     <li> Parsing.
     <li> Decoding and parsing the host.
@@ -1077,10 +1425,10 @@
   <p>
     The appendix
     <a href=https://datatracker.ietf.org/doc/html/rfc3986#appendix-C>Delimiting a
-    <abbr class=-caps>URI</abbr> in Context</a> of <abbr class=-caps>RFC</abbr> 3986 
+    <abbr class=caps>URI</abbr> in Context</a> of <abbr class=caps>RFC</abbr> 3986 
     states that surrounding white-space should be removed from an
-    <abbr class=-caps>URI</abbr> when it is extracted from its surrounding context. 
-    The <abbr class=-caps>WHATWG</abbr> standard makes this more explicit and specifies a
+    <abbr class=caps>URI</abbr> when it is extracted from its surrounding context. 
+    The <abbr class=caps>WHATWG</abbr> standard makes this more explicit and specifies a
     preprocessing step that removes removes specific control– and white-space–characters
     from the input string before parsing.
 
@@ -1095,78 +1443,120 @@
     <li>
       Remove all <b>u+9</b> (tab), <b>u+A</b> (line-feed) and <b>u+D</b>
       (carriage-return) <i class=common>character</i>s from <var>input</var>.
+    <li>
+      If the result starts with a <i>web-<b>scheme</b></i> followed by <code>:</code>
+      or with a <i>file-<b>scheme</b></i> followed by <code>:</code>
+      but it <strong>does not</strong> start with a <i>scheme</i> followed by <code>:</code>
+      then furthermore replace all occurrences of <code>\</code> that occur <em>before</em>
+      the first character that is either an <code>?</code> or an <code>#</code>, 
+      or before the end of the string otherwise,
+      with the <code>/</code> character.
   </ol>
   </div>
-
-
-  <h3>Parser modes</h3>
+  
+  <!-- <div class=dfn-section>
+  <h3>Parser Mode</h3>
   <p>
-    Unfortunately, <i class=url>URL</i>-parsing depends on the
-    <b>scheme</b> of the <i class=url>URL</i> being parsed. 
-    As a consequence, scheme-less <i class=url>URL</i> parsing is ambiguous. 
-    This can be resolved by explicitly specifying a <i>parser-mode</i>.
-    The <i class=common>parser-mode</i> only influences how scheme-less
-    <i class=url>URL</i>s are parsed.
+    The top-level grammar rule for <span class=url>URL</span>-strings is as follows:
+  </p>
 
-  <div class="dfn-scope +br">
+  <script class="grammar" type=bnf>
+    url  ::= [ scheme `:` ] ( auth-path | path ) [ `?` query ] [ `#` fragment ]
+  </script>
+
+  <p>
+    However, <b>web</b>, <b>file</b> and <b>generic</b> <i class=url>URL</i>s
+    use mildly different <i>auth-path</i> rules. An additional
+    problem is that it is unclear which of the varying rules should be used for parsing
+    scheme-less <span class=url>URL</span>-strings.
+  <p>
+    This is resolved by explicitly providing a fallback <i>parser-mode-for</i>
+    scheme-less <span class=url>URL</span>-strings.
+  </p>
+
   <h4>Parser Mode</h4>
     <p>
-      There are three distinct <dfn>parser-mode</dfn>s:
-    <p class="-center">
-      <dfn><b>web-mode</b></dfn>, 
-      <dfn><b>file-mode</b></dfn>, and
-      <dfn><b>generic-mode</b></dfn>.
-
-    <p>
       The <dfn>parser-mode-for</dfn> an
-      <i class=common><span class=url>URL</span>-string</i> <var>input</var>, given a
-      fallback <i class=common>parser-mode</i> <var>supplied-mode</var> is then defined to be:
-    <ul class=-inbetween>
+      <span class=url>URL</span>-string <var>input</var>, given a
+      fallback <i class=common>parser-mode</i> <var>supplied-mode</var> is defined to be:
+    <ul class=inbetween>
       <li>
-        <b>web-mode</b> — if <var>input</var> starts with a
+        <dfn><b>web</b></dfn> — if <var>input</var> starts with a
         <i>web-<b>scheme</b></i> followed by <code>:</code>
       <li>
-        <b>file-mode</b> — if <var>input</var> starts with a
+        <dfn><b>file</b></dfn> — if <var>input</var> starts with a
         <i>file-<b>scheme</b></i> followed by <code>:</code>
       <li>
-        <b>generic-mode</b> — if otherwise <var>input</var> starts with a
+        <dfn><b>generic</b></dfn> — if otherwise <var>input</var> starts with a
         <i><b>scheme</b>-string</i> followed by <code>:</code>
       <li>
         <var>supplied-mode</var> — otherwise.
     </ul>
-  </div>
+  </div> -->
 
-  <p>
-    In practice, it is possible and advisable to begin parsing with a supplied
-    <i class=common>parser-mode</i>, and to update the
-    <i class=common>parser-mode</i> whilst parsing, as soon as a
-    <i class=common>scheme</i> has been detected. 
-
+  <div class=dfn-section>
   <h3>URL Grammar</h3>
-    <p>
-      This subsection specifies the grammar for <i><span class=url>URL</span>-string</i>s.
-      Implementations must use this grammar for parsing <i><span class=url>URL</span></i>s
-      from <i>string</i>s. The grammar is parameterised by a <i>parser-mode</i>.
-      Specifically, the <i>auth-path</i> rule, the <i>authority</i> rule and the <i>s</i>
-      rule have different versions for different <i class=common>parser-mode</i>s.
+  <p>
+    We can now specify the full grammar for <span class=url>URL</span>-strings,
+    using an alternative version for the auth-path rule for <b>file</b>-<span class=url>URL</span></i>s:
+  </p>
 
-    <table class=grammar>
+  <!-- <script class="grammar url-grammar" type=bnf>
+    url                ::= [ scheme `:` ] ( auth-path | path ) [ `?` query ] [ `#` fragment ]
+    -- The auth path rule for web and generic URLs:
+    auth-path          ::= s s authority [ path-root  path-rel ]
+    -- The auth path rule for file URLs:
+    auth-path          ::= auth-drive [ path-root  path-rel ]
+    auth-drive         ::= auth-drive-invalid | [ s s authority-empty ] [ s ] drive |  s s authority [ s drive ]
+    auth-drive-invalid ::= [ ss authority-empty ] drive
+    -- Rules for the authority and the path:
+    authority-empty    ::= ε
+    authority          ::= ε  |  [ userinfo `@` ] host [ `:` port ]
+    userinfo           ::= username [ `:` password ]
+    host               ::= `[` ip6-address `]`  |  opaque-host
+    port               ::= ε | digit+
+    path               ::= [ path-root ]  path-rel
+    path-rel           ::= ( dir s )* [ file ]
+    -- Rules for the components:
+    scheme           ::= alpha (alpha | digit | `+` | `-` | `.`)*
+    username         ::= ( pcts | uchar )*
+    password         ::= ( pcts | pchar )*
+    opaque-host      ::= ( pcts | hchar )+
+    drive            ::= alpha (`:` | `|`)
+    path-root        ::= s
+    dir              ::= ( pcts | pchar )*
+    file             ::= ( pcts | pchar )+
+    query            ::= ( pcts | qchar )*
+    fragment         ::= ( pcts | fchar )*
+    -- Where pcts is defined as follows:
+    pcts             ::= percent-encoded-bytes  |  pct-invalid
+    -- The rules are based on the following character-sets:
+    uchar            := any \ s \ { `%`, `#`, `?`, `:` }
+    hchar            := any \ s \ { `%`, `#`, `?`, `:`, `@` } \ { u+0, ` `, `<`, `>`, `[`, `\`, `]`, `^`, `|` }
+    pchar            := any \ s \ { `%`, `#`, `?` }
+    qchar            := any \ { `%`, `#` }
+    fchar            := any \ { `%` }
+    -- Where s depends on the parser-mode:
+    s                := { `/` }  -- for generic URLs
+    s                := { `/`, `\` }  -- otherwise
+  </script> -->
+  
+  <table class=grammar>
     <tr>
       <td>url 
       <td> ::= 
       <td> [ scheme <code>:</code> ] ( auth-path | path )
         [ <code>?</code> query ] [ <code>#</code> fragment ]
-
-    <tr class=-inbetween>
-      <td colspan=3>The auth-path rule in <b>web-mode</b> and in <b>generic-mode</b>:
+      <tr class=inbetween>
+        <td colspan=3>The general auth-path rule:
 
     <tr>
       <td><dfn>auth-path</dfn> 
       <td> ::= 
-      <td> <i>s</i> <i>s</i> authority [ path-root  path-rel ]
+      <td> <code>//</code> authority [ path-root  path-rel ]
 
-    <tr class=-inbetween>
-      <td colspan=3>The auth-path rule in <b>file-mode</b>:
+    <tr class=inbetween>
+      <td colspan=3>The auth-path rule for <b>file</b>-<span class=url>URL</span></i>s:
 
     <tr>
       <td><dfn>auth-path</dfn>
@@ -1176,59 +1566,47 @@
     <tr>
       <td><dfn>auth-drive</dfn>
       <td> ::= 
-      <td> [ <i>s</i> <i>s</i> authority<sub>ε</sub>] [ <i>s</i> ] drive
-         |  <i>s</i> <i>s</i> authority [ <i>s</i> drive ]
+      <td> auth-drive-invalid
+         |  <code>//</code> authority [ <code>/</code> drive ]
+         |  <code>/</code> drive
+
+    <tr>
+      <td><dfn>auth-drive-invalid</dfn>
+      <td> ::= 
+      <td> [ <code>//</code> authority<sub>ε</sub> ] drive
+
+    <tr>
+      <td><dfn>drive</dfn>
+      <td> ::= 
+      <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
 
     <!-- <tr>
       <td><dfn>authority</dfn>
       <td> ::=
       <td> ε  |  <i>host</i> -->
 
-    <tr class=-inbetween>
-      <td colspan=3>Rules for the authority and the path:
+    <tr class=inbetween><td colspan=3>
+      <p class=note> A forced <i>file-<span class=url>URL</span></i> however
+      does not have a username, password or a port, and will have a path-root.
+      Moreover if it has a non-empty authority then its host will not be an
+      opaque host as it will have been processed and verified to be a domain.
 
-    <tr>
-      <td><dfn>authority</dfn> 
-      <td> ::= 
-      <td> ε  |  [ credentials <code>@</code> ] <i>host</i> [ <code>:</code> port ]
+    <tr class=inbetween>
+      <td colspan=3>Rules for the authority and the path:
 
     <tr>
       <td><dfn>authority<sub>ε</sub></dfn> 
       <td> ::= <td> ε
 
     <tr>
-      <td>credentials 
+      <td><dfn>authority</dfn> 
       <td> ::= 
-      <td>username [ <code>:</code> password ]
+      <td> ε  |  [ <i>userinfo</i> <code>@</code> ] <i>host</i> [ <code>:</code> port ]
 
     <tr>
-      <td><dfn>path</dfn>
+      <td><dfn>userinfo</dfn>
       <td> ::= 
-      <td> [ path-root ]  path-rel
-
-    <tr>
-      <td><dfn>path-rel</dfn>
-      <td> ::= 
-      <td> ( dir <i>s</i> )* [ file ]
-
-    <tr class=-inbetween>
-      <td colspan=3>Rules for the components:
-
-    <tr>
-      <td>scheme 
-      <td> ::= 
-      <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i>
-        | <code>+</code> | <code>-</code> | <code>.</code>)*
-
-    <tr>
-      <td>username 
-      <td> ::= 
-      <td> ( <i>pcts</i> | <i>uchar</i> )*
-
-    <tr>
-      <td>password 
-      <td> ::= 
-      <td> ( <i>pcts</i> | <i>pchar</i> )*
+      <td><i>username</i> [ <code>:</code> <i>password</i> ]
 
     <tr>
       <td><dfn>host</dfn> 
@@ -1236,317 +1614,155 @@
       <td> <code>[</code> <i>ip6-address</i> <code>]</code>  |  <i>opaque-host</i>
 
     <tr>
-      <td><dfn>opaque-host</dfn> 
-      <td> ::= 
-      <td> ( <i>pcts</i> | <i>hchar</i> )+
-
-    <tr>
       <td><dfn>port</dfn> 
       <td> ::= 
       <td> ε | <i>digit</i>+
 
     <tr>
-      <td>drive 
+      <td><dfn>path</dfn>
       <td> ::= 
-      <td> <i>alpha</i> (<code>:</code> | <code>|</code>)
+      <td> [ path-root ]  path-rel
 
     <tr>
       <td><dfn>path-root</dfn> 
       <td> ::= 
-      <td> <i>s</i>
+      <td> <code>/</code>
 
     <tr>
-      <td>dir 
+      <td><dfn>path-rel</dfn>
       <td> ::= 
-      <td> ( <i>pcts</i> | <i>pchar</i> )*
+      <td> ( dir <code>/</code> )* [ file ]
+
+    <tr class=inbetween><td colspan=3>
+    If the port is not the empty string, then it must in addition be a decimal representation of 
+    a natural number <var>n</var> &lt; 2<sup>16</sup> where leading zeroes are allowed.
 
     <tr>
-      <td>file 
-      <td> ::= 
-      <td> ( <i>pcts</i> | <i>pchar</i> )+
+    <td colspan=3>
+      <p class=note> A forced <i>web-<span class=url>URL</span></i>
+      will have a non-empty authority and a path-root. Moreover if it has a
+      host then it will not be an opaque host as it will have been processed
+      and verified to be a domain.
+
+    <tr class=inbetween>
+      <td colspan=3>Rules for the components:
 
     <tr>
-      <td>query 
+      <td><dfn>scheme</dfn>
       <td> ::= 
-      <td> ( <i>pcts</i> | <i>qchar</i> )*
+      <td> <i>alpha</i> (<i>alpha</i> | <i>digit</i>
+        | <code>+</code> | <code>-</code> | <code>.</code>)*
 
     <tr>
-      <td>fragment 
+      <td><dfn>username</dfn>
       <td> ::= 
-      <td> ( <i>pcts</i> | <i>url-char</i> )*
-
-    <tr class=-inbetween>
-      <td colspan=3>Where <i>pcts</i> is defined as follows:
+      <td class=nowrap> ( <i>uchar</i> | <i>pct</i> )*
 
     <tr>
-      <td><dfn>pcts</dfn> 
+      <td><dfn>password</dfn>
       <td> ::= 
-      <td> <i>pct-encoded-bytes</i> | <i>pct-invalid</i>
+      <td class=nowrap> ( <i>pchar</i> | <i>pct</i> )*
 
-    <tr class=-inbetween>
+    <tr>
+      <td><dfn>opaque-host</dfn> 
+      <td> ::= 
+      <td><nowrap>( <i>hchar</i> | <i>pct</i> )+</nowrap>
+
+    <tr>
+      <td><dfn>dir</dfn>
+      <td> ::= 
+      <td class=nowrap> ( <i>pchar</i> | <i>pct</i> )*
+
+    <tr>
+      <td><dfn>file</dfn>
+      <td> ::= 
+      <td class=nowrap> ( <i>pchar</i> | <i>pct</i> )+
+
+    <tr>
+      <td><dfn>query</dfn>
+      <td> ::= 
+      <td class=nowrap> ( <i>qchar</i> | <i>pct</i> )*
+
+    <tr>
+      <td><dfn>fragment</dfn>
+      <td> ::= 
+      <td class=nowrap> ( <i>fchar</i> | <i>pct</i> )*
+
+    <tr class=inbetween>
+      <td colspan=3>Using the following rule for valid– <em>or</em> invalid
+        percent encoded bytes:
+
+    <tr>
+      <td><dfn>pct</dfn>
+      <td> ::= 
+      <td class=nowrap> <i>pct-encoded-byte</i>  |  <i>pct-invalid</i>
+
+
+    <tr class=inbetween>
       <td colspan=3>The rules are based on the following character-sets:
-
-  <tr>
-    <td><dfn>url-char</dfn> 
-    <td> := <td> <i>any</i> \ <nowrap>{ <b>u+9</b>, <b>u+A</b>, <b>u+D</b> }</nowrap>
-
     <tr><td><dfn>uchar</dfn>
       <td> :=
-      <td> <i>url-char</i> \  <i>s</i>  \
-        <nowrap>{ <code>#</code>, <code>?</code>, <code>:</code> }</nowrap>
-
+      <td> <i>any</i> \
+        <nowrap>{ <code>%</code>, <code>#</code>, <code>?</code>, <code>/</code>, <code>:</code> }</nowrap>
     <tr><td><dfn>hchar</dfn>
       <td> :=
-      <td> <i>url-char</i> \  <i>s</i>  \
-        { <code>#</code>, <code>?</code>, <code>:</code> , <code>@</code> }  \
-        { <b>u+0</b>, 
-        <code><span style=display:inline-block;width:1ch> </span></code>,
+      <td> <i>any</i> \
+        { <code>%</code>, <code>#</code>, <code>?</code>, <code>/</code>, <code>:</code>, <code>@</code> } 
+        \ { <b>u+0</b>, <code><span style=display:inline-block;width:1ch> </span></code>,
         <code>&lt;</code>, <code>&gt;</code>, <code>[</code>, <code>\</code>, <code>]</code>,
         <code>^</code>, <code>|</code> }
-
     <tr>
       <td><dfn>pchar</dfn>
       <td> := 
-      <td> <i>url-char</i> \  <i>s</i>  \ <nowrap>{ <code>#</code>, <code>?</code> }</nowrap>
-
+      <td> <i>any</i> \ <nowrap>{ <code>%</code>, <code>#</code>, <code>?</code>, <code>/</code> }</nowrap>
     <tr>
       <td><dfn>qchar</dfn> 
       <td> := 
-      <td class=-nowrap> <i>url-char</i> \ { <code>#</code> }
-
-    <tr class=-inbetween>
-      <td colspan=3>Where <i>s</i> depends on the <i>parser-mode</i>:
-
+      <td class=-nowrap> <i>any</i> \ { <code>%</code>, <code>#</code> }
     <tr>
-      <td><dfn>s</dfn> 
+      <td><dfn>fchar</dfn> 
       <td> := 
+      <td class=-nowrap> <i>any</i> \ { <code>%</code> }
+
+    <!-- <tr class=inbetween>
+      <td colspan=3>Where <code>/</code> depends on the <i>parser-mode</i>:
+    <tr>
+      <td><dfn>s</dfn>
+      <td> :=
       <td> { <code>/</code> }
-         —  in <b>generic-mode</b>
-
+         —  for <b>generic</b> <span class=url>URL</span>s
     <tr>
-      <td>s<dfn style=display:none>s</dfn>
-      <td> := 
+      <td><dfn>s</dfn>
+      <td> :=
       <td> { <code>/</code>, <code>\</code> }
-         —  otherwise
+         —  otherwise -->
     </table>
 
-  <h3>Strict URL Grammar</h3>
-
   <p>
-    For an <span class=url>URL</span>-string</dfn> to be considered <dfn>valid</dfn>, it must
-    conform to a more restricted grammar. The strict grammar is obtained by modifying the
-    <i>auth-drive</i> and <i>pcts</i> rules and the <i>url-char</i> and <i>s</i> character-sets as follows:
-
-  <table class=grammar>
-    <tr>
-      <td><dfn>auth-drive</dfn>
-      <td> ::= 
-      <td> <i>s</i> drive  |  <i>s</i> <i>s</i> authority  [ <i>s</i> drive ]
-    <tr>
-      <td><dfn>pcts</dfn> 
-      <td> ::=
-      <td> <i>pct-encoded-bytes</i>
-         —  note the absence of <i>pct-invalid</i>
-
-    <tr class=-inbetween>
-      <td colspan=3>The rules are based on the following character-sets:
-    <tr>
-      <td><dfn>url-char</dfn> 
-      <td> := 
-      <td colspan=4> <i>base-char</i> \ <span class=-nowrap>{
-        <code><span style=display:inline-block;width:1ch> </span></code>,</span>
-        <code>"</code>,
-        <code>#</code>,
-        <code>%</code>,
-        <code>&lt;</code>,
-        <code>&gt;</code>,
-        <code>[</code>,
-        <code>\</code>,
-        <code>]</code>,
-        <code>^</code>,
-        <code>`</code>,
-        <code>{</code>,
-        <code>|</code>,
-        <code>}</code> }
-  <tr>
-    <td><dfn>s</dfn> 
-    <td> := 
-    <td> { <code>/</code> }
-       —  in all modes.
-  </table>
-
-
-
-<h3>IPv6 Addresses</h4>
-
-  <p class=todo>
-    Double check the following, and include it here
-
-  <h4><abbr class=-caps>IP</abbr>v6 Address — Strict</h4>
-  <p>
-    An <abbr class=-caps>IP</abbr>v6 address-string is a representation
-    of a natural number <var>n</var> &lt; 2<sup>128</sup> that is used as an identifier. 
-    It is accurately described by the production rule <var>IPv6address</var>
-    in the <a href=https://tools.ietf.org/html/rfc3986#section-3.2.2>Host
-    section</a> of <abbr class=-caps>RFC</abbr> 3986. 
-
-  <p>
-    The <a href=https://url.spec.whatwg.org/#concept-ipv6-parser
-    ><abbr class=-caps>IP</abbr>v6 address parser</a> in the
-    <abbr class=-caps>WHATWG</abbr> standard however implies a more tolerant definition
-    of <abbr class=-caps>IP</abbr>v6 address-strings. 
-
-  <h4>IPv6 Address — loose</h4>
-  <div class=todo>
+    This grammar provides a lenient and a strict description of URL strings at once,
+    as follows: A stricty valid URL string does not use the <i>pct-invalid</i>,
+    nor <i>auth-drive-invalid</i> rules and it must not contain in its components any characters
+    that are specified as <b class=R>R</b>, <b>T</b> or <b>F</b> for that
+    component-type as per the <a href=#component-characters>Component Characters</a> section.
+    Moreover, a strictly valid URL must not contain a <i>Userinfo</i> component in its
+    authority.
   </div>
 
-
-  <div class=todo>
-    There are additional, semantic constraints on the ipv4-address, ipv6-address
-    and the port. 
-  </div>
-
-  <!-- <h3>URL Model</h3>
-  <div class=todo>
-    The grammar and the model, are very closely related.
-    (So close even that I'm pondering if I can merge them).
-    If you record the use of each rule whose name corresponds to a component-type
-    as a component, then you end up with an URL as defined in the Model section.
-    With the port, being once exception, and the definition of a host needs
-    a bit of work too.
-  </div> -->
-
-
-  <h3>A note about multiple slashes</h3>
-    <p>
-      Web browsers interpret any amount of slashes after a 
-      <i>web-scheme</i> as  the start of the authority component. Consider
-      the following <span class=url>URL</span>-strings:
-
-    <div class=-inbetween><ol class=-inline>
-      <li><code>http:foo/bar</code>
-      <li><code>http:/foo/bar</code>
-      <li><code>http://foo/bar</code>
-      <li><code>http:///foo/bar</code>
-    </ol>.</div>
-
-    <p>
-      Web browsers treat all these examples as equivalent to
-      <code>http://foo/bar</code>.
-      It is tempting to try to express this behaviour on the level of the
-      grammar. For example one might consider using the following rule:
-
-    <p class="-inbetween -center">auth-path  ::= 
-      <i>s</i>* <i>authority</i>
-        [ <i>path-root</i> [ dir <i>s</i> ]* [ file ] ]
-
-    <p>
-      However, the examples above <em>do</em> behave differently with 
-      respect to reference resolution. For example, if they are resolved 
-      against the <i>base-<span class=url>URL</span></i> that is represented by
-      <code>http://host/</code>, then the results are as follows:
-
-    <div class=-inbetween><ol class=-inline>
-      <li><code>http://host/foo/bar</code>
-      <li><code>http://host/foo/bar</code>
-      <li><code>http://foo/bar</code>
-      <li><code>http://foo/bar</code>
-    </ol>.</div>
-
-    <p>
-      As such, collapsing the multiples of slashes, cannot be expressed within 
-      the grammar. Instead, the <i>force</i> operation as defined in the 
-      section on <a href=#reference-resolution>Reference Resolution</a>
-      implements this behaviour. 
-
-</section>
-
-
-<!------------------------------>
-<section><h2>Host Parsing</h2>
-<!------------------------------>
-
-  <div class=note>
-    This section still has to be written.
-  </div>
-
-  <div class=todo>
-    <ul>
-      <li>Percent decode.
-      <li>Puny decode.
-      <li>Apply IDNA/ Nameprep normalisation.
-      <li>Detect and interpret IPv4 addresses.
-      <li>Err on 'forbidden host codepoints'.
-    </ul>
-  </div>
-
-  <h4>IPv4 Address</h4>
-  <p>
-    An IPv4 address-string consists of one up to four dot-separated numbers with
-    an optional trailing dot. The numbers may use decimal, octal or hexadecimal
-    notation, as follows:
-
-  <table class=grammar>
-    <tr><td><dfn>ip4-address </dfn>
-      <td> ::=
-      <td> num
-          [<code>.</code> num
-          [<code>.</code> num
-          [<code>.</code> num ] ] ]
-          [<code>.</code>]
-    <tr><td><dfn>num</dfn> 
-      <td> ::=
-      <td> num-dec | num-oct | num-hex
-    <tr><td><dfn>num-dec</dfn> 
-      <td> ::= 
-      <td> <code>0</code> | (<i>digit-nonzero</i> <i>digit</i>*)
-    <tr><td>num-oct 
-      <td> ::= 
-      <td> <code>0</code> <i>octal-digit</i>*
-    <tr><td>num-hex 
-      <td> ::= 
-      <td> (<code>0x</code> | <code>0X</code>) <i>hex-digit</i>*
-  </table>
-
-  <p>
-    Note that <code>0x</code> is parsed as a hexadecimal number.
-    (It will be interpreted as 0).
-
-  <h4>IPv4 Address – Strict</h4>
-  <p>
-    A <em>valid</em> IPv4 address-string consists of four
-    dot-separated numbers, <em>without</em> a trailing dot.
-    The numbers must use decimal notation, as follows:
-  
-  <table class=grammar>
-    <tr><td><dfn>ip4-address-strict</dfn> 
-      <td> ::=
-      <td>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i> <code>.</code>
-          <i>num-dec</i>
-  </table>
-<div class=todo>
-  In addition, each of the components must represent a number n ≤ 255
-</div>
 
 </section>
 
 
 <!--------------------------------------------->
-<section><h2>Equivalences and Normalisation</h2>
+<section><h2 id=equivalences-and-normalisation>Equivalences and Normalisation</h2>
 <!--------------------------------------------->
 
 <p>
   This section is analogous to the section
   <a href="https://tools.ietf.org/html/rfc3986#section-6.2">Normalization and 
-  Comparison</a> of <abbr class=-caps>RFC</abbr> 3986. The
-  <abbr class=-caps>RFC</abbr> however, does not <em>prescribe</em> a
-  particular normal form. The <abbr class=-caps>WHATWG</abbr> standard
+  Comparison</a> of <abbr class=caps>RFC</abbr> 3986. The
+  <abbr class=caps>RFC</abbr> however, does not <em>prescribe</em> a
+  particular normal form. The <abbr class=caps>WHATWG</abbr> standard
   does, however implicitly. 
-
-
 
 <!-- <p>
   I think it is nice to define the equivalences via a congruence relation.
@@ -1554,6 +1770,8 @@
   to right to obtain a set of terminating rewrite rules.
   An <i class=url>URL</i> is in normal form if no more rewrite rules can be
   applied.
+-->
+<!--
 <h4>Normalisation Function</h4>
 <p>
   A <i>normalisation function</i> for <i class=url>URL</i>s is a function
@@ -1570,36 +1788,30 @@
 </table>
 -->
 
-
 <h3>Path Segment Normalisation</h3>
 
 <p>
   Path segment normalisation involves the interpretation of
-  <i>dotted-segment</i>s. Colloquially, a single-dot segment has 
-  the meaning of &ldquo;select the current directory&rdquo;
-  whereas a double-dot segment has the meaning
-  of &ldquo;select the parent directory&rdquo;. 
-  Dotted segments are defined by the following rules, where
-  the addition of <code>%2e</code> and <code>%2E</code> has been motivated
+  <i>dotted-segment</i>s. Colloquially, a single-dot segment has the meaning of
+  &ldquo;select the current directory&rdquo; whereas a double-dot segment has
+  the meaning of &ldquo;select the parent directory&rdquo;.
+  Dotted segments are defined by the following rules, where the addition of
+  <code>%2e</code> and <code>%2E</code> has been motivated
   by security concerns. Again this is in accordance with
-  the <abbr class=-caps>WHATWG</abbr> standard.
+  the <abbr class=caps>WHATWG</abbr> standard.
 </p>
 
 <div class="dfn-scope +br">
 <dfn style=display:none>dotted-segment</dfn>
-<table class=grammar>
-  <tr>
-    <td><dfn>dot</dfn>
-    <td> ::=
-    <td colspan=10> <code>.</code> | <code>%2e</code> | <code>%2E</code>
-  <tr>
-    <td><dfn>dots</dfn> <td> ::= <td colspan=10> <i>dot</i>  <i>dot</i>
-</table>
+<script class="indent grammar" type=bnf>
+  dot   ::= `.` | `%2e` | `%2E`
+  dots  ::= dot dot
+</script>
 </div>
 
 <p>
   Path equivalence is defined by the following equations.
-  The equations must be exhaustively applied from left-to-right
+  The equations can be exhaustively applied from left-to-right
   to normalise an <i class=url>URL</i>. 
 </p>
 
@@ -1609,18 +1821,7 @@
     <td> ≈
     <td><b>drive</b>  <var>x</var> <code>:</code>
   <tr>
-    <td><b>path-root</b> <code>/</code>・<b>dir</b> <var>y</var> 
-    <td> ≈ <td><b>path-root</b> <code>/</code>
-    <td> — <td> if <var>y</var> :: <i>dots</i>
-  <tr>
-    <td><b>path-root</b> <code>/</code>・<b>file</b> <var>y</var>
-    <td> ≈ <td><b>path-root</b> <code>/</code>
-    <td> — <td> if <var>y</var> :: <i>dots</i>
-  <tr>
     <td><b>dir</b>  <var>x</var>
-    <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
-  <tr>
-    <td><b>file</b> <var>x</var>
     <td> ≈ <td>ε <td>—<td> if <var>x</var> :: <i>dot</i></td>
   <tr>
     <td><b>dir</b>  <var>x</var>・<b>dir</b> <var>y</var>
@@ -1628,10 +1829,9 @@
     <td> — <td> if <var>y</var> :: <i>dots</i> 
       and <strong>not</strong> <var>x</var> :: <i>dots</i>
   <tr>
-    <td><b>dir</b>  <var>x</var>・<b>file</b> <var>y</var>
-    <td> ≈ <td> ε                                
-    <td> — <td> if <var>y</var> :: <i>dots</i> 
-      and <strong>not</strong> <var>x</var> :: <i>dots</i>
+    <td><b>path-root</b> <code>/</code>・<b>dir</b> <var>y</var> 
+    <td> ≈ <td><b>path-root</b> <code>/</code>
+    <td> — <td> if <var>y</var> :: <i>dots</i>
 </table>
 
 
@@ -1650,10 +1850,27 @@
     <!-- <tr><td><b>username</b> ε・<b>password</b> ε
       <td> ≈ <td>ε -->
     <tr><td><b>password</b> ε <td> ≈ <td> ε
-    <tr><td><b>username</b> ε・<b>host</b> <var>h</var>
-      <td> ≈ <td><b>host</b> <var>h</var>
+    <tr><td><b>userinfo</b> (<b>username</b> ε) <td> ≈ <td> ε
     <tr><td><b>port</b> ε <td> ≈ <td>ε
   </table>
+
+<h3>Scheme-Based Authority Validation</h3>
+
+<p>
+  If an <i class=url>URL</i> has a scheme, then a number of additional
+  requirements may be enforced on the authority; specifically these should be 
+  enforced or fixed whilst resolving (as opposed to rebasing) and URL. 
+
+<p class=todo>
+  Type it out nicely
+
+<ul>
+  <li>file and web URLs must have an authority
+  <li>file URL authority must not have a userinfo nor a port component
+  <li>web URL must have a <em>non-empty</em> authority
+  <li>file- and web URL host must not be an opaque host
+</ul>    
+
 
 <h3>Scheme-Based Authority Normalisation</h3>
 <p>
@@ -1707,291 +1924,173 @@
     </table>
 
 
-<h3>Percent Coding Normalisation</h3>
 
-<p>
-  There is a natural notion of equivalence for percent-encoded-strings:
-  one could consider two percent-encoded strings to be equivalent if their
-  percent-decodings are equal. However, for <span class=url>URL</span>-components,
-  this notion of equivalence is too strong. 
-  
-<p class=todo>
-  … RFC3986 specifies reserved characters to allow for additional,
-  application-specific interpretation. For reserved characters, one cannot assume that
-  they are equivalent to their percent-encoding.
-
-<!-- <p>
-  Percent encoding can be extended from <i class=common>string</i>s to
-  <i class=url>URL</i>s by percent encoding the components' 
-  <i class=common>value</i>s of an <i class=url>URL</i>. This means that instead
-  of a single <i class=common>percent-encode-set</i>,
-  a <i>percent-encode-profile</i> is required as an argument to the
-  percent-encode-operation on <i class=url>URL</i>s. -->
-
-<p>
-  The <abbr class=-caps>WHATWG</abbr> standard <em>does not</em> specify the semantics of
-  percent-encoded-bytes in the components of an <i class=url>URL</i> other than the <b>host</b>
-  at all, and any percent-encoded bytes that are present in other components are not
-  decoded. It <em>does</em> however specify sets of characters that must be <em>encoded</em>.
-  
-<h4>Percent Encode Profile</h4>
-  <p>
-    A <dfn>percent-encode-profile</dfn> is a mapping that maps 
-    each <i>component-type</i> in the set 
-    { <b>username</b>, <b>password</b>, <b>host</b>, <b>dir</b>,
-      <b>file</b>, <b>query</b>, <b>fragment</b> } 
-    to a <i>percent-encode-set</i>. 
-    <!-- A <i class=common>percent-encode-profile</i> is used as a configuration
-    argument to the <i>percent-encode</i> operation on <i class=url>URL</i>s. -->
-
-<div class="dfn-scope +br">
-<h4>Percent Encode Profiles</h4>
-  <p>
-  There are <em>four</em> distinct <i class=common>percent-encode-profile</i>s 
-  that are relevant for this specification. 
-  They are specified by the following tables. A table can be selected by
-  clicking on one of the profile names below. 
-<p class=-center>
-  <dfn onclick="encodeTable.show({})">generic</dfn>,
-  <dfn onclick="encodeTable.show({special:true})">special</dfn>,
-  <dfn onclick="encodeTable.show({minimal:true})">minimal</dfn> and
-  <dfn onclick="encodeTable.show({special:true, minimal:true})">minimal-special</dfn>.
-</div>
-
-<div id=percent-encode-sets class=+br><table>
-  <col>
-  <colgroup span=8>
-  <colgroup span=1>
-  <colgroup span=7>
-  <colgroup span=6>
-  <colgroup span=5>
-  <tr>
-    <th>
-    <th colspan=8><b>u+20</b>–<b>u+27</b>
-    <th colspan=1><!-- <b>u+2F</b> -->
-    <th colspan=7><b>u+3A</b>–<b>u+40</b>
-    <th colspan=6><b>u+5B</b>–<b>u+60</b>
-    <th colspan=5><b>u+7B</b>–<b>u+7E</b>
-    <th>
-</table>
-</div>
-
-<script>
-
-  const encodedTypes = [/*'url', */'username', 'password', 'host', 'dir', 'file', 'query', 'fragment']
-
-  class EncodeTableView {
-
-    constructor () {
-      this.div = document.getElementById ('percent-encode-sets')
-      this.template = this.div.firstChild
-    }
-
-    show ({ special = false, minimal = false } = { }) {
-      const table = this.template.cloneNode (true)
-      this.div.innerHTML = ''
-      this.div.append (table)
-      for (let name of encodedTypes) {
-        const _name = name === 'fragment' ? 'hash' : name
-        const tr = $ ('tr', $('th', $('b', name, '  ')))
-        for (let i=0x20; i<=0x7e; i++) {
-          // remove 0-9, a-z, A-Z, '('-'.' and '$', '%' and '&'
-          if ((i < 0x28 || i > 0x2e) && (i < 48 || i > 57) && (i < 65 || i > 90) && (i < 97 || i > 122)) {
-            const _has = specurl.unstable.isInSet (i, { name:_name, minimal, special })
-            const td = $('td', $('code', String.fromCharCode (i)))
-              if (!_has) td.classList.add ('-screen')
-              td.title = 'u+'+i.toString(16).toUpperCase ()
-            tr.append(td)
-          }
-        }
-        tr.append ($('td', '  '))
-        table.append (tr)
-      }
-      let title = []
-      if (minimal) title.push ('minimal')
-      if (special) title.push ('special')
-      title = title.join ('-')
-      table.append ($('caption', title ? title : 'generic', ' ', 'percent encode profile'))
-    }
-  }
-
-  const encodeTable = new EncodeTableView ()
-  encodeTable.show ({ })
-
-</script>
-
-<p>
-  Unfortunately, like parsing, the percent-encoding
-  of <span class=url>URL</span>s as prescribed by the 
-  <abbr class=-caps>WHATWG</abbr> standard, is scheme dependent. 
-
-<h4>Encode Profile Selection</h4>
-  <p class=-br>
-    The <i>percent-encode-profile-for</i> a given <i class=url>URL</i> is
-  <ul>
-    <li>
-      the <i>special</i> profile — if the <span class=url>URL</span> is a
-      <i>file-<span class=url>URL</span></i> or a <i>web-<span class=url>URL</span></i>,
-    <li>
-      the <i>special</i> profile — if the <span class=url>URL</span> does not have a <b>scheme</b>,
-    <li>
-      the <i>generic</i> profile — if otherwise the <span class=url>URL</span> has an
-      <b>authority</b> or a <b>path-root</b>, or
-    <li>
-      the <i>minimal</i> profile — otherwise.
-  </ul>
+<!-- <h3>Percent Coding Normalisation</h3> -->
 
 
-<div class=note>
-  Note that these profiles do not lead to valid URL-strings after printing. 
-  This is as is specified by the WHATWG.
-</div>
-<div class=todo>
-  I prefer renaming generic to normal, special to normal-special, add a valid profile, 
-  and change the minimal profile to be truly minimal, only encoding characters that would cause
-  reparse bugs. Furthermore. 
-</div>
 
 </section>
 
 
-<!------------------------->
-<section><h2>Printing</h2>
+
+<section>
+<h2 id=printing>Printing</h2>
 <!------------------------->
 
 <p>
   Printing is the process of converting an <i class=url>URL</i> to an
   <i><span class=url>URL</span>-string</i>. 
-  To print an <span class=url>URL</span>, it must first be
+  Printing can be stratified into the following three phases:
+<ol>
+  <li>
+    Normalising the <i class=url>URL</i> for printing. 
+  <li>
+    Converting each of the <i class=common>component</i>s of the <i class=url>URL</i> to a
+    <i class=common>string</i>.
+  <li>
+    Composing the final <i class=common><span class=url>URL</span>-string</i> from the printed
+    <i class=common>component</i>s.
+</ol>
+
+
+<h3>Normalise for Printing</h3>
+
+<p>
+  To print an <i class=url>URL</i>, it must first be
   subjected to an additional normalisation operation, and it must be percent encoded
   as follows. 
 
 <h4>Normalise for Printing</h4>
 <p>
-  If an <span class=url>URL</span> does <em>not</em> have a <b>drive</b> nor an <b>authority</b>
+  If an <i class=url>URL</i> does <em>not</em> have a <b>drive</b> nor an <b>authority</b>
   but it <em>does</em> have an empty first <b>dir</b> component (<b>dir</b> ε) then it must be
   <dfn>normalised for printing</dfn> by inserting a component (<b>dir</b> <code>.</code>)
   immediately before its first <b>dir</b> component.
+<p>
+  Otherwise, if the first component of an <span class=url>URL</span> is a <b>dir</b> or
+  a <b>file</b> component and its value <var>value</var> starts with a scheme-like string, i.e.
+
+<p class="center nobr">
+  <var>value</var> :: <i>alpha</i> (<i>alpha</i> | <i>digit</i> | <code>+</code>
+    | <code>-</code> | <code>.</code>)* <code>:</code> <i>any</i>*,
+
+<p>
+  then the first occurrence of <code>:</code> in <var>value</var> must be replaced with its percent-encoding
+  <code>%3A</code>.
 
 <p>
   This additional normalisation step is necessary because it is not possible to represent
-  the affected <span class=url>URL</span>s as an <span class=url>URL</span>-string. 
+  the affected <i class=url>URL</i> as an <i class=common><span class=url>URL</span>-string</i>
+  otherwise.
 
 <p>
-  Consider for example the <span class=url>URL</span>
+  Consider for example the <i class=url>URL</i>
   (<b>path-root</b> <code>/</code>)・(<b>dir</b> ε)・(<b>file</b> <code>foo</code>). 
   Printing this <span class=url>URL</span> without an additional normalisation step
   would result in <code>//foo</code> which represents the <span class=url>URL</span> 
   (<b>authority</b> (<b>host</b> <code>foo</code>)) instead. 
-  
+
 <p class=todo>
-  This is not sufficient. 
-  There are similar issues around URLs with drive letters, which is an open issue. 
+  There is a similar issue around URLs with drive letters,
+  but these issues are not properly addressed in the current WHATWG standard,
+  making it difficult for us to prescribe appropriate counter measures.
   
-<ul>
+<!-- <ul>
   <li>
-    To print to an <abbr class=-caps>ASCII</abbr>
-    <i><span class=url>URL</span>-string</i>, 
-    percent encode <i>any</i> \ <i>printable-<abbr class=-caps>ASCII</abbr></i>
+    To print to an <abbr class=caps>
+    </abbr>
+    <i><span class=url>URL</span>-string</i>,
+    percent encode <i>any</i> \ <i>printable-<abbr class=caps>ASCII</abbr></i>
   <li>
-    Otherwise percent encode <i>control-c0</i>, <i>del-c1</i>, 
-    <i>surrogate</i>s and <i>non-char</i>s. 
+    Otherwise percent encode <i>control-c0</i>, <i>del-c1</i>,
+    <i>surrogate</i>s and <i>non-char</i>s.
   <li>
-    In addition percent encode a subset of 
-    <i>printable-<abbr class=-caps>ASCII</abbr></i>, depending on the 
-    <i class=common>component</i>, as indicated by the percent coding table. 
-</ul>
+    In addition percent encode a subset of
+    <i>printable-<abbr class=caps>ASCII</abbr></i>, depending on the
+    <i class=common>component</i>, as indicated by the percent coding table.
+</ul> -->
 
 
+<h3>Printing URLs</h3>
 
-<ul>
-  <li>
-    Let output be the empty string, then, for each of the
-    <i class=common>component</i>s (<var>tag</var>, <var>value</var>) of
-    <var>url2</var> in tree order, convert the <i class=common>component</i> to a
-    <i class=common>string</i>, depending on its <i>type</i> according to the
-    following table, and append it to the output.
-</ul>
+<p>
+  To convert an <i>Authority</i> to an <i>Authority</i>-string, replace each of the sub-components
+  with their component-value concatenated with their prefix– or postfix-sigil, if any.
+  This results in a sequence of strings, which is converted to the final result by concatenating them in order.
 
-<table id=printer>
-  <tr>
-  <th><b>scheme</b>
-  <th colspan=2><b>authority</b>
-  <th><b>drive</b>
-  <th><b>root</b>
-  <th><b>dir</b>
-  <th><b>file</b>
-  <th><b>query</b>
-  <th><b>fragment</b>
-  <tr>
-  <td><var>value</var> <code>:</code>
-  <td><code>//</code><td><table>
-    <tr><th colspan=2>credentials<th><b>host</b><th><b>port</b>
-    <tr><td><table>
-      <tr><th><b>user</b><th><b>pass</b>
-      <tr><td><var>value</var><td><var> <code>:</code> value</var>
-    </table><td><code>@</code>
-      <td><var>value</var><td><var><code>:</code> value</var>
-    </table>
-  <td><code>/</code> <var>value</var>
-  <td><code>/</code>
-  <td><var>value</var> <code>/</code>
-  <td><var>value</var>
-  <td><code>?</code> <var>value</var>
-  <td><code>#</code> <var>value</var>
-</table>
+<p>
+  To convert an <i class=url>URL</i> to an <span class=url>URL</span>-string, first convert the value of
+  its <b>authority</b> component (if any) to an <i>Authority</i>-string.
+  Then continue to replace each component with their component-value concatenated with their identifying sigil, if any.
+  This results in a sequence of strings, which is converted to a single string by simply concatenating them in order.
 </section>
 
 
 <!------------------------->
-<section><h2>Concluding</h2>
-<!------------------------->
 
-<p>This final section specifies the behaviour of a 
-  <i>parse-resolve-and-normalise</i> operation that characterises the behaviour of the
-  &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
-  <span class=url>URL</span> parser</a>&rsquo;
-  as described in the <abbr class=-caps>WHATWG URL</abbr> standard.
 
-<div class=todo>
-  It's easy!<br>
-  parse-resolve-and-normalise (string, base) :=
-  <ul>
-  <li>preprocess string 
-  <li>detect the parser mode, with the fallback mode as indicated by the base
-  <li>parse the preprocessed string according to the grammar to obtain url1
-  <li>force resolve url1 against base
-  <li>normalise and percent encode the result. 
-</ul>  
-</div>
+<section>
+  
+  <h2 id=concluding>Concluding</h2>
 
-<div class=todo>
-That results in an URL (model). 
-One can then wrap around that to describe the URL class of web browsers:
+  <p>
+    This final section specifies the behaviour of a 
+    <i>parse-resolve-and-normalise</i> operation that characterises the behaviour of the
+    &lsquo;<a href="https://url.spec.whatwg.org/#concept-basic-url-parser">basic
+    <span class=url>URL</span> parser</a>&rsquo;
+    as described in the <abbr class=caps>WHATWG URL</abbr> standard.
 
-<ul>
-  <li>The href getter returns the printed URL.
-  <li>The protocol getter returns the scheme + <code>:</code> or ε if absent.
-  <li>The username and password getters return ε if absent or the value of the
-    corresponding component otherwise
-  <li>The host getter returns ε if absent, the value
-    of the <b>host</b> if the port is absent, and the value
-    of the <b>host</b> + <code>:</code> + the value of the <b>port</b> otherwise.
-  <li>The hostname getter returns ε if the URL has no host, otherwise it returns the value
-    of the <b>host</b>.
-  <li>pathname (…)
-  <li>The search getter returns ε if the URL has no <b>query</b>, otherwise it
-    returns the value of the <b>query</b>. 
-  <li>The hash getter returns returns ε if the URL has no <b>query</b>, 
-    otherwise it returns the value of the <b>fragment</b>. 
-</ul>
+  <div class=note>
+    It's easy!<br>
+    parse-resolve-and-normalise (string, base) :=
+    <ul>
+      <li>
+        Preprocess string 
+      <li>
+        Detect the parser mode, with the fallback mode as indicated by the base
+      <li>
+        Parse the preprocessed string according to the grammar to obtain url1
+      <li>
+        Force resolve url1 against base
+      <li>
+        Normalise and percent encode the result. 
+    </ul>
 
-<p>
-  Note that there is a loss of information about the structure of the URL. 
-</div>
+    <p>
+      That results in an URL-structure.
+      One can then wrap around that to describe the URL class of web browsers:
+
+    <ul>
+      <li>
+        The href getter returns the printed URL.
+      <li>
+        The protocol getter returns the scheme + <code>:</code> or ε if absent.
+      <li>
+        The username and password getters return ε if absent or the value of the
+        corresponding component otherwise
+      <li>
+        The host getter returns ε if absent, the value
+        of the <b>host</b> if the port is absent, and the value
+        of the <b>host</b> + <code>:</code> + the value of the <b>port</b> otherwise.
+      <li>
+        The hostname getter returns ε if the URL has no host, otherwise it returns the value
+        of the <b>host</b>.
+      <li>
+        pathname (…)
+      <li>
+        The search getter returns ε if the URL has no <b>query</b>, otherwise it
+        returns <code>?</code> + the value of the <b>query</b>. 
+      <li>
+        The hash getter returns returns ε if the URL has no <b>fragment</b>, 
+        otherwise it returns <code>#</code> + the value of the <b>fragment</b>. 
+    </ul>
+
+  </div>
+
 
 </section>
 </article>
+<br class=clear>
 </main>
 </body>
 </html>

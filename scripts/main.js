@@ -1,10 +1,23 @@
 const log = console.log.bind (console)
+const REM_PX = 22;
+
+// DOM Tools
+// ---------
 
 const $ = (name, ...subs) => {
   const r = document.createElement (name)
   r.append (...subs)
   return r
 }
+
+function isAncestor (elem, parent) {
+  do if (!elem || elem === parent) return elem
+  while (elem = elem.parentNode)
+}
+
+
+// TOC
+// ---
 
 function buildTOC (doc = document) {
   const heads = doc.querySelectorAll ('H2')
@@ -55,7 +68,7 @@ function buildIndex (doc = document) {
     const context = getContext (dfn)
     if (!context) continue
     let { block, section } = context
-    const title = section ? section.querySelector('h1,h2').innerText : null
+    const title = section ? section.querySelector('h1,h2,h3')?.innerText : null
     let text = dfn.innerText.replace (/\s+/, ' ')
     // TODO support multiple dfns with same name
     index [text] = index [text]||[]
@@ -68,11 +81,12 @@ function buildIndex (doc = document) {
 function buildToolTips (entries) {
   const tips = $('div')
   for (let entry of entries) {
+    // log (entry)
     if (!entry.block) continue
     const tip = entry.block.cloneNode (true)
     if (!entry.block.querySelector ('h2,h3,h4')) {
-      const h = entry.section.querySelector('h2')
-      tips.append ($('h4', h.innerText))
+      const h = entry.section.querySelector('h2,h3,h4')
+      if (h) tips.append ($('h4', h.innerText))
     }
     tips.append (tip)
   }
@@ -83,44 +97,49 @@ function buildToolTips (entries) {
 // Idiom Observer
 // --------------
 // Detects mouses over idioms and other tags that
-// benefit from a tool tip
+// benefit from a tool tip - <i> and <b> elements.
+
+const idiomTags = { I:1, B:1 }
 
 function IdiomObserver (elem, callback) {
 
-  const self = this
-  let current = null
-  document.addEventListener ('click', handler)
-  elem.addEventListener ('mouseover', handler)
+  let activeIdiom = null
+  init ()
+
+  function init () {
+    document.addEventListener ('click', handler)
+    elem.addEventListener ('mouseover', handler)
+  }
 
   function handler (evt) {
     const info = getContext (evt.target)
     if (info == null) return
-    info.idiom = (info.elem && info.elem.innerText.replace(/\s+/, ' ')) || null
-    if (evt.type === 'click' || info.idiom !== current) {
-      current = info.idiom
+    info.idiom = (info.elem && info.elem.textContent.replace(/\s+/, ' ')) || null
+    if (evt.type === 'click' || info.idiom !== activeIdiom) {
+      activeIdiom = info.idiom
       callback (evt, info)
     }
   }
 
 }
 
-const contexts = { TR:1, LI:1, DIV:1, P:1, SECTION:1, BODY:1 }
-const idioms = { I:1, B:1, DFN:1 }
+
+const contextTags = { TR:1, LI:1, DIV:1, P:1, SECTION:1, BODY:1 }
 
 function getContext (elem) {
   let idiom = null, implicitScope = null, scope, section
   for (; (!scope || !section) && elem && elem.tagName !== 'HTML'; elem = elem.parentNode) {
-    if (!idiom && elem.tagName in idioms) {
+    if (!idiom && elem.tagName in idiomTags) {
       if (elem.classList.contains ('noindex')) return null
       else idiom = elem
     }
     else if (!scope) {
       if (elem.classList.contains ('dfn-scope'))
         scope = elem
-      else if (!implicitScope && elem.tagName in contexts)
+      else if (!implicitScope && elem.tagName in contextTags)
         implicitScope = elem
     }
-    if (!section && elem.tagName === 'SECTION') {
+    if (!section && (elem.tagName === 'SECTION' || elem.classList.contains ('dfn-section'))) {
       section = elem
     }
   }
@@ -135,28 +154,32 @@ function getContext (elem) {
 
 function PageObserver (elem, callback) {
 
-  const self = this
   const article = document.getElementsByTagName ('ARTICLE')[0]
   const sections = document.getElementsByTagName ('SECTION')
   let currentSection = sections [0]
   let scrollTimeout = 0
-  onscroll ()
+  init ()
 
-  const wrapped = evt => !scrollTimeout ? setTimeout (_ => onscroll (evt), 30) : null
-  window.addEventListener ('hashchange', wrapped)
-  elem.addEventListener ('scroll', wrapped)
+  function init () {
+    onscroll ()
+    window.addEventListener ('hashchange', wrapped)
+    window.addEventListener ('scroll', wrapped)
+  }
+
+  function wrapped (evt) {
+    if (!scrollTimeout) setTimeout (_ => onscroll (evt), 30)
+  }
 
   function onscroll () {
-    // NB hard coded 80px threshold for header
     const scrollY = elem.scrollTop
-    const newSection = scrollY < 80 ? article : getCurrentSection (sections)
+    const newSection = scrollY <= 80 ? article : getCurrentSection (sections)
     if (newSection && currentSection !== newSection)
       callback ({ section:(currentSection = newSection), scrollY })
     scrollTimeout = 0
   }
   
   function getCurrentSection () {
-    const threshold = 25 // 75 // 55
+    const threshold = 1 * REM_PX
     for (let s of sections) {
       const { top, bottom } = s.getBoundingClientRect ()
       if (top < threshold && threshold < bottom) return s
@@ -166,29 +189,31 @@ function PageObserver (elem, callback) {
 }
 
 
-// Main
-// ----
+// Reader UI
+// ---------
 
-window.addEventListener ('DOMContentLoaded', main)
-
-function main () {
+function Reader () {
 
   const content = document.getElementsByTagName ('main') [0]
   const header = document.getElementsByTagName ('header') [0]
   const toolsDiv = document.getElementById ('tooltip')
   let toc, hoverDfns = [], hoverAs = []
+  let index, refIndex
   let currentIdiom = null, pinnedTips = null
+  init ()
 
-  document.getElementById ('toc') .replaceWith (toc = buildTOC ())
-  toc.id = 'toc'
-
-  const index = buildIndex ()
-  const refIndex = buildHrefIndex ()
-
-  new PageObserver (content, onSection)
+  function init () {
+    // toc = buildTOC ()
+    // toc.id = 'toc'
+    // const tocElem = document.getElementById ('toc')
+    // if (tocElem) tocElem.replaceWith (toc)
+    index = buildIndex ()
+    refIndex = buildHrefIndex ()
+    new PageObserver (document.documentElement, onSection)
+    new IdiomObserver (content, onIdiom)
+  }
 
   function onSection ({ section, scrollY, _header = true }) {
-    log ('onSection')
     let entry, node = section.querySelector ('h1,h2')
     if ((entry = refIndex [node.id])) {
       hoverAs.forEach (a => a.classList.remove ('-focus'))
@@ -196,26 +221,30 @@ function main () {
       hoverAs.forEach (a => a.classList.add ('-focus'))
     }
     // Show the node in the header
-    if (node.tagName === 'H2') {
-      header.style.display = 'block'
-      node = node.cloneNode (true)
-      node.style.display = null
-      // Assumes <header><hgroup><h2>...
-      header.firstElementChild.innerHTML = ''
-      header.firstElementChild.append (node)
-    }
-    else {
-      header.style.display = 'none'
-    }
+    // if (node.id != null && node.tagName === 'H2' && scrollY > 40) {
+    //   showHeader (node)
+    //   history.replaceState (node.id, null, new URL('#'+node.id, document.location))
+    // }
+    // else {
+    //   header.style.display = 'none'
+    // }
+  }
+
+  function showHeader (elem) {
+    // Assumes <header><hgroup><h2>...
+    header.style.display = 'block'
+    const clone = elem.cloneNode (true)
+    clone.style.display = null
+    header.firstElementChild.innerHTML = ''
+    header.firstElementChild.append (clone)
   }
 
 
   // Idiom tools
 
-  new IdiomObserver (content, onIdiom)
-
   function onIdiom (evt, { elem, block, idiom }) {
-    log ('idiom', idiom, pinnedTips, evt.type)
+    // log ('idiom', idiom, elem, block, pinnedTips, evt.type)
+    // log (isAncestor (elem, block))
     if (evt.type === 'click') {
       if (!idiom) {
         pinnedTips = null
@@ -228,7 +257,8 @@ function main () {
     if (entries) {
       entries.forEach (({dfn}) => dfn.classList.add ('-focus'))
       hoverDfns = entries
-      const tips = buildToolTips (entries)
+      const tips_ = evt.type === 'click' ? entries : entries.filter (({ dfn, block }) => !isAncestor (elem, block))
+      const tips = buildToolTips (tips_)
       if (evt.type === 'click') pinnedTips = tips
       showTips (tips)
     }
@@ -241,7 +271,7 @@ function main () {
       toolsDiv.append (tips)
       toolsDiv.style.top = 0
       const rect = tips.getBoundingClientRect ()
-      const y = Math.max (rect.y, 475) - 25
+      const y = Math.max (rect.y, 18*REM_PX) - REM_PX
       toolsDiv.style.top = y + 'px'
       toolsDiv.classList.remove ('-hidden')
     }
@@ -254,4 +284,28 @@ function main () {
   }
 
 }
+
+
+// Main
+// ----
+
+window.addEventListener ('DOMContentLoaded', () => {
+  // Pretty print BNF
+  const { render, parse } = window.BnfModule
+  for (const elem of document.body.querySelectorAll('script[type=bnf]')) {
+    const rendered = render (parse (elem.textContent))
+    for (const c of elem.classList) rendered.classList.add (c)
+    elem.replaceWith (rendered) 
+  }
+  new Reader ()
+})
+
+
+
+
+window.addEventListener ('click', evt => {
+  if (evt.altKey && /^file:/i.test(document.location))
+    document.documentElement.classList.toggle ('debug')
+  }
+)
 
