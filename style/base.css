@@ -78,14 +78,14 @@ header,main,aside,article,footer,nav,div,dd,dt,fieldset,legend,figcaption,h3,h4,
 .-screen {
   opacity:.2;
 }
-.-inbetween {
+.inbetween {
   margin-top:-.5rem;
   margin-bottom:.5rem;
 }
-.-inbetween +.-inbetween {
+.inbetween +.inbetween {
   margin-top:.5rem;
 }
-tr.-inbetween {
+tr.inbetween {
   height:2rem;
 }
 .-nowrap, .-nobr {
@@ -93,6 +93,9 @@ tr.-inbetween {
 }
 :not(table).-center {
   text-align:center;
+}
+.-hidden {
+  display:none;
 }
 
 /* Inline lists */
@@ -121,4 +124,8 @@ ul.-inline > li::before {
 }
 .-inline > li:last-child::after {
   content:none;
+}
+
+.hidden {
+  display:none;
 }
